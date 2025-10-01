@@ -1,12 +1,16 @@
 ﻿using GeneradorDeModelos.Dtos;
 using GeneradorDeModelos.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace GeneradorDeModelos.Controllers
 {
@@ -70,7 +74,6 @@ namespace GeneradorDeModelos.Controllers
                 return Unauthorized("Usuario o contraseña incorrectos.");
             }
 
-            //VERIFICACION DE CONTRASEÑAS
             using var sha512 = SHA512.Create();
             var computedHash = sha512.ComputeHash(Encoding.UTF8.GetBytes(request.Password));
             var requestPasswordHash = Convert.ToBase64String(computedHash);
@@ -82,6 +85,34 @@ namespace GeneradorDeModelos.Controllers
 
             string token = CreateToken(user);
             return Ok(token);
+        }
+
+        // --- MÉTODO AÑADIDO PARA EL MENÚ DINÁMICO ---
+        [HttpGet("menu")]
+        [Authorize]
+        public async Task<ActionResult<IEnumerable<MenuItem>>> GetUserMenu()
+        {
+            // 1. Obtiene el nombre del rol del usuario desde su token JWT
+            var roleName = User.FindFirst(ClaimTypes.Role)?.Value;
+            if (string.IsNullOrEmpty(roleName))
+            {
+                return Unauthorized("Token inválido o sin rol.");
+            }
+
+            // 2. Busca el rol en la base de datos para obtener su ID y relaciones
+            var role = await _context.Roles
+                .Include(r => r.MenuItems) // Carga los MenuItems asociados
+                .FirstOrDefaultAsync(r => r.NombreRol == roleName);
+
+            if (role == null)
+            {
+                return NotFound("El rol del usuario no fue encontrado en la base de datos.");
+            }
+
+            // 3. Devuelve la lista de MenuItems asociados a ese rol
+            var menuItems = role.MenuItems.OrderBy(m => m.Id).ToList(); // Asumiendo que quieres ordenarlos por ID
+
+            return Ok(menuItems);
         }
 
         private string CreateToken(Usuario user)

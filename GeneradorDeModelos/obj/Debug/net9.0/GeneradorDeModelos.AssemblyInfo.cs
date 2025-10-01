@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("GeneradorDeModelos")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+913948f5c11a2322af1a2073691d608570894e04")]
 [assembly: System.Reflection.AssemblyProductAttribute("GeneradorDeModelos")]
 [assembly: System.Reflection.AssemblyTitleAttribute("GeneradorDeModelos")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
