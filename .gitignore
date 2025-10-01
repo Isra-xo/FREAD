@@ -1,0 +1,6 @@
+# Ignorar configuraciones y caché de Visual Studio
+.vs/
+*.user
+*.suo
+*.slnx
+*.vsidx
