@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createForo } from '../services/apiService';
-import './CreateForoPage.css'; // Importamos los nuevos estilos
+import './CreateForoPage.css'; 
 
 const CreateForoPage = () => {
     const [nombreForo, setNombreForo] = useState('');
@@ -13,7 +13,6 @@ const CreateForoPage = () => {
         e.preventDefault();
         try {
             await createForo({ nombreForo, descripcion });
-            // Navega a la página de crear hilo para que vean el resultado inmediatamente
             navigate('/crear-hilo');
         } catch (err) {
             console.error("Error al crear el foro:", err);

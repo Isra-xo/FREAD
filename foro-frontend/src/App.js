@@ -1,7 +1,7 @@
-import React, { useState } from 'react'; // <-- 1. Se importa useState
+import React, { useState } from 'react'; 
 import { Routes, Route } from 'react-router-dom';
 
-// Tus componentes existentes
+// Componentes existentes
 import Navbar from './components/Navbar';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
@@ -14,14 +14,16 @@ import HiloDetailPage from './pages/HiloDetailPage';
 import PerfilPage from './pages/PerfilPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import NotFoundPage from './pages/NotFoundPage';
+import MiActividadPage from './pages/MiActividadPage';
+
 
 function App() {
-  // 2. Se define el estado para el término de búsqueda
+  // Define el estado para el término de búsqueda
   const [searchTerm, setSearchTerm] = useState('');
 
   return (
     <>
-      {/* 3. Se pasan los props al Navbar para controlar la búsqueda */}
+      {/* Se pasan los props al Navbar para controlar la búsqueda */}
       <Navbar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
       <main>
         <Routes>
@@ -29,9 +31,9 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           
-          {/* --- Rutas Protegidas (agrupadas para mayor claridad) --- */}
+          {/* --- Rutas Protegidas --- */}
           <Route element={<ProtectedRoute />}>
-            {/* 4. Se pasa el término de búsqueda a HomePage para filtrar */}
+            {/* Pasa el término de búsqueda a HomePage para filtrar */}
             <Route path="/" element={<HomePage searchTerm={searchTerm} />} />
             <Route path="/foros" element={<ForosListPage />} />
             <Route path="/crear-foro" element={<CreateForoPage />} />
@@ -39,6 +41,7 @@ function App() {
             <Route path="/hilo/:id" element={<HiloDetailPage />} />
             <Route path="/perfil" element={<PerfilPage />} />
             <Route path="/popular" element={<AdminPage />} />
+            <Route path="/mi-actividad" element={<MiActividadPage />} />
           </Route>
 
           {/* --- Ruta para Páginas no Encontradas (404) --- */}

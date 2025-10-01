@@ -4,7 +4,8 @@ import { useAuth } from '../context/AuthContext';
 import './Navbar.css';
 
 const Navbar = ({ searchTerm, setSearchTerm }) => {
-    const { user, logout } = useAuth();
+    // 1. Obtenemos 'menuItems' del contexto, además de 'user' y 'logout'
+    const { user, logout, menuItems } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -36,11 +37,16 @@ const Navbar = ({ searchTerm, setSearchTerm }) => {
         <header className="navbar-header">
             <div className="navbar-left">
                 <Link to="/" className="navbar-brand">FREAD</Link>
-                <Link to="/" className="nav-link">Inicio</Link>
-                {userRole === 'Administrador' && (
-                    <Link to="/popular" className="nav-link">Administrar</Link>
-                )}
+                
+                {/* --- 2. RENDERIZADO DINÁMICO DEL MENÚ --- */}
+                {/* Mapeamos el array 'menuItems' y creamos un Link para cada uno */}
+                {menuItems.map(item => (
+                    <Link key={item.id} to={item.url} className="nav-link">
+                        {item.titulo}
+                    </Link>
+                ))}
             </div>
+
             <div className="navbar-center">
                 <input 
                     type="search" 
@@ -50,10 +56,9 @@ const Navbar = ({ searchTerm, setSearchTerm }) => {
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
             </div>
+
             <div className="navbar-right">
-                {userRole === 'Administrador' && (
-                    <Link to="/crear-foro" className="btn">Crear Foro</Link>
-                )}
+                
                 <Link to="/crear-hilo" className="btn btn-primary">Crear Hilo</Link>
                 <div className="dropdown">
                     <button className="btn dropdown-btn">

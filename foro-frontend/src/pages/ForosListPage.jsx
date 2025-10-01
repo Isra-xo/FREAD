@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 
 const ForosListPage = () => {
     const [foros, setForos] = useState([]);
-    const { user } = useAuth(); // Obtenemos la info del usuario logueado
+    const { user } = useAuth(); // Aqui se obtiene la info del usuario logueado
     const userId = user?.['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'];
 
     useEffect(() => {
@@ -25,7 +25,6 @@ const ForosListPage = () => {
         if (window.confirm("¿Estás seguro de que quieres eliminar este foro?")) {
             try {
                 await deleteForo(foroId);
-                // Refresca la lista de foros después de borrar
                 fetchForos();
             } catch (error) {
                 console.error("Error al eliminar el foro:", error);
@@ -48,7 +47,7 @@ const ForosListPage = () => {
                         <p>{foro.descripcion}</p>
                         <small>Creado por: {foro.usuario?.nombreUsuario || 'Desconocido'}</small>
 
-                        {/* LÓGICA DE PERMISOS: Muestra el botón solo si el usuario logueado es el dueño */}
+                        {}
                         {foro.usuarioId && Number(userId) === foro.usuarioId && (
                             <button onClick={() => handleDelete(foro.id)} style={{ marginLeft: '20px', color: 'red' }}>
                                 Eliminar

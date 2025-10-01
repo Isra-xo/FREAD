@@ -2,10 +2,10 @@
 .admin-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
 .admin-table th, .admin-table td { padding: 12px; border: 1px solid #30363d; text-align: left; }
 .admin-table th { background-color: #161b22; }
-/* Agrega esto a tu archivo AdminPage.css */
+
 .table-container {
-    max-height: 60vh; /* Altura máxima del 60% de la ventana */
-    overflow-y: auto; /* Scroll vertical si se necesita */
+    max-height: 60vh; 
+    overflow-y: auto; 
     border: 1px solid #30363d;
 }
 

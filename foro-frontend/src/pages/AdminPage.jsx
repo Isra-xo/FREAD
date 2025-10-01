@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-// Añade la nueva función del apiService
 import { getUsers, deleteUser, changeUserRole } from '../services/apiService';
 import './AdminPage.css';
 
@@ -19,8 +18,6 @@ const AdminPage = () => {
 
     useEffect(() => {
         fetchUsers();
-        // En una aplicación real, también podrías obtener los roles desde la API
-        // const fetchRoles = async () => { ... }; fetchRoles();
     }, []);
 
     const handleDeleteUser = async (userId) => {

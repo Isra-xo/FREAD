@@ -2,7 +2,7 @@
 
 .profile-page-container {
     max-width: 800px;
-    margin: 20px auto 80px; /* Margen superior e inferior para espacio */
+    margin: 20px auto 80px; 
     padding: 2rem;
     background-color: var(--background-medium);
     border: 1px solid var(--border-color);
@@ -45,15 +45,14 @@
 }
 
 .user-info {
-    flex-grow: 1; /* Permite que la información del usuario ocupe el espacio */
+    flex-grow: 1; 
 }
 
 .user-info h2 { margin: 0 0 0.25rem 0; color: var(--text-primary); }
 .user-info p { margin: 0 0 0.5rem 0; color: var(--text-secondary); }
 
-/* Botones genéricos dentro del perfil */
 .profile-page-container .btn {
-    display: inline-block; /* Para que el botón "Editar Perfil" no ocupe todo el ancho */
+    display: inline-block; 
     margin-top: 1rem;
     padding: 0.75rem 1.5rem;
     border-radius: 20px;
@@ -61,16 +60,14 @@
     transition: background-color 0.2s, border-color 0.2s, color 0.2s;
 }
 
-/* --- Formulario de Edición --- */
 .profile-edit-form {
     background-color: var(--background-dark);
     border: 1px solid var(--border-color);
     border-radius: 8px;
     padding: 1.5rem;
     margin-top: 2rem;
-    /* Añadimos overflow auto aquí también para el formulario si es muy largo */
-    max-height: calc(100vh - 200px); /* Ocupa casi toda la altura visible */
-    overflow-y: auto; /* Scroll dentro del formulario si se desborda */
+    max-height: calc(100vh - 200px); 
+    overflow-y: auto; 
 }
 
 .profile-edit-form h3 { margin-top: 0; text-align: center; color: var(--text-primary); }
@@ -95,18 +92,18 @@
     border-color: var(--border-color);
     color: var(--text-primary);
     padding: 0.6rem 1rem;
-    border-radius: 5px; /* Botones más cuadrados para inputs */
+    border-radius: 5px; 
 }
 .file-input-container .btn-secondary:hover { background-color: #30363d; border-color: var(--accent-primary); }
-.file-name { color: var(--text-secondary); font-size: 0.9rem; flex-shrink: 1; min-width: 0; /* Permite que el texto se trunque */ }
+.file-name { color: var(--text-secondary); font-size: 0.9rem; flex-shrink: 1; min-width: 0;  }
 .profile-picture-preview {
-    width: 100px; /* Un poco más grande la previsualización */
+    width: 100px;
     height: 100px;
     border-radius: 50%;
     object-fit: cover;
-    margin: 1rem auto; /* Centrado y con margen */
+    margin: 1rem auto; 
     display: block;
-    border: 2px dashed var(--accent-primary); /* Borde punteado para previsualización */
+    border: 2px dashed var(--accent-primary); 
 }
 
 .profile-edit-form .btn-primary {
@@ -115,7 +112,7 @@
     margin-top: 1.5rem;
     padding: 0.75rem;
     font-size: 1.1rem;
-    border-radius: 8px; /* Botón de guardar más rectangular */
+    border-radius: 8px; 
 }
 
 
@@ -150,35 +147,33 @@
 }
 
 /* --- SCROLL PERSONALIZADO PARA LISTAS E INPUTS --- */
-.scrollable-list, .profile-edit-form { /* Aplicamos a ambas */
-    /* max-height: 300px; */ /* Descomenta si necesitas un scroll más estricto */
+.scrollable-list, .profile-edit-form { 
     overflow-y: auto;
     padding-right: 8px; /* Espacio para el scrollbar */
 }
 
-/* Estilos de la barra de desplazamiento */
 .scrollable-list::-webkit-scrollbar,
 .profile-edit-form::-webkit-scrollbar {
     width: 8px;
-    background-color: transparent; /* Fondo transparente */
+    background-color: transparent; 
 }
 
 .scrollable-list::-webkit-scrollbar-track,
 .profile-edit-form::-webkit-scrollbar-track {
-    background: transparent; /* Fondo transparente para el track */
+    background: transparent; 
     border-radius: 10px;
 }
 
 .scrollable-list::-webkit-scrollbar-thumb,
 .profile-edit-form::-webkit-scrollbar-thumb {
-    background-color: var(--accent-primary); /* Color del thumb */
+    background-color: var(--accent-primary);
     border-radius: 10px;
-    border: 2px solid var(--background-dark); /* Borde para "separar" */
+    border: 2px solid var(--background-dark); 
 }
 
 .scrollable-list::-webkit-scrollbar-thumb:hover,
 .profile-edit-form::-webkit-scrollbar-thumb:hover {
-    background-color: #6a76f7; /* Un tono más claro al pasar el ratón */
+    background-color: #6a76f7;
 }
 
 /* Mensajes de error y carga */
@@ -189,7 +184,7 @@
     padding: 10px;
     border-radius: 6px;
     text-align: center;
-    margin-bottom: 1rem; /* Espacio debajo del error */
+    margin-bottom: 1rem; 
 }
 
 .profile-page-container {

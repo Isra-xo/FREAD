@@ -1,5 +1,5 @@
 import React from 'react';
-import './Sidebar.css'; // Estilos para la barra lateral
+import './Sidebar.css'; 
 
 const Sidebar = () => {
     return (

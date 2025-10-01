@@ -4,25 +4,25 @@
   justify-content: center;
   min-height: 100vh;
   padding: 1rem;
-  box-sizing: border-box; /* Clave #1: El padding no hará que se desborde */
+  box-sizing: border-box; 
 }
 
 .login-box {
   width: 100%;
-  max-width: 420px; /* Ancho máximo del formulario */
+  max-width: 420px; 
   padding: 2rem;
   background-color: #161b22;
   border-radius: 8px;
   border: 1px solid #30363d;
   text-align: center;
-  box-sizing: border-box; /* Clave #2: El padding no hará que la caja crezca */
+  box-sizing: border-box; 
 }
 
 .login-header h1 {
   margin: 15px 0 10px 0;
   font-size: 1.8rem;
   color: #f0f6fc;
-  word-wrap: break-word; /* Evita que el texto largo se desborde */
+  word-wrap: break-word; 
 }
 
 .login-header p {
@@ -50,7 +50,7 @@
   border: 1px solid #30363d;
   border-radius: 6px;
   color: #c9d1d9;
-  box-sizing: border-box; /* Clave #3: El padding no hará que el input crezca */
+  box-sizing: border-box; 
 }
 
 .options {

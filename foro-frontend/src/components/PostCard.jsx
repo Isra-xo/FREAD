@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { voteOnHilo } from '../services/apiService';
-import './PostCard.css'; // ¡Asegúrate de que este import exista!
+import './PostCard.css';
 
 const PostCard = ({ post }) => {
     const { user } = useAuth();

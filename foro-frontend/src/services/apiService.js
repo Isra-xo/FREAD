@@ -18,6 +18,7 @@ apiClient.interceptors.request.use(config => {
 
 export const register = (userData) => apiClient.post('/Auth/register', userData);
 export const login = (userData) => apiClient.post('/Auth/login', userData);
+export const getMenuItemsForUser = () => apiClient.get('/Auth/menu');
 
 // --- FOROS ---
 export const getForos = () => apiClient.get('/Foros');
@@ -36,6 +37,7 @@ export const voteOnHilo = (hiloId, voteData) => apiClient.post(`/Hilos/${hiloId}
 // --- COMENTARIOS ---
 export const getComentariosByHiloId = (hiloId) => apiClient.get(`/Hilos/${hiloId}/Comentarios`);
 export const createComentario = (hiloId, comentarioData) => apiClient.post(`/Hilos/${hiloId}/Comentarios`, comentarioData);
+export const getComentariosByUserId = (userId) => apiClient.get(`/Comentarios/ByUser/${userId}`);
 
 // --- USUARIOS Y PERFIL (FUNCIONES NUEVAS) ---
 export const getUsuarioById = (userId) => apiClient.get(`/Usuarios/${userId}`);

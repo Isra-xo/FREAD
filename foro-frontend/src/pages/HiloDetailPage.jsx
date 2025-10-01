@@ -53,7 +53,7 @@ const HiloDetailPage = () => {
             try {
                 await deleteHilo(id);
                 alert("Hilo eliminado con éxito.");
-                navigate('/'); // Redirige al inicio después de borrar
+                navigate('/'); 
             } catch (error) {
                 console.error("Error al eliminar el hilo:", error);
                 alert("No se pudo eliminar el hilo.");

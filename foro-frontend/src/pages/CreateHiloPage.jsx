@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createHilo, getForos } from '../services/apiService';
-import './CreateHiloPage.css'; // Importamos el nuevo archivo de estilos
+import './CreateHiloPage.css';
 
 const CreateHiloPage = () => {
     const [titulo, setTitulo] = useState('');

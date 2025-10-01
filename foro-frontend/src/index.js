@@ -2,19 +2,20 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom'; // Asegúrate de que esté importado
+import { BrowserRouter } from 'react-router-dom'; 
 import App from './App';
-import { AuthProvider } from './context/AuthContext'; // Importante que esté dentro del Router
+import { AuthProvider } from './context/AuthContext';
 import './index.css';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    {/* El Router DEBE estar aquí, envolviendo a toda la App */}
+    {}
     <BrowserRouter>
       <AuthProvider>
         <App />
       </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>
+  
 );

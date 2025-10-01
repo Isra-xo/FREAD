@@ -36,7 +36,7 @@
     border-radius: 6px;
     color: #c9d1d9;
     font-size: 1rem;
-    box-sizing: border-box; /* Asegura que el padding no afecte el ancho total */
+    box-sizing: border-box; 
 }
 
 .post-form input:focus,

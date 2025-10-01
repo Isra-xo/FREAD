@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { register as registerService } from '../services/apiService'; // Usa el servicio centralizado
-import './AuthForm.css'; // Usa el CSS común
+import { register as registerService } from '../services/apiService';
+import './AuthForm.css';
 
 const RegisterPage = () => {
     const [nombreUsuario, setNombreUsuario] = useState('');
