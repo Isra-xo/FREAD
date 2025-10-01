@@ -1,0 +1,238 @@
+/* --- Variables de Color y Estilos Globales --- */
+:root {
+    --primary-text: #EAEAEA;
+    --secondary-text: #A0A0A0;
+    --border-color-translucent: rgba(255, 255, 255, 0.1);
+    --gradient-brand: linear-gradient(90deg, #8A2BE2, #4A00E0, #9f3bff, #8A2BE2);
+    --primary-accent: #6D28D9;
+    --font-family: 'Roboto', sans-serif;
+}
+
+/* --- Fondo Animado --- */
+body {
+    font-family: var(--font-family);
+    margin: 0;
+    color: var(--primary-text);
+    background: linear-gradient(-45deg, #0a0118, #1a0a2e, #130321, #2e0e4b);
+    background-size: 400% 400%;
+    animation: animated-gradient 15s ease infinite;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+@keyframes animated-gradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* --- Efecto Glassmorphism en la Caja de Login --- */
+.login-box {
+    width: 100%;
+    max-width: 400px;
+    background: rgba(30, 30, 30, 0.4); /* Fondo semi-transparente */
+    backdrop-filter: blur(20px); /* El efecto de desenfoque clave */
+    -webkit-backdrop-filter: blur(20px);
+    padding: 40px;
+    border-radius: 16px;
+    border: 1px solid var(--border-color-translucent);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.login-header .fa-dyalog {
+    font-size: 3em;
+    background: var(--gradient-brand);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin-bottom: 10px;
+    background-size: 200%;
+    animation: animated-gradient 5s ease infinite;
+}
+
+.login-header h1 {
+    margin: 10px 0 5px;
+    color: var(--primary-text);
+    font-weight: 700;
+}
+
+.login-header p {
+    color: var(--secondary-text);
+    font-size: 0.9em;
+}
+
+/* --- Selector de Rol con Animaciones --- */
+.role-selector {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.role-input {
+    display: none;
+}
+
+.role-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 15px 20px;
+    border: 2px solid var(--border-color-translucent);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    background-color: rgba(44, 44, 44, 0.5);
+    min-width: 80px;
+}
+
+.role-card:hover {
+    transform: translateY(-5px); /* Se eleva al pasar el mouse */
+    border-color: var(--primary-accent);
+}
+
+/* --- Estilo de Rol Seleccionado con Brillo --- */
+.role-input:checked + .role-card {
+    border-image: var(--gradient-brand) 1;
+    animation: pulse-glow 2s infinite ease-in-out;
+}
+
+@keyframes pulse-glow {
+    0% { box-shadow: 0 0 5px rgba(138, 43, 226, 0.3), 0 0 10px rgba(74, 0, 224, 0.2); }
+    50% { box-shadow: 0 0 20px rgba(138, 43, 226, 0.6), 0 0 30px rgba(74, 0, 224, 0.4); }
+    100% { box-shadow: 0 0 5px rgba(138, 43, 226, 0.3), 0 0 10px rgba(74, 0, 224, 0.2); }
+}
+
+.role-input:checked + .role-card i,
+.role-input:checked + .role-card span {
+    color: var(--primary-text);
+}
+
+/* --- Campos de Inputs --- */
+.input-group {
+    position: relative;
+    margin-bottom: 20px;
+}
+.input-group i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--secondary-text);
+}
+.input-group input {
+    width: 85%;
+    padding: 12px 12px 12px 55px;
+    background-color: rgba(44, 44, 44, 0.7);
+    border: 1px solid var(--border-color-translucent);
+    border-radius: 8px;
+    color: var(--primary-text);
+    font-size: 1em;
+}
+.input-group input:focus {
+    outline: none;
+    box-shadow: 0 0 10px rgba(138, 43, 226, 0.5);
+    border-color: var(--primary-accent);
+}
+
+/* --- Botón Principal con Gradiente Animado --- */
+.login-btn {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 1.1em;
+    font-weight: 700;
+    cursor: pointer;
+    background-image: var(--gradient-brand);
+    background-size: 200% auto;
+    transition: background-position 0.5s;
+}
+
+.login-btn:hover {
+    background-position: right center; /* Mueve el gradiente al pasar el mouse */
+    box-shadow: 0 0 20px rgba(138, 43, 226, 0.6);
+}
+
+/* --- Otros Enlaces --- */
+.options a, .signup-link a {
+    color: var(--secondary-text);
+    text-decoration: none;
+    font-size: 0.9em;
+    transition: color 0.2s;
+}
+.options a:hover, .signup-link a:hover {
+    color: var(--primary-accent);
+    text-decoration: underline;
+}
+.signup-link { text-align: center; margin-top: 25px; }
+.options { text-align: right; margin-bottom: 25px; }
+
+/* --- Responsive para móviles --- */
+@media (max-width: 600px) {
+    body {
+        min-height: 100vh;
+        flex-direction: column;
+    }
+    .login-box {
+        max-width: 95vw;
+        padding: 20px 10px;
+        border-radius: 10px;
+    }
+    .login-header h1 {
+        font-size: 1.5em;
+    }
+    .role-selector {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .role-card {
+        min-width: unset;
+        width: 100%;
+        padding: 10px 0;
+    }
+    .input-group input {
+        width: 100%;
+        padding-left: 45px;
+        font-size: 1em;
+    }
+    .login-btn {
+        font-size: 1em;
+        padding: 10px;
+    }
+    .options, .signup-link {
+        font-size: 0.95em;
+    }
+}
+
+/* --- Responsive para tablets (iPads) --- */
+@media (min-width: 601px) and (max-width: 900px) {
+    .login-box {
+        max-width: 70vw;
+        padding: 30px 20px;
+        border-radius: 14px;
+    }
+    .role-selector {
+        gap: 12px;
+    }
+    .role-card {
+        min-width: 70px;
+        padding: 12px 10px;
+    }
+    .input-group input {
+        font-size: 1.05em;
+    }
+    .login-btn {
+        font-size: 1.05em;
+        padding: 11px;
+    }
+}

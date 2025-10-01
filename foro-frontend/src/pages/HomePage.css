@@ -1,0 +1,39 @@
+.home-container {
+    max-width: 1100px;
+    margin: 15px auto; 
+    padding: 0 24px;
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) 1fr; /* Columna izquierda flexible, derecha fija */
+    gap: 30px; /* Espacio entre las columnas */
+}
+
+.posts-list {
+    /* Define una altura máxima. El 100vh es la altura total de la pantalla,
+       y le restamos 100px para dejar espacio al navbar y a los márgenes. */
+    max-height: calc(100vh - 100px);
+    
+    /* Si el contenido supera la altura máxima, muestra una barra de scroll vertical. */
+    overflow-y: auto;
+    
+    /* Un pequeño espacio a la derecha para que la barra de scroll no se pegue al contenido. */
+    padding-right: 10px;
+}
+
+/* --- Estilo Minimalista del Scroll (Opcional, pero recomendado) --- */
+.posts-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.posts-list::-webkit-scrollbar-track {
+    background: transparent; /* Fondo transparente */
+}
+
+.posts-list::-webkit-scrollbar-thumb {
+    background-color: #30363d; /* Color del scroll */
+    border-radius: 4px;
+    border: 2px solid var(--background-dark); /* Borde que coincide con el fondo de la página */
+}
+
+.posts-list::-webkit-scrollbar-thumb:hover {
+    background-color: #58a6ff; /* Color al pasar el mouse */
+}

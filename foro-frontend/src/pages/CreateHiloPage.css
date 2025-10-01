@@ -1,0 +1,60 @@
+/* Contenido para src/pages/CreateHiloPage.css */
+.create-post-container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 24px;
+    background-color: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+}
+
+.page-title {
+    margin-top: 0;
+    margin-bottom: 24px;
+    border-bottom: 1px solid #30363d;
+    padding-bottom: 16px;
+}
+
+.post-form .form-group {
+    margin-bottom: 20px;
+}
+
+.post-form label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #c9d1d9;
+}
+
+.post-form input[type="text"],
+.post-form textarea,
+.post-form select {
+    width: 100%;
+    padding: 12px;
+    background-color: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    color: #c9d1d9;
+    font-size: 1rem;
+    box-sizing: border-box; /* Asegura que el padding no afecte el ancho total */
+}
+
+.post-form input:focus,
+.post-form textarea:focus,
+.post-form select:focus {
+    outline: none;
+    border-color: #58a6ff;
+}
+
+.form-actions {
+    text-align: right;
+    margin-top: 24px;
+}
+
+.error-message {
+    color: #f85149;
+    background-color: rgba(248, 81, 73, 0.1);
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+}

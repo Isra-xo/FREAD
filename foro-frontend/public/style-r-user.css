@@ -1,0 +1,137 @@
+/* --- Variables de Color y Estilos Globales (TEMA OSCURO) --- */
+:root {
+    --primary-text: #EAEAEA;
+    --secondary-text: #A0A0A0;
+    --border-color-translucent: rgba(255, 255, 255, 0.1);
+    --gradient-brand: linear-gradient(90deg, #8A2BE2, #4A00E0, #9f3bff, #8A2BE2);
+    --primary-accent: #6D28D9;
+    --font-family: 'Roboto', sans-serif;
+}
+
+/* --- Fondo Animado --- */
+body {
+    font-family: var(--font-family);
+    margin: 0;
+    color: var(--primary-text);
+    background: linear-gradient(-45deg, #0a0118, #1a0a2e, #130321, #2e0e4b);
+    background-size: 400% 400%;
+    animation: animated-gradient 15s ease infinite;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px 0;
+}
+
+@keyframes animated-gradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* --- Efecto Glassmorphism en la Caja de Registro --- */
+.register-box {
+    width: 100%;
+    max-width: 400px;
+    background: rgba(30, 30, 30, 0.4); /* Fondo semi-transparente */
+    backdrop-filter: blur(20px); /* El efecto de desenfoque clave */
+    -webkit-backdrop-filter: blur(20px);
+    padding: 40px;
+    border-radius: 16px;
+    border: 1px solid var(--border-color-translucent);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+}
+
+.register-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.register-header .fa-dyalog {
+    font-size: 3em;
+    background: var(--gradient-brand);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin-bottom: 10px;
+    background-size: 200%;
+    animation: animated-gradient 5s ease infinite;
+}
+
+.register-header h1 {
+    margin: 10px 0 5px;
+    color: var(--primary-text);
+    font-weight: 700;
+}
+
+.register-header p {
+    color: var(--secondary-text);
+    font-size: 0.9em;
+}
+
+/* --- Grupos de Inputs --- */
+.input-group {
+    position: relative;
+    margin-bottom: 20px;
+}
+.input-group i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--secondary-text);
+}
+.input-group input {
+    width: 83%;
+    padding: 12px 12px 12px 45px;
+    background-color: rgba(44, 44, 44, 0.7);
+    border: 1px solid var(--border-color-translucent);
+    border-radius: 8px;
+    color: var(--primary-text);
+    font-size: 1em;
+}
+.input-group input:focus {
+    outline: none;
+    box-shadow: 0 0 10px rgba(138, 43, 226, 0.5);
+    border-color: var(--primary-accent);
+}
+
+/* --- Botón Principal con Gradiente Animado --- */
+.register-btn {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 1.1em;
+    font-weight: 700;
+    cursor: pointer;
+    background-image: var(--gradient-brand);
+    background-size: 200% auto;
+    transition: background-position 0.5s, box-shadow 0.3s;
+    margin-top: 10px;
+}
+
+.register-btn:hover {
+    background-position: right center; /* Mueve el gradiente al pasar el mouse */
+    box-shadow: 0 0 20px rgba(138, 43, 226, 0.6);
+}
+
+/* --- Enlace de Inicio de Sesión --- */
+.login-link {
+    text-align: center;
+    margin-top: 25px;
+    font-size: 0.9em;
+}
+
+.login-link a {
+    color: var(--primary-accent);
+    font-weight: 700;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.login-link a:hover {
+    text-decoration: underline;
+    filter: brightness(1.2);
+}

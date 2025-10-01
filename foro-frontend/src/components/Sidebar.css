@@ -1,0 +1,53 @@
+/* Contenido para src/components/Sidebar.css */
+.sidebar-widget {
+    background-color: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    padding: 16px;
+    margin-bottom: 16px;
+}
+
+.sidebar-widget h4 {
+    margin-top: 0;
+    border-bottom: 1px solid #30363d;
+    padding-bottom: 8px;
+    font-size: 1rem;
+}
+
+.stats {
+    display: flex;
+    gap: 24px;
+    margin: 16px 0;
+    text-align: center;
+}
+
+.stats div {
+    flex-grow: 1;
+}
+
+.stats strong {
+    display: block;
+    font-size: 1.2rem;
+}
+
+.stats p {
+    margin: 0;
+    font-size: 0.8rem;
+    color: #8b949e;
+}
+
+.full-width {
+    width: 100%;
+    padding: 10px;
+    font-size: 1rem;
+}
+
+.sidebar-widget ol {
+    padding-left: 20px;
+    font-size: 0.9rem;
+    color: #8b949e;
+}
+
+.sidebar-widget li {
+    margin-bottom: 8px;
+}

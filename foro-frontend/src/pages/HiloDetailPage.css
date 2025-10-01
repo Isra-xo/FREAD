@@ -1,0 +1,95 @@
+.hilo-detail-container {
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 24px;
+    background-color: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+}
+
+.meta-info {
+    font-size: 0.9rem;
+    color: #8b949e;
+    margin-bottom: 16px;
+}
+
+.hilo-body {
+    line-height: 1.6;
+}
+
+.comentarios-section {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #30363d;
+}
+
+.comment-form {
+    margin-bottom: 30px;
+}
+
+.comment-form textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 12px;
+    background-color: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    color: #c9d1d9;
+    font-size: 1rem;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+}
+
+.comment-form button {
+    float: right;
+}
+
+.comentario {
+    padding: 15px;
+    border-bottom: 1px solid #30363d;
+}
+
+.comentario .meta-info {
+    margin-bottom: 8px;
+}
+
+.comentario p {
+    margin: 0;
+}
+
+/* --- ESTILOS PARA EL SCROLL --- */
+.comentarios-list {
+    max-height: 500px;
+    overflow-y: auto;
+    padding-right: 15px;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    background-color: #0d1117;
+}
+
+/* --- Estilo Minimalista del Scroll (para Chrome/Safari/Edge) --- */
+.comentarios-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.comentarios-list::-webkit-scrollbar-track {
+    background: #0d1117;
+}
+
+.comentarios-list::-webkit-scrollbar-thumb {
+    background-color: #30363d;
+    border-radius: 4px;
+    border: 2px solid #0d1117;
+}
+
+.comentarios-list::-webkit-scrollbar-thumb:hover {
+    background-color: #58a6ff;
+}
+/* Agrega esto a HiloDetailPage.css */
+.admin-actions {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    gap: 10px;
+}

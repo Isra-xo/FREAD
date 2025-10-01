@@ -1,0 +1,94 @@
+/* Contenido para src/pages/CreateForoPage.css */
+.create-foro-container {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 40px;
+    max-width: 960px;
+    margin: 40px auto;
+    color: #c9d1d9;
+}
+
+.form-panel h2 {
+    margin-top: 0;
+    font-size: 1.5rem;
+}
+
+.form-panel .subtitle {
+    color: #8b949e;
+    margin-bottom: 30px;
+}
+
+.form-group {
+    margin-bottom: 24px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 12px;
+    background-color: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    color: #c9d1d9;
+    font-size: 1rem;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #58a6ff;
+}
+
+.form-group small {
+    display: block;
+    margin-top: 6px;
+    font-size: 0.8rem;
+    color: #8b949e;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 30px;
+}
+
+.preview-panel h4 {
+    color: #8b949e;
+    font-weight: 500;
+}
+
+.preview-card {
+    background-color: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 16px;
+}
+
+.preview-header {
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin-bottom: 12px;
+}
+
+.preview-body p {
+    color: #8b949e;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.preview-footer {
+    display: flex;
+    gap: 8px;
+    font-size: 0.8rem;
+    color: #8b949e;
+    margin-top: 16px;
+}
