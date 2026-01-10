@@ -1,25 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { getHilosByUserId, getComentariosByUserId } from '../services/apiService';
+import { extractItems, getTotalPages } from '../services/apiHelpers';
 import { Link } from 'react-router-dom';
 import './PerfilPage.css'; // Componentes existentes de PerfilPage --> Nota: Craer un nuevo css para esto
 
 const MiActividadPage = () => {
     const { user } = useAuth();
     const [hilos, setHilos] = useState([]);
+    const [hilosPage, setHilosPage] = useState(1);
+    const [hilosTotalPages, setHilosTotalPages] = useState(1);
     const [comentarios, setComentarios] = useState([]);
+    const [comentariosPage, setComentariosPage] = useState(1);
+    const [comentariosTotalPages, setComentariosTotalPages] = useState(1);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         if (user && user.id) {
             const fetchData = async () => {
+                setLoading(true);
                 try {
                     const [hilosRes, comentariosRes] = await Promise.all([
-                        getHilosByUserId(user.id),
-                        getComentariosByUserId(user.id) 
+                        getHilosByUserId(user.id, hilosPage, 10),
+                        getComentariosByUserId(user.id, comentariosPage, 10)
                     ]);
-                    setHilos(hilosRes.data);
-                    setComentarios(comentariosRes.data);
+                    setHilos(extractItems(hilosRes));
+                    setHilosTotalPages(getTotalPages(hilosRes));
+                    setComentarios(extractItems(comentariosRes));
+                    setComentariosTotalPages(getTotalPages(comentariosRes));
                 } catch (error) {
                     console.error("Error al cargar la actividad del usuario", error);
                 } finally {
@@ -30,7 +38,7 @@ const MiActividadPage = () => {
         } else {
             setLoading(false);
         }
-    }, [user]);
+    }, [user, hilosPage, comentariosPage]);
 
     if (loading) return <div className="profile-page-container"><p>Cargando tu actividad...</p></div>;
 
@@ -59,7 +67,21 @@ const MiActividadPage = () => {
                             </div>
                         ))}
                     </div>
+
+                    {/* Comentarios pagination */}
+                    <div style={{ display: 'flex', gap: 10, justifyContent: 'center', marginTop: 8 }}>
+                        <button aria-label="Ir a página anterior" onClick={() => setComentariosPage(p => Math.max(1, p - 1))} disabled={comentariosPage === 1}>Anterior</button>
+                        <span>Página {comentariosPage} de {comentariosTotalPages}</span>
+                        <button aria-label="Ir a página siguiente" onClick={() => setComentariosPage(p => Math.min(comentariosTotalPages, p + 1))} disabled={comentariosPage === comentariosTotalPages}>Siguiente</button>
+                    </div>
                 </div>
+            </div>
+
+            {/* Hilos pagination */}
+            <div style={{ display: 'flex', gap: 10, justifyContent: 'center', marginTop: 16 }}>
+                <button aria-label="Ir a página anterior" onClick={() => setHilosPage(p => Math.max(1, p - 1))} disabled={hilosPage === 1}>Anterior</button>
+                <span>Página {hilosPage} de {hilosTotalPages}</span>
+                <button aria-label="Ir a página siguiente" onClick={() => setHilosPage(p => Math.min(hilosTotalPages, p + 1))} disabled={hilosPage === hilosTotalPages}>Siguiente</button>
             </div>
         </div>
     );

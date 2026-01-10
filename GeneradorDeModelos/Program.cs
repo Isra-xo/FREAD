@@ -36,6 +36,12 @@ builder.Services.AddScoped<IVoteService, VoteService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Configurar OutputCache
+builder.Services.AddOutputCache(options =>
+{
+    options.DefaultExpirationTimeSpan = TimeSpan.FromSeconds(60);
+});
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -47,6 +53,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = false
         };
     });
+
+// Configurar políticas de autorización
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy =>
+        policy.RequireRole("Administrador"));
+});
 
 builder.Services.AddCors(options =>
 {
@@ -73,6 +86,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("MyCorsPolicy");
+app.UseOutputCache(); // Middleware de OutputCache debe ir antes de UseAuthentication
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

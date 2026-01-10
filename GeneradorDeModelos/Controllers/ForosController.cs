@@ -1,8 +1,10 @@
 using GeneradorDeModelos.Dtos;
+using GeneradorDeModelos.Helpers;
 using GeneradorDeModelos.Models;
 using GeneradorDeModelos.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using System.Security.Claims;
 
 namespace GeneradorDeModelos.Controllers
@@ -18,18 +20,21 @@ namespace GeneradorDeModelos.Controllers
             _foroService = foroService;
         }
 
-        // GET: api/foros -> Cualquiera puede ver la lista de foros
+        // GET: api/foros -> Cualquiera puede ver la lista de foros (con paginación)
         [HttpGet]
         [AllowAnonymous]
-        public async Task<ActionResult<IEnumerable<Foro>>> GetForos()
+        [OutputCache(Duration = 60)] // Cache de 60 segundos
+        public async Task<ActionResult<PagedResult<Foro>>> GetForos(
+            [FromQuery] int pageNumber = 1, 
+            [FromQuery] int pageSize = 10)
         {
-            var foros = await _foroService.GetForosAsync();
-            return Ok(foros);
+            var result = await _foroService.GetForosAsync(pageNumber, pageSize);
+            return Ok(result);
         }
 
         // POST: api/foros -> Solo administradores pueden crear foros
         [HttpPost]
-        [Authorize(Roles = "Administrador")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult<Foro>> CreateForo(Foro foroRequest)
         {
             var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;

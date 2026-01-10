@@ -196,7 +196,28 @@ setMenuItems(response.data);  // Array: [{id, titulo, url, icono}, ...]
 
 ### Backend - Estructura y Patrones
 
-#### 0. **Services/** - Capa de Servicios (NUEVA) ✅
+#### 0. **Helpers/** - Utilidades y Helpers (NUEVA) ✅
+
+**Patrón de Diseño**: Helper Classes - Clases de utilidad reutilizables
+
+**Helpers Implementados**:
+
+| Helper | Propósito |
+|--------|-----------|
+| `PagedResult<T>` | Clase genérica para resultados paginados con metadatos (PageNumber, PageSize, TotalCount, TotalPages, HasPrevious, HasNext) |
+
+**Características**:
+- ✅ Genérica: puede usarse con cualquier tipo `T`
+- ✅ Metadatos completos: información de paginación para el frontend
+- ✅ Propiedades calculadas: `TotalPages`, `HasPrevious`, `HasNext`
+
+**Ejemplo de Uso**:
+```csharp
+var result = new PagedResult<Hilo>(items, totalCount, pageNumber, pageSize);
+// Retorna: { Items: [...], PageNumber: 1, PageSize: 10, TotalCount: 50, TotalPages: 5, HasPrevious: false, HasNext: true }
+```
+
+#### 1. **Services/** - Capa de Servicios (NUEVA) ✅
 
 **Patrón de Diseño**: Service Layer Pattern - Separación de lógica de negocio de controladores
 
@@ -204,16 +225,19 @@ setMenuItems(response.data);  // Array: [{id, titulo, url, icono}, ...]
 
 | Servicio | Interfaz | Responsabilidades |
 |----------|----------|-------------------|
-| `HiloService` | `IHiloService` | CRUD de hilos, validación de permisos, verificación de existencia |
-| `ForoService` | `IForoService` | CRUD de foros, validación de permisos, verificación de existencia |
+| `HiloService` | `IHiloService` | CRUD de hilos, paginación, filtrado por búsqueda, validación de permisos, verificación de existencia |
+| `ForoService` | `IForoService` | CRUD de foros, paginación, validación de permisos, verificación de existencia |
 | `UsuarioService` | `IUsuarioService` | Gestión de usuarios, validación de unicidad (email, nombreUsuario), mapeo a DTOs sin PasswordHash |
-| `VoteService` | `IVoteService` | Sistema de votos con prevención de múltiples votos, toggle de votos, actualización de contadores |
+| `VoteService` | `IVoteService` | Sistema de votos con prevención de múltiples votos, toggle de votos, actualización de contadores, manejo de concurrencia optimista |
 
 **Características**:
 - ✅ Todos los métodos son `async/await` de extremo a extremo
 - ✅ Validación de permisos centralizada en servicios
 - ✅ Mapeo automático a DTOs de respuesta (sin PasswordHash)
 - ✅ Registrados en DI container con `AddScoped` en `Program.cs`
+- ✅ Paginación implementada en servicios de listado (HiloService, ForoService)
+- ✅ Filtrado de búsqueda en HiloService (por título y contenido)
+- ✅ Manejo de concurrencia optimista en VoteService (con RowVersion y reintentos)
 
 **Ejemplo de Uso**:
 ```csharp
@@ -239,7 +263,7 @@ public class HilosController : ControllerBase
 }
 ```
 
-#### 1. **Controllers/** - Patrón MVC (Model-View-Controller) - REFACTORIZADO
+#### 2. **Controllers/** - Patrón MVC (Model-View-Controller) - REFACTORIZADO
 
 **Patrón de Diseño**: Service Layer Pattern - Los controladores delegan la lógica de negocio a servicios especializados
 
@@ -271,7 +295,7 @@ public class XController : ControllerBase
 
 ✅ **REFACTORIZACIÓN COMPLETADA**: Todos los controladores ahora usan el namespace unificado `GeneradorDeModelos.Controllers`. Los controladores principales (Hilos, Foros, Usuarios) ahora usan servicios para separar la lógica de negocio.
 
-#### 2. **Models/** - Domain Models y DbContext
+#### 3. **Models/** - Domain Models y DbContext
 
 **Patrón**: Code-First con Entity Framework Core
 
@@ -302,6 +326,7 @@ public partial class FreadContext : DbContext
 - **Navigation Properties**: Propiedades `virtual` para lazy loading (aunque se usa eager loading con `Include()`)
 - **Data Annotations**: `[Key]`, `[Required]` en `Comentario.cs`, pero Fluent API en `FreadContext` para otros modelos
 - **Valores por Defecto**: `DateTimeOffset?` con `HasDefaultValueSql("(sysdatetimeoffset())")`
+- **Concurrencia Optimista**: `Hilo` tiene propiedad `RowVersion` con `[Timestamp]` para prevenir conflictos de actualización simultánea ✅ **NUEVO**
 
 **Nueva Entidad: Voto** ✅
 - **Propósito**: Rastrear votos individuales de usuarios en hilos para prevenir múltiples votos
@@ -347,7 +372,7 @@ public partial class FreadContext : DbContext
 - ✅ `UsuarioResponseDto` asegura que NUNCA se envíe `PasswordHash` al frontend
 - ⚠️ Falta validación con Data Annotations o FluentValidation (pendiente para Fase 3)
 
-#### 4. **Program.cs** - Startup y Configuración
+#### 5. **Program.cs** - Startup y Configuración
 
 **Patrón**: Top-Level Statements (C# 10+), Configuration Pattern
 
@@ -361,25 +386,30 @@ if (app.Environment.IsDevelopment())
 // 2. CORS (debe ir antes de autenticación para preflight requests)
 app.UseCors("MyCorsPolicy");
 
-// 3. Autenticación (lee token JWT)
+// 3. OutputCache (debe ir antes de autenticación) ✅ NUEVO
+app.UseOutputCache();
+
+// 4. Autenticación (lee token JWT)
 app.UseAuthentication();
 
-// 4. Autorización (valida permisos basados en claims)
+// 5. Autorización (valida permisos basados en claims)
 app.UseAuthorization();
 
-// 5. Routing y endpoints
+// 6. Routing y endpoints
 app.MapControllers();
 ```
 
 **Configuración de Servicios**:
-- **DbContext**: Scoped lifetime (una instancia por request)
+- **DbContext**: Scoped lifetime (una instancia por request) con retry policy para errores transitorios ✅
 - **JWT Authentication**: Configurado con clave simétrica desde `appsettings.json`
 - **JSON Serialization**: `ReferenceHandler.IgnoreCycles` para evitar referencias circulares
 - **CORS**: Política restrictiva solo para `http://localhost:3000`
+- **OutputCache**: Configurado con duración por defecto de 60 segundos ✅ **NUEVO**
+- **Políticas de Autorización**: Política `AdminOnly` configurada que requiere rol "Administrador" ✅ **NUEVO**
 
-**Problemas de Seguridad Detectados**:
-- ⚠️ Connection string hardcodeada en `FreadContext.OnConfiguring()` (línea 30)
-- ⚠️ Token JWT en `appsettings.json` (debe estar en User Secrets/Environment Variables)
+**Mejoras de Seguridad Implementadas**:
+- ✅ Connection string eliminada de `FreadContext.OnConfiguring()` - ahora solo en `appsettings.json` y Program.cs
+- ⚠️ Token JWT en `appsettings.json` (debe estar en User Secrets/Environment Variables para producción)
 - ⚠️ `ValidateIssuer = false` y `ValidateAudience = false` (no recomendado para producción)
 
 ### Frontend - Estructura y Patrones
@@ -864,7 +894,7 @@ flowchart LR
 |--------|------|----------|---------------|------------------------------|
 | `Register` | POST | `/api/Auth/register` | 1. Valida NombreUsuario único<br>2. Valida Email único<br>3. Busca rol "Usuario" por defecto<br>4. Hash password SHA512<br>5. Crea Usuario<br>6. Retorna Usuario completo (⚠️ incluye PasswordHash) | ❌ Retorna PasswordHash en respuesta<br>❌ No valida formato de email<br>❌ SHA512 sin salt (inseguro, debería usar BCrypt/PBKDF2)<br>❌ No hay validación de fortaleza de contraseña |
 | `Login` | POST | `/api/Auth/login` | 1. Busca Usuario por NombreUsuario<br>2. Hash password ingresada<br>3. Compara hashes<br>4. Genera JWT token<br>5. Retorna solo token string | ⚠️ Mensaje genérico "Usuario o contraseña incorrectos" (no especifica cuál)<br>❌ No hay rate limiting (vulnerable a brute force)<br>❌ Token expira en 1 día fijo, sin refresh mechanism |
-| `GetUserMenu` | GET | `/api/Auth/menu` | 1. Extrae rol de token<br>2. Query Roles con Include MenuItems<br>3. Retorna MenuItems ordenados por Id | ✅ Lógica correcta<br>⚠️ Ordenar por Id puede no ser ideal (debería tener campo Orden) |
+| `GetUserMenu` | GET | `/api/Auth/menu` | 1. Extrae rol de token<br>2. Query Roles con Include MenuItems<br>3. Retorna MenuItems ordenados por Id<br>4. Caché de 60 segundos con `[OutputCache]` | ✅ Lógica correcta<br>✅ **NUEVO**: Caché de respuestas para reducir latencia<br>⚠️ Ordenar por Id puede no ser ideal (debería tener campo Orden) |
 | `CreateToken` (privado) | - | - | Genera JWT con claims estándar, expiración 1 día, firma HMAC SHA512 | ✅ Funcional<br>⚠️ ValidateIssuer/Audience deshabilitados |
 
 **Lógica a Mover a Servicio**:
@@ -876,7 +906,7 @@ flowchart LR
 
 | Método | HTTP | Endpoint | Lógica Actual | Problemas/Mejoras Necesarias |
 |--------|------|----------|---------------|------------------------------|
-| `GetForos` | GET | `/api/Foros` | 1. Query Foros con Include Usuario<br>2. Retorna lista completa | ❌ No hay paginación (puede ser lento con muchos foros)<br>❌ No hay filtrado/búsqueda<br>⚠️ Retorna Usuario completo (puede exponer datos sensibles) |
+| `GetForos` | GET | `/api/Foros` | 1. Query Foros con Include Usuario<br>2. Paginación con `pageNumber` y `pageSize`<br>3. Retorna `PagedResult<Foro>`<br>4. Caché de 60 segundos con `[OutputCache]` | ✅ **MEJORADO**: Paginación implementada<br>✅ **NUEVO**: Caché de respuestas para reducir latencia<br>✅ Retorna metadatos de paginación |
 | `CreateForo` | POST | `/api/Foros` | 1. Valida [Authorize(Roles = "Administrador")]<br>2. Extrae UsuarioId del token<br>3. Crea Foro con UsuarioId<br>4. Retorna Foro creado | ✅ Lógica correcta<br>⚠️ No valida si Foro con mismo nombre ya existe<br>❌ DTO inline `ForoUpdateDto` debería ser `ForoCreateDto` |
 | `DeleteForo` | DELETE | `/api/Foros/{id}` | 1. Valida [Authorize]<br>2. Busca Foro por Id<br>3. Valida propiedad (UsuarioId coincide) o rol Admin<br>4. Elimina Foro | ⚠️ No valida si Foro tiene Hilos asociados (puede dejar Hilos huérfanos por ClientSetNull)<br>❌ No hay soft delete |
 | `UpdateForo` | PUT | `/api/Foros/{id}` | 1. Valida propiedad o Admin<br>2. Actualiza NombreForo y Descripcion<br>3. SaveChanges | ✅ Lógica correcta<br>⚠️ No valida longitud de campos<br>⚠️ No valida si nuevo nombre ya existe |
@@ -890,13 +920,13 @@ flowchart LR
 
 | Método | HTTP | Endpoint | Lógica Actual | Problemas/Mejoras Necesarias |
 |--------|------|----------|---------------|------------------------------|
-| `GetHilos` | GET | `/api/Hilos` | 1. Query Hilos con Include Usuario y Foro<br>2. Ordena por FechaCreacion DESC | ❌ No hay paginación<br>❌ No hay filtrado por Foro<br>⚠️ Retorna entidades completas (puede ser pesado) |
+| `GetHilos` | GET | `/api/Hilos` | 1. Query Hilos con Include Usuario y Foro<br>2. Aplica filtro de búsqueda si se proporciona `searchTerm`<br>3. Paginación con `pageNumber` y `pageSize`<br>4. Ordena por FechaCreacion DESC<br>5. Retorna `PagedResult<Hilo>` | ✅ **MEJORADO**: Paginación implementada<br>✅ **MEJORADO**: Filtrado por título/contenido implementado<br>✅ Retorna metadatos de paginación (TotalCount, TotalPages, HasPrevious, HasNext) |
 | `GetHilo` | GET | `/api/Hilos/{id}` | 1. Query Hilo por Id con Include<br>2. Retorna Hilo o 404 | ✅ Funcional<br>⚠️ No incluye Comentarios (se cargan por separado) |
 | `CreateHilo` | POST | `/api/Hilos` | 1. Extrae UsuarioId del token<br>2. Crea Hilo con Votos=0, FechaCreacion=Now<br>3. Retorna Hilo creado | ✅ Lógica correcta<br>⚠️ No valida que ForoId exista<br>⚠️ No valida longitud de Titulo (150 max en BD) |
 | `UpdateHilo` | PUT | `/api/Hilos/{id}` | 1. Valida propiedad o Admin<br>2. Actualiza Titulo y Contenido<br>3. SaveChanges | ✅ Funcional<br>⚠️ No valida longitud |
 | `DeleteHilo` | DELETE | `/api/Hilos/{id}` | 1. Valida propiedad o Admin<br>2. Elimina Hilo<br>3. SaveChanges | ⚠️ Comentarios se eliminan en cascada (OK)<br>⚠️ Posts se quedan con HiloId=null por ClientSetNull (puede ser problema) |
 | `GetHilosByUsuario` | GET | `/api/Hilos/ByUsuario/{userId}` | 1. Query Hilos filtrado por UsuarioId<br>2. Ordena por FechaCreacion DESC | ⚠️ Mismo problema de permisos que GetForosByUsuario |
-| `VoteOnHilo` | POST | `/api/Hilos/{id}/vote` | 1. Busca Hilo<br>2. Incrementa/decrementa Votos según direction<br>3. SaveChanges<br>4. Retorna nuevo contador | ❌ **PROBLEMA CRÍTICO**: No valida si usuario ya votó (permite múltiples votos)<br>❌ No hay tabla de votos individuales (debería tener tabla UserHiloVotes)<br>❌ Direction puede ser cualquier string (solo valida "up"/"down" parcialmente) |
+| `VoteOnHilo` | POST | `/api/Hilos/{id}/vote` | 1. Busca Hilo con verificación de RowVersion<br>2. Valida si usuario ya votó (tabla Votos)<br>3. Toggle: si vota lo mismo, elimina el voto<br>4. Cambio: si cambia de up/down, actualiza<br>5. Maneja concurrencia con reintentos (máx 3)<br>6. SaveChanges con verificación de RowVersion<br>7. Retorna nuevo contador | ✅ **RESUELTO**: Valida votos únicos mediante tabla Votos<br>✅ **RESUELTO**: Tabla Votos implementada con índice único (UsuarioId, HiloId)<br>✅ **RESUELTO**: Validación de direction ("up" o "down")<br>✅ **NUEVO**: Concurrencia optimista con RowVersion y reintentos |
 
 **Lógica a Mover a Servicio**:
 - Sistema de votos → `IVoteService` (con validación de votos únicos)
@@ -931,7 +961,7 @@ flowchart LR
 
 | Método | HTTP | Endpoint | Lógica Actual | Problemas/Mejoras Necesarias |
 |--------|------|----------|---------------|------------------------------|
-| `GetUsers` | GET | `/api/Admin/users` | 1. Query Usuarios con Include Rol<br>2. Retorna lista completa | ❌ Retorna PasswordHash de todos los usuarios<br>❌ No hay paginación<br>⚠️ [Authorize(Roles = "Administrador")] a nivel de clase (correcto) |
+| `GetUsers` | GET | `/api/Admin/users` | 1. Query Usuarios con Include Rol<br>2. Mapea a UsuarioResponseDto (sin PasswordHash)<br>3. Retorna lista completa | ✅ **RESUELTO**: No retorna PasswordHash (usa UsuarioResponseDto)<br>⚠️ No hay paginación (pendiente para futuras mejoras)<br>✅ **MEJORADO**: Usa política `AdminOnly` en lugar de `[Authorize(Roles)]` |
 | `DeleteUser` | DELETE | `/api/Admin/users/{id}` | 1. Busca Usuario<br>2. Valida que no se elimine a sí mismo<br>3. Elimina Usuario<br>4. SaveChanges | ⚠️ No valida dependencias (Foros, Hilos, Comentarios del usuario)<br>⚠️ Eliminación en cascada puede ser peligrosa |
 | `ChangeUserRole` | PUT | `/api/Admin/users/{id}/role` | 1. Busca Usuario<br>2. Valida que NewRoleId existe<br>3. Actualiza RolId<br>4. SaveChanges | ✅ Funcional<br>⚠️ No hay auditoría de cambios de rol<br>⚠️ Usuario debe re-autenticarse para ver nuevo menú |
 
@@ -973,38 +1003,54 @@ flowchart LR
 - ✅ Uso consistente de Entity Framework con eager loading
 - ✅ Sistema de menús dinámicos bien implementado
 - ✅ Autenticación JWT funcional
+- ✅ **NUEVO**: Capa de servicios implementada (Service Layer Pattern)
+- ✅ **NUEVO**: Paginación y filtrado en endpoints de listado
+- ✅ **NUEVO**: Caché de respuestas (OutputCache) para reducir latencia
+- ✅ **NUEVO**: Concurrencia optimista implementada con RowVersion
+- ✅ **NUEVO**: Políticas de autorización en lugar de roles directos
 
-**Debilidades Críticas**:
-- ❌ Lógica de negocio mezclada en controladores (debe moverse a servicios)
-- ❌ Inconsistencias de namespace (`FRED.Controllers` vs `GeneradorDeModelos.Controllers`)
-- ❌ Sistema de votos permite múltiples votos del mismo usuario
-- ❌ Falta validación en múltiples endpoints
-- ❌ PasswordHash expuesto en respuestas
-- ❌ Connection string y tokens hardcodeados (riesgo de seguridad)
+**Debilidades Resueltas**:
+- ✅ Lógica de negocio movida a servicios especializados
+- ✅ Namespaces unificados a `GeneradorDeModelos.Controllers`
+- ✅ Sistema de votos previene múltiples votos del mismo usuario
+- ✅ PasswordHash nunca se expone en respuestas (UsuarioResponseDto)
+- ✅ Connection string eliminada del código fuente (solo en appsettings.json)
+
+**Mejoras Pendientes**:
+- ⚠️ Falta validación con Data Annotations o FluentValidation en DTOs
+- ⚠️ Token JWT debería estar en User Secrets/Environment Variables para producción
+- ⚠️ `ValidateIssuer` y `ValidateAudience` deberían estar habilitados para producción
 
 ### Próximos Pasos Recomendados
 
-1. **Refactorización de Lógica de Negocio**:
-   - Crear capa de servicios (`Services/`)
-   - Mover lógica de controladores a servicios
-   - Implementar interfaces para testabilidad
+1. **Migraciones Pendientes**:
+   - ✅ Tabla `Votos` creada (migración aplicada)
+   - ⏳ Agregar columna `RowVersion` a tabla `Hilos` (migración pendiente):
+     ```bash
+     dotnet ef migrations add AddRowVersionToHilo
+     dotnet ef database update
+     ```
 
-2. **Corrección de Namespaces**:
-   - Unificar todos los controladores a `GeneradorDeModelos.Controllers`
+2. **Actualización del Frontend**:
+   - ⏳ Actualizar componentes que usan `getHilos()` para acceder a `response.data.items` y usar metadatos de paginación
+   - ⏳ Actualizar componentes que usan `getForos()` para acceder a `response.data.items` y usar metadatos de paginación
+   - ⏳ Implementar UI de paginación (botones anterior/siguiente, selector de página)
 
-3. **Mejora de Seguridad**:
+3. **Mejoras de Seguridad** (Producción):
    - Mover secrets a User Secrets/Environment Variables
-   - Implementar BCrypt para hashing de passwords
-   - Remover PasswordHash de respuestas JSON
+   - Implementar BCrypt para hashing de passwords (actualmente SHA512 sin salt)
+   - Habilitar `ValidateIssuer` y `ValidateAudience` en JWT
    - Agregar rate limiting
 
-4. **Sistema de Votos**:
-   - Crear tabla `UserHiloVotes` para rastrear votos individuales
-   - Validar que usuario solo vote una vez por hilo
-
-5. **Validación y Paginación**:
+4. **Validación**:
    - Implementar FluentValidation para DTOs
-   - Agregar paginación a todos los endpoints de listado
+   - Agregar validación de longitud de campos
+   - Validar formato de email
+
+5. **Rendimiento Adicional**:
+   - Considerar agregar índices adicionales en BD para búsquedas frecuentes
+   - Implementar caché distribuido (Redis) para producción
+   - Considerar compresión de respuestas HTTP
 
 ---
 

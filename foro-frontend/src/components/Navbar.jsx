@@ -1,12 +1,11 @@
 import React from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './Navbar.css';
 
 const Navbar = ({ searchTerm, setSearchTerm }) => {
     // 1. Obtenemos 'menuItems' del contexto, además de 'user' y 'logout'
     const { user, logout, menuItems } = useAuth();
-    const navigate = useNavigate();
     const location = useLocation();
 
     if (location.pathname === '/login' || location.pathname === '/register') {
@@ -26,8 +25,7 @@ const Navbar = ({ searchTerm, setSearchTerm }) => {
         );
     }
 
-    const userRole = user.role;
-    const userName = user.name;
+    const userName = user.name; 
 
     const handleLogout = () => {
         logout();
@@ -66,7 +64,7 @@ const Navbar = ({ searchTerm, setSearchTerm }) => {
                     </button>
                     <div className="dropdown-content">
                         <Link to="/perfil">Mi Perfil</Link>
-                        <a href="#" onClick={handleLogout}>Cerrar Sesión</a>
+                        <button type="button" className="dropdown-link" onClick={handleLogout} aria-label="Cerrar sesión">Cerrar Sesión</button>
                     </div>
                 </div>
             </div>

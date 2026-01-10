@@ -1,4 +1,5 @@
 using GeneradorDeModelos.Dtos;
+using GeneradorDeModelos.Helpers;
 using GeneradorDeModelos.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,13 +17,38 @@ public class HiloService : IHiloService
         _context = context;
     }
 
-    public async Task<IEnumerable<Hilo>> GetHilosAsync()
+    public async Task<PagedResult<Hilo>> GetHilosAsync(int pageNumber = 1, int pageSize = 10, string? searchTerm = null)
     {
-        return await _context.Hilos
+        // Validar parámetros
+        if (pageNumber < 1) pageNumber = 1;
+        if (pageSize < 1) pageSize = 10;
+        if (pageSize > 100) pageSize = 100; // Límite máximo
+
+        var query = _context.Hilos
             .Include(h => h.Usuario)
             .Include(h => h.Foro)
+            .AsQueryable();
+
+        // Aplicar filtro de búsqueda si se proporciona
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+        {
+            searchTerm = searchTerm.Trim().ToLower();
+            query = query.Where(h => 
+                h.Titulo.ToLower().Contains(searchTerm) || 
+                (h.Contenido != null && h.Contenido.ToLower().Contains(searchTerm)));
+        }
+
+        // Obtener total antes de paginar
+        var totalCount = await query.CountAsync();
+
+        // Aplicar paginación
+        var items = await query
             .OrderByDescending(h => h.FechaCreacion)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
             .ToListAsync();
+
+        return new PagedResult<Hilo>(items, totalCount, pageNumber, pageSize);
     }
 
     public async Task<Hilo?> GetHiloByIdAsync(int id)

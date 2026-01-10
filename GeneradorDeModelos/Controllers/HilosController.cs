@@ -1,4 +1,5 @@
 using GeneradorDeModelos.Dtos;
+using GeneradorDeModelos.Helpers;
 using GeneradorDeModelos.Models;
 using GeneradorDeModelos.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -20,13 +21,16 @@ namespace GeneradorDeModelos.Controllers
             _voteService = voteService;
         }
 
-        // GET: api/hilos -> Cualquiera puede ver los hilos
+        // GET: api/hilos -> Cualquiera puede ver los hilos (con paginación y búsqueda)
         [HttpGet]
         [AllowAnonymous]
-        public async Task<ActionResult<IEnumerable<Hilo>>> GetHilos()
+        public async Task<ActionResult<PagedResult<Hilo>>> GetHilos(
+            [FromQuery] int pageNumber = 1, 
+            [FromQuery] int pageSize = 10,
+            [FromQuery] string? searchTerm = null)
         {
-            var hilos = await _hiloService.GetHilosAsync();
-            return Ok(hilos);
+            var result = await _hiloService.GetHilosAsync(pageNumber, pageSize, searchTerm);
+            return Ok(result);
         }
 
         // GET: api/Hilos/5 -> Cualquiera puede ver un hilo

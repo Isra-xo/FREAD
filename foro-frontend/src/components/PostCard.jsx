@@ -36,8 +36,8 @@ const PostCard = ({ post }) => {
                 </Link>
                 <div className="post-actions">
                     <Link to={`/hilo/${post.id}`}>Comentarios</Link>
-                    <a href="#">Compartir</a>
-                    <a href="#">Guardar</a>
+                    <button type="button" className="post-action-btn" aria-label="Compartir">Compartir</button>
+                    <button type="button" className="post-action-btn" aria-label="Guardar publicación">Guardar</button>
                     {post.usuarioId && Number(loggedInUserId) === post.usuarioId && (
                         <button className="btn-delete">Eliminar</button>
                     )}

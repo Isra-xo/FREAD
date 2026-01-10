@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createHilo, getForos } from '../services/apiService';
+import { extractItems } from '../services/apiHelpers';
 import './CreateHiloPage.css';
 
 const CreateHiloPage = () => {
@@ -15,9 +16,10 @@ const CreateHiloPage = () => {
         const fetchForos = async () => {
             try {
                 const response = await getForos();
-                setForos(response.data);
-                if (response.data.length > 0) {
-                    setForoId(response.data[0].id);
+                const items = extractItems(response);
+                setForos(items);
+                if (items.length > 0) {
+                    setForoId(items[0].id);
                 }
             } catch (err) {
                 setError("No se pudieron cargar las comunidades.");

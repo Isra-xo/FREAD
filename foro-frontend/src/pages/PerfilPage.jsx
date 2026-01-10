@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getUsuarioById, updateUsuario, uploadProfilePicture, getHilosByUserId, getForosByUserId } from '../services/apiService';
+import { extractItems, getTotalPages } from '../services/apiHelpers';
 import './PerfilPage.css';
 
 const PerfilPage = () => {
     const { user } = useAuth();
-    const navigate = useNavigate();
     const [userData, setUserData] = useState(null);
     const [hilos, setHilos] = useState([]);
+    const [hilosPage, setHilosPage] = useState(1);
+    const [hilosTotalPages, setHilosTotalPages] = useState(1);
     const [foros, setForos] = useState([]);
+    const [forosPage, setForosPage] = useState(1);
+    const [forosTotalPages, setForosTotalPages] = useState(1);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [isEditing, setIsEditing] = useState(false);
@@ -30,13 +34,15 @@ const PerfilPage = () => {
                 try {
                     const [userRes, hilosRes, forosRes] = await Promise.all([
                         getUsuarioById(user.id),
-                        getHilosByUserId(user.id),
-                        getForosByUserId(user.id)
+                        getHilosByUserId(user.id, hilosPage, 10),
+                        getForosByUserId(user.id, forosPage, 10)
                     ]);
                     
                     setUserData(userRes.data);
-                    setHilos(hilosRes.data);
-                    setForos(forosRes.data);
+                    setHilos(extractItems(hilosRes));
+                    setHilosTotalPages(getTotalPages(hilosRes));
+                    setForos(extractItems(forosRes));
+                    setForosTotalPages(getTotalPages(forosRes));
                     setNewNombreUsuario(userRes.data.nombreUsuario);
                     setNewEmail(userRes.data.email);
                 } catch (err) {
@@ -51,7 +57,7 @@ const PerfilPage = () => {
             }
         };
         fetchUserData();
-    }, [user]);
+    }, [user, hilosPage, forosPage]);
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
@@ -169,6 +175,12 @@ const PerfilPage = () => {
                             </div>
                         )) : <p>No has creado ningún hilo.</p>}
                     </div>
+
+                    <div style={{ display: 'flex', gap: 10, justifyContent: 'center', marginTop: 8 }}>
+                        <button aria-label="Ir a página anterior" onClick={() => setHilosPage(p => Math.max(1, p - 1))} disabled={hilosPage === 1}>Anterior</button>
+                        <span>Página {hilosPage} de {hilosTotalPages}</span>
+                        <button aria-label="Ir a página siguiente" onClick={() => setHilosPage(p => Math.min(hilosTotalPages, p + 1))} disabled={hilosPage === hilosTotalPages}>Siguiente</button>
+                    </div>
                 </div>
                 <div className="user-foros">
                     <h3>Foros Creados ({foros.length})</h3>
@@ -178,6 +190,12 @@ const PerfilPage = () => {
                                 <Link to={`/f/${foro.nombreForo}`}>{foro.nombreForo}</Link>
                             </div>
                         )) : <p>No has creado ningún foro.</p>}
+                    </div>
+
+                    <div style={{ display: 'flex', gap: 10, justifyContent: 'center', marginTop: 8 }}>
+                        <button aria-label="Ir a página anterior" onClick={() => setForosPage(p => Math.max(1, p - 1))} disabled={forosPage === 1}>Anterior</button>
+                        <span>Página {forosPage} de {forosTotalPages}</span>
+                        <button aria-label="Ir a página siguiente" onClick={() => setForosPage(p => Math.min(forosTotalPages, p + 1))} disabled={forosPage === forosTotalPages}>Siguiente</button>
                     </div>
                 </div>
             </div>

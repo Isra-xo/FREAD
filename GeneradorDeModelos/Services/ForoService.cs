@@ -1,3 +1,4 @@
+using GeneradorDeModelos.Helpers;
 using GeneradorDeModelos.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,11 +16,28 @@ public class ForoService : IForoService
         _context = context;
     }
 
-    public async Task<IEnumerable<Foro>> GetForosAsync()
+    public async Task<PagedResult<Foro>> GetForosAsync(int pageNumber = 1, int pageSize = 10)
     {
-        return await _context.Foros
+        // Validar parámetros
+        if (pageNumber < 1) pageNumber = 1;
+        if (pageSize < 1) pageSize = 10;
+        if (pageSize > 100) pageSize = 100; // Límite máximo
+
+        var query = _context.Foros
             .Include(f => f.Usuario)
+            .AsQueryable();
+
+        // Obtener total antes de paginar
+        var totalCount = await query.CountAsync();
+
+        // Aplicar paginación
+        var items = await query
+            .OrderBy(f => f.NombreForo)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
             .ToListAsync();
+
+        return new PagedResult<Foro>(items, totalCount, pageNumber, pageSize);
     }
 
     public async Task<Foro?> GetForoByIdAsync(int id)

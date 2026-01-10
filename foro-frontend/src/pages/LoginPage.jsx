@@ -42,7 +42,7 @@ const LoginPage = () => {
                         <input type="password" placeholder="Contraseña" required value={password} onChange={e => setPassword(e.target.value)} />
                     </div>
                     <div className="options">
-                        <a href="#" className="forgot-password">¿Olvidaste tu contraseña?</a>
+                        <button type="button" className="forgot-password" aria-label="Recuperar contraseña">¿Olvidaste tu contraseña?</button>
                     </div>
                     <button type="submit" className="auth-btn">Iniciar Sesión</button>
                 </form>

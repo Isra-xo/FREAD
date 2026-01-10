@@ -12,7 +12,7 @@ namespace GeneradorDeModelos.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Administrador")] // <-- Toda esta clase es solo para admins
+    [Authorize(Policy = "AdminOnly")] // <-- Toda esta clase es solo para admins
     public class AdminController : ControllerBase
     {
         private readonly FreadContext _context;
