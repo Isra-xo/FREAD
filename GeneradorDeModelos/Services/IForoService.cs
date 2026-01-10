@@ -1,3 +1,4 @@
+using GeneradorDeModelos.Helpers;
 using GeneradorDeModelos.Models;
 
 namespace GeneradorDeModelos.Services;
@@ -7,7 +8,7 @@ namespace GeneradorDeModelos.Services;
 /// </summary>
 public interface IForoService
 {
-    Task<IEnumerable<Foro>> GetForosAsync();
+    Task<PagedResult<Foro>> GetForosAsync(int pageNumber = 1, int pageSize = 10);
     Task<Foro?> GetForoByIdAsync(int id);
     Task<Foro> CreateForoAsync(Foro foroRequest, int usuarioId);
     Task<bool> UpdateForoAsync(int id, string nombreForo, string? descripcion, int usuarioId, bool isAdmin);

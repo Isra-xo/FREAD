@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace GeneradorDeModelos.Models;
 
@@ -12,6 +13,12 @@ public partial class Hilo
     public int UsuarioId { get; set; }
     public string? Contenido { get; set; }
     public int Votos { get; set; }
+
+    /// <summary>
+    /// Token de concurrencia optimista para prevenir conflictos de actualización simultánea
+    /// </summary>
+    [Timestamp]
+    public byte[]? RowVersion { get; set; }
 
     public virtual Foro Foro { get; set; } = null!;
     public virtual Usuario Usuario { get; set; } = null!;

@@ -18,60 +18,89 @@ public class VoteService : IVoteService
 
     public async Task<int> VoteOnHiloAsync(int hiloId, int usuarioId, string direction)
     {
-        // Validar que el hilo existe
-        var hilo = await _context.Hilos.FindAsync(hiloId);
-        if (hilo == null)
-        {
-            throw new ArgumentException($"Hilo con ID {hiloId} no encontrado.");
-        }
+        int maxRetries = 3;
+        int retryCount = 0;
 
-        // Buscar si el usuario ya votó en este hilo
-        var votoExistente = await _context.Votos
-            .FirstOrDefaultAsync(v => v.UsuarioId == usuarioId && v.HiloId == hiloId);
-
-        int nuevoValor = direction.ToLower() == "up" ? 1 : (direction.ToLower() == "down" ? -1 : 0);
-        
-        if (nuevoValor == 0)
+        while (retryCount < maxRetries)
         {
-            throw new ArgumentException("Direction debe ser 'up' o 'down'.");
-        }
-
-        if (votoExistente != null)
-        {
-            // Si el usuario ya votó, actualizar el voto
-            var valorAnterior = votoExistente.Valor;
-            
-            // Si vota lo mismo, eliminar el voto (toggle)
-            if (votoExistente.Valor == nuevoValor)
+            try
             {
-                _context.Votos.Remove(votoExistente);
-                hilo.Votos -= nuevoValor; // Revertir el voto anterior
+                // Validar que el hilo existe (con RowVersion para concurrencia)
+                var hilo = await _context.Hilos.FindAsync(hiloId);
+                if (hilo == null)
+                {
+                    throw new ArgumentException($"Hilo con ID {hiloId} no encontrado.");
+                }
+
+                // Guardar RowVersion original para verificación de concurrencia
+                var originalRowVersion = hilo.RowVersion;
+
+                // Buscar si el usuario ya votó en este hilo
+                var votoExistente = await _context.Votos
+                    .FirstOrDefaultAsync(v => v.UsuarioId == usuarioId && v.HiloId == hiloId);
+
+                int nuevoValor = direction.ToLower() == "up" ? 1 : (direction.ToLower() == "down" ? -1 : 0);
+                
+                if (nuevoValor == 0)
+                {
+                    throw new ArgumentException("Direction debe ser 'up' o 'down'.");
+                }
+
+                if (votoExistente != null)
+                {
+                    // Si el usuario ya votó, actualizar el voto
+                    var valorAnterior = votoExistente.Valor;
+                    
+                    // Si vota lo mismo, eliminar el voto (toggle)
+                    if (votoExistente.Valor == nuevoValor)
+                    {
+                        _context.Votos.Remove(votoExistente);
+                        hilo.Votos -= nuevoValor; // Revertir el voto anterior
+                    }
+                    else
+                    {
+                        // Cambiar el voto (de up a down o viceversa)
+                        hilo.Votos -= valorAnterior; // Revertir voto anterior
+                        hilo.Votos += nuevoValor;    // Aplicar nuevo voto
+                        votoExistente.Valor = nuevoValor;
+                        votoExistente.FechaVoto = DateTimeOffset.Now;
+                    }
+                }
+                else
+                {
+                    // Crear nuevo voto
+                    var nuevoVoto = new Voto
+                    {
+                        UsuarioId = usuarioId,
+                        HiloId = hiloId,
+                        Valor = nuevoValor,
+                        FechaVoto = DateTimeOffset.Now
+                    };
+                    _context.Votos.Add(nuevoVoto);
+                    hilo.Votos += nuevoValor;
+                }
+
+                // Verificar que el RowVersion no haya cambiado (concurrencia optimista)
+                _context.Entry(hilo).Property(h => h.RowVersion).OriginalValue = originalRowVersion;
+
+                await _context.SaveChangesAsync();
+                return hilo.Votos;
             }
-            else
+            catch (DbUpdateConcurrencyException)
             {
-                // Cambiar el voto (de up a down o viceversa)
-                hilo.Votos -= valorAnterior; // Revertir voto anterior
-                hilo.Votos += nuevoValor;    // Aplicar nuevo voto
-                votoExistente.Valor = nuevoValor;
-                votoExistente.FechaVoto = DateTimeOffset.Now;
+                retryCount++;
+                if (retryCount >= maxRetries)
+                {
+                    throw new InvalidOperationException("No se pudo completar el voto debido a una actualización simultánea. Por favor, intente nuevamente.");
+                }
+                
+                // Limpiar el contexto y reintentar
+                _context.ChangeTracker.Clear();
+                await Task.Delay(100 * retryCount); // Esperar un poco antes de reintentar
             }
         }
-        else
-        {
-            // Crear nuevo voto
-            var nuevoVoto = new Voto
-            {
-                UsuarioId = usuarioId,
-                HiloId = hiloId,
-                Valor = nuevoValor,
-                FechaVoto = DateTimeOffset.Now
-            };
-            _context.Votos.Add(nuevoVoto);
-            hilo.Votos += nuevoValor;
-        }
 
-        await _context.SaveChangesAsync();
-        return hilo.Votos;
+        throw new InvalidOperationException("Error al procesar el voto después de múltiples intentos.");
     }
 
     public async Task<bool> UserHasVotedAsync(int hiloId, int usuarioId)

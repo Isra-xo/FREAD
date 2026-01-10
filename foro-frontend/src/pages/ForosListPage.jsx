@@ -1,21 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getForos, deleteForo } from '../services/apiService';
+import { extractItems, getTotalPages } from '../services/apiHelpers';
 import { useAuth } from '../context/AuthContext';
 
 const ForosListPage = () => {
     const [foros, setForos] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
     const { user } = useAuth(); // Aqui se obtiene la info del usuario logueado
     const userId = user?.['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'];
 
     useEffect(() => {
-        fetchForos();
-    }, []);
+        fetchForos(currentPage);
+    }, [currentPage]);
 
-    const fetchForos = async () => {
+    const fetchForos = async (page = 1) => {
         try {
-            const response = await getForos();
-            setForos(response.data);
+            const response = await getForos(page, 10);
+            setForos(extractItems(response));
+            setTotalPages(getTotalPages(response));
         } catch (error) {
             console.error("Error al obtener los foros:", error);
         }
@@ -55,6 +59,13 @@ const ForosListPage = () => {
                         )}
                     </div>
                 ))}
+            </div>
+
+            {/* Pagination controls */}
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 12, marginTop: 16 }}>
+                <button aria-label="Ir a página anterior" onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1}>Anterior</button>
+                <span>Página {currentPage} de {totalPages}</span>
+                <button aria-label="Ir a página siguiente" onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}>Siguiente</button>
             </div>
         </div>
     );

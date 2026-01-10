@@ -2,6 +2,7 @@ using GeneradorDeModelos.Dtos;
 using GeneradorDeModelos.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Collections.Generic;
@@ -102,6 +103,7 @@ namespace GeneradorDeModelos.Controllers
         // --- MÉTODO AÑADIDO PARA EL MENÚ DINÁMICO ---
         [HttpGet("menu")]
         [Authorize]
+        [OutputCache(Duration = 60)] // Cache de 60 segundos
         public async Task<ActionResult<IEnumerable<MenuItem>>> GetUserMenu()
         {
             // 1. Obtiene el nombre del rol del usuario desde su token JWT

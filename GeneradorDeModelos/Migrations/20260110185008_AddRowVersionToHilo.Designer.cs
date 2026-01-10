@@ -4,6 +4,7 @@ using GeneradorDeModelos.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GeneradorDeModelos.Migrations
 {
     [DbContext(typeof(FreadContext))]
-    partial class FreadContextModelSnapshot : ModelSnapshot
+    [Migration("20260110185008_AddRowVersionToHilo")]
+    partial class AddRowVersionToHilo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

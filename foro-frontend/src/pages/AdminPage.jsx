@@ -5,7 +5,7 @@ import './AdminPage.css';
 const AdminPage = () => {
     const [users, setUsers] = useState([]);
     // Necesitamos los roles para llenar el dropdown
-    const [roles, setRoles] = useState([{ id: 1, nombreRol: 'Administrador' }, { id: 2, nombreRol: 'Usuario' }]);
+    const roles = [{ id: 1, nombreRol: 'Administrador' }, { id: 2, nombreRol: 'Usuario' }];
 
     const fetchUsers = async () => {
         try {
