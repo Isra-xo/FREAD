@@ -1,4 +1,4 @@
-﻿using GeneradorDeModelos.Dtos;
+using GeneradorDeModelos.Dtos;
 using GeneradorDeModelos.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -28,7 +28,7 @@ namespace GeneradorDeModelos.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult<Usuario>> Register(UserRegisterDto request)
+        public async Task<ActionResult<UsuarioResponseDto>> Register(UserRegisterDto request)
         {
             if (await _context.Usuarios.AnyAsync(u => u.NombreUsuario == request.NombreUsuario))
             {
@@ -59,7 +59,19 @@ namespace GeneradorDeModelos.Controllers
 
             _context.Usuarios.Add(user);
             await _context.SaveChangesAsync();
-            return Ok(user);
+            
+            // Mapear a DTO sin PasswordHash
+            var responseDto = new UsuarioResponseDto
+            {
+                Id = user.Id,
+                Email = user.Email,
+                NombreUsuario = user.NombreUsuario,
+                FechaRegistro = user.FechaRegistro,
+                RolId = user.RolId,
+                ProfilePictureUrl = user.ProfilePictureUrl
+            };
+            
+            return Ok(responseDto);
         }
 
         [HttpPost("login")]

@@ -1,4 +1,5 @@
 using GeneradorDeModelos.Models;
+using GeneradorDeModelos.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -7,18 +8,30 @@ using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// --- SECCIÓN 1: SERVICIOS ---
+// --- SECCIï¿½N 1: SERVICIOS ---
 
-// Añadimos AddJsonOptions para evitar errores de referencia circular
+// Aï¿½adimos AddJsonOptions para evitar errores de referencia circular
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
 });
 
 builder.Services.AddDbContext<FreadContext>(options =>
-{
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-});
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
+    sqlServerOptionsAction: sqlOptions =>
+    {
+        // Esta lÃ­nea es la que soluciona el error transitorio
+        sqlOptions.EnableRetryOnFailure(
+            maxRetryCount: 5,
+            maxRetryDelay: TimeSpan.FromSeconds(30),
+            errorNumbersToAdd: null);
+    }));
+
+// Registrar servicios de la capa de negocio
+builder.Services.AddScoped<IHiloService, HiloService>();
+builder.Services.AddScoped<IForoService, ForoService>();
+builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+builder.Services.AddScoped<IVoteService, VoteService>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -48,14 +61,14 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// --- SECCIÓN 2: PIPELINE ---
+// --- SECCIï¿½N 2: PIPELINE ---
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "Mi API v1");
-        c.RoutePrefix = string.Empty; // Swagger UI en la raíz "/"
+        c.RoutePrefix = string.Empty; // Swagger UI en la raï¿½z "/"
     });
 }
 

@@ -259,6 +259,43 @@ namespace GeneradorDeModelos.Migrations
                     b.ToTable("Usuarios");
                 });
 
+            modelBuilder.Entity("GeneradorDeModelos.Models.Voto", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("ID");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("FechaVoto")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetimeoffset")
+                        .HasDefaultValueSql("(sysdatetimeoffset())");
+
+                    b.Property<int>("HiloId")
+                        .HasColumnType("int")
+                        .HasColumnName("HiloID");
+
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("int")
+                        .HasColumnName("UsuarioID");
+
+                    b.Property<int>("Valor")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id")
+                        .HasName("PK__Votos__3214EC27");
+
+                    b.HasIndex("HiloId");
+
+                    b.HasIndex("UsuarioId", "HiloId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_Votos_UsuarioId_HiloId");
+
+                    b.ToTable("Votos");
+                });
+
             modelBuilder.Entity("RolMenuItemPermiso", b =>
                 {
                     b.Property<int>("RolId")
@@ -353,6 +390,27 @@ namespace GeneradorDeModelos.Migrations
                         .HasConstraintName("FK__Usuarios__RolID__619B8048");
 
                     b.Navigation("Rol");
+                });
+
+            modelBuilder.Entity("GeneradorDeModelos.Models.Voto", b =>
+                {
+                    b.HasOne("GeneradorDeModelos.Models.Hilo", "Hilo")
+                        .WithMany()
+                        .HasForeignKey("HiloId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_Votos_Hilos");
+
+                    b.HasOne("GeneradorDeModelos.Models.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_Votos_Usuarios");
+
+                    b.Navigation("Hilo");
+
+                    b.Navigation("Usuario");
                 });
 
             modelBuilder.Entity("RolMenuItemPermiso", b =>

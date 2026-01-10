@@ -1,18 +1,15 @@
-﻿using GeneradorDeModelos.Models;
+using GeneradorDeModelos.Models;
+using GeneradorDeModelos.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace FRED.Controllers
+namespace GeneradorDeModelos.Controllers
 {
-    // --- DTO para recibir el nuevo ID del rol desde el frontend ---
-    public class RoleChangeDto
-    {
-        public int NewRoleId { get; set; }
-    }
-
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(Roles = "Administrador")] // <-- Toda esta clase es solo para admins
@@ -27,10 +24,24 @@ namespace FRED.Controllers
 
         // GET: api/Admin/users -> Obtiene todos los usuarios
         [HttpGet("users")]
-        public async Task<ActionResult<IEnumerable<Usuario>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<UsuarioResponseDto>>> GetUsers()
         {
             // Incluimos la información del Rol para cada usuario
-            return await _context.Usuarios.Include(u => u.Rol).ToListAsync();
+            var usuarios = await _context.Usuarios.Include(u => u.Rol).ToListAsync();
+            
+            // Mapear a DTOs sin PasswordHash
+            var responseDtos = usuarios.Select(u => new UsuarioResponseDto
+            {
+                Id = u.Id,
+                Email = u.Email,
+                NombreUsuario = u.NombreUsuario,
+                FechaRegistro = u.FechaRegistro,
+                RolId = u.RolId,
+                ProfilePictureUrl = u.ProfilePictureUrl,
+                NombreRol = u.Rol?.NombreRol
+            }).ToList();
+            
+            return Ok(responseDtos);
         }
 
         // DELETE: api/Admin/users/5 -> Elimina un usuario

@@ -1,4 +1,4 @@
-﻿using GeneradorDeModelos.Models;
+using GeneradorDeModelos.Models;
 using GeneradorDeModelos.Dtos; // <-- 1. AÑADE ESTE USING para los DTOs
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -8,7 +8,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace FRED.Controllers // O el namespace que corresponda a tu proyecto
+namespace GeneradorDeModelos.Controllers
 {
     // Esta ruta anida los comentarios dentro de los hilos.
     // Ejemplo de URL: /api/Hilos/5/Comentarios

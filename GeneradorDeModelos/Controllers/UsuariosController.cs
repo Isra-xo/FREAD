@@ -1,4 +1,6 @@
-﻿using GeneradorDeModelos.Models;
+using GeneradorDeModelos.Models;
+using GeneradorDeModelos.Dtos;
+using GeneradorDeModelos.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,27 +12,19 @@ using System;
 using System.Linq;
 using Microsoft.AspNetCore.Http;   // Para IFormFile
 
-namespace FRED.Controllers
+namespace GeneradorDeModelos.Controllers
 {
-    // DTO para recibir los datos de actualización del perfil
-    public class UsuarioUpdateDto
-    {
-        public string? NombreUsuario { get; set; }
-        public string? Email { get; set; }
-        public string? OldPassword { get; set; }
-        public string? NewPassword { get; set; }
-    }
-
     [Route("api/[controller]")]
     [ApiController]
     public class UsuariosController : ControllerBase
     {
-        // --- CORRECCIÓN IMPORTANTE ---
+        private readonly IUsuarioService _usuarioService;
         private readonly FreadContext _context;
         private readonly IWebHostEnvironment _hostingEnvironment;
 
-        public UsuariosController(FreadContext context, IWebHostEnvironment hostingEnvironment)
+        public UsuariosController(IUsuarioService usuarioService, FreadContext context, IWebHostEnvironment hostingEnvironment)
         {
+            _usuarioService = usuarioService;
             _context = context;
             _hostingEnvironment = hostingEnvironment;
         }
@@ -38,13 +32,14 @@ namespace FRED.Controllers
         // GET: api/Usuarios/5
         [HttpGet("{id}")]
         [Authorize]
-        public async Task<ActionResult<Usuario>> GetUsuario(int id)
+        public async Task<ActionResult<UsuarioResponseDto>> GetUsuario(int id)
         {
-            var usuario = await _context.Usuarios.FindAsync(id);
+            var usuario = await _usuarioService.GetUsuarioByIdAsync(id);
             if (usuario == null)
             {
                 return NotFound();
             }
+            
             return usuario;
         }
 
@@ -54,33 +49,17 @@ namespace FRED.Controllers
         public async Task<IActionResult> PutUsuario(int id, [FromBody] UsuarioUpdateDto usuarioDto)
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (userIdClaim == null || int.Parse(userIdClaim) != id)
+            if (userIdClaim == null || !int.TryParse(userIdClaim, out int currentUserId))
             {
-                return Forbid(); // Solo el propio usuario puede modificar su perfil
+                return Unauthorized();
             }
 
-            var usuario = await _context.Usuarios.FindAsync(id);
-            if (usuario == null)
+            var updated = await _usuarioService.UpdateUsuarioAsync(id, usuarioDto, currentUserId);
+            
+            if (!updated)
             {
                 return NotFound();
             }
-
-            // Actualizar nombre y email
-            if (!string.IsNullOrWhiteSpace(usuarioDto.NombreUsuario))
-                usuario.NombreUsuario = usuarioDto.NombreUsuario;
-            if (!string.IsNullOrWhiteSpace(usuarioDto.Email))
-                usuario.Email = usuarioDto.Email;
-
-            // Actualizar contraseña (simplificado, necesitas una librería de hashing como BCrypt)
-            if (!string.IsNullOrWhiteSpace(usuarioDto.NewPassword))
-            {
-                // Aquí deberías verificar la contraseña antigua (usuarioDto.OldPassword)
-                // y luego generar un nuevo hash para la nueva contraseña.
-                // Por ahora, lo dejamos pendiente para no añadir más complejidad.
-            }
-
-            _context.Entry(usuario).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
 
             return NoContent();
         }

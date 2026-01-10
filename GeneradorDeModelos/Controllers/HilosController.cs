@@ -1,37 +1,23 @@
-﻿using GeneradorDeModelos.Dtos;
+using GeneradorDeModelos.Dtos;
 using GeneradorDeModelos.Models;
+using GeneradorDeModelos.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System;
-using System.Linq;
 
 namespace GeneradorDeModelos.Controllers
 {
-    // DTOs para Hilos
-    public class HiloUpdateDto
-    {
-        public string Titulo { get; set; }
-        public string Contenido { get; set; }
-    }
-    public class VoteRequest
-    {
-        public string Direction { get; set; } // "up" or "down"
-    }
-
-
     [Route("api/[controller]")]
     [ApiController]
     public class HilosController : ControllerBase
     {
-        private readonly FreadContext _context;
+        private readonly IHiloService _hiloService;
+        private readonly IVoteService _voteService;
 
-        public HilosController(FreadContext context)
+        public HilosController(IHiloService hiloService, IVoteService voteService)
         {
-            _context = context;
+            _hiloService = hiloService;
+            _voteService = voteService;
         }
 
         // GET: api/hilos -> Cualquiera puede ver los hilos
@@ -39,11 +25,8 @@ namespace GeneradorDeModelos.Controllers
         [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<Hilo>>> GetHilos()
         {
-            return await _context.Hilos
-                .Include(h => h.Usuario)
-                .Include(h => h.Foro)
-                .OrderByDescending(h => h.FechaCreacion)
-                .ToListAsync();
+            var hilos = await _hiloService.GetHilosAsync();
+            return Ok(hilos);
         }
 
         // GET: api/Hilos/5 -> Cualquiera puede ver un hilo
@@ -51,10 +34,7 @@ namespace GeneradorDeModelos.Controllers
         [AllowAnonymous]
         public async Task<ActionResult<Hilo>> GetHilo(int id)
         {
-            var hilo = await _context.Hilos
-                .Include(h => h.Usuario)
-                .Include(h => h.Foro)
-                .FirstOrDefaultAsync(h => h.Id == id);
+            var hilo = await _hiloService.GetHiloByIdAsync(id);
             if (hilo == null) return NotFound();
             return hilo;
         }
@@ -65,18 +45,20 @@ namespace GeneradorDeModelos.Controllers
         public async Task<ActionResult<Hilo>> CreateHilo(HiloCreateDto hiloDto)
         {
             var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var nuevoHilo = new Hilo
+            if (string.IsNullOrEmpty(userIdString) || !int.TryParse(userIdString, out int usuarioId))
             {
-                Titulo = hiloDto.Titulo,
-                Contenido = hiloDto.Contenido, // Asumiendo que HiloCreateDto tiene Contenido
-                ForoId = hiloDto.ForoId,
-                UsuarioId = int.Parse(userIdString),
-                FechaCreacion = DateTimeOffset.Now,
-                Votos = 0 // Inicializa votos en 0
-            };
-            _context.Hilos.Add(nuevoHilo);
-            await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetHilos), new { id = nuevoHilo.Id }, nuevoHilo);
+                return Unauthorized();
+            }
+
+            try
+            {
+                var nuevoHilo = await _hiloService.CreateHiloAsync(hiloDto, usuarioId);
+                return CreatedAtAction(nameof(GetHilos), new { id = nuevoHilo.Id }, nuevoHilo);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         // DELETE: api/hilos/5 -> Dueño o admin pueden borrar
@@ -85,61 +67,65 @@ namespace GeneradorDeModelos.Controllers
         public async Task<IActionResult> DeleteHilo(int id)
         {
             var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdString) || !int.TryParse(userIdString, out int usuarioId))
+            {
+                return Unauthorized();
+            }
+
             var userIsAdmin = User.IsInRole("Administrador");
-            var hilo = await _context.Hilos.FindAsync(id);
-            if (hilo == null) return NotFound();
-            if (hilo.UsuarioId.ToString() != userIdString && !userIsAdmin) return Forbid();
-            _context.Hilos.Remove(hilo);
-            await _context.SaveChangesAsync();
+            var deleted = await _hiloService.DeleteHiloAsync(id, usuarioId, userIsAdmin);
+            
+            if (!deleted) return NotFound();
             return NoContent();
         }
 
-        // --- MÉTODO AÑADIDO ---
         // GET: api/Hilos/ByUsuario/5
         [HttpGet("ByUsuario/{userId}")]
         [Authorize]
         public async Task<ActionResult<IEnumerable<Hilo>>> GetHilosByUsuario(int userId)
         {
-            return await _context.Hilos
-                .Where(h => h.UsuarioId == userId)
-                .Include(h => h.Foro)
-                .OrderByDescending(h => h.FechaCreacion)
-                .ToListAsync();
+            var hilos = await _hiloService.GetHilosByUsuarioAsync(userId);
+            return Ok(hilos);
         }
 
-        // --- MÉTODO AÑADIDO ---
         // PUT: api/Hilos/5 -> Dueño o admin pueden editar
         [HttpPut("{id}")]
         [Authorize]
         public async Task<IActionResult> UpdateHilo(int id, HiloUpdateDto hiloUpdateDto)
         {
             var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdString) || !int.TryParse(userIdString, out int usuarioId))
+            {
+                return Unauthorized();
+            }
+
             var userIsAdmin = User.IsInRole("Administrador");
-            var hilo = await _context.Hilos.FindAsync(id);
-            if (hilo == null) return NotFound();
-            if (hilo.UsuarioId.ToString() != userIdString && !userIsAdmin) return Forbid();
-
-            hilo.Titulo = hiloUpdateDto.Titulo;
-            hilo.Contenido = hiloUpdateDto.Contenido;
-
-            await _context.SaveChangesAsync();
+            var updated = await _hiloService.UpdateHiloAsync(id, hiloUpdateDto, usuarioId, userIsAdmin);
+            
+            if (!updated) return NotFound();
             return NoContent();
         }
 
-        // --- MÉTODO AÑADIDO ---
         // POST: api/Hilos/5/vote
         [HttpPost("{id}/vote")]
         [Authorize]
-        public async Task<IActionResult> VoteOnHilo(int id, [FromBody] VoteRequest voteRequest)
+        public async Task<IActionResult> VoteOnHilo(int id, [FromBody] VoteRequestDto voteRequest)
         {
-            var hilo = await _context.Hilos.FindAsync(id);
-            if (hilo == null) return NotFound();
+            var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdString) || !int.TryParse(userIdString, out int usuarioId))
+            {
+                return Unauthorized();
+            }
 
-            if (voteRequest.Direction == "up") hilo.Votos++;
-            else if (voteRequest.Direction == "down") hilo.Votos--;
-
-            await _context.SaveChangesAsync();
-            return Ok(new { newVoteCount = hilo.Votos });
+            try
+            {
+                var nuevoVoteCount = await _voteService.VoteOnHiloAsync(id, usuarioId, voteRequest.Direction);
+                return Ok(new { newVoteCount = nuevoVoteCount });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

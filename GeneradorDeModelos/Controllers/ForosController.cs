@@ -1,30 +1,21 @@
-﻿using GeneradorDeModelos.Models;
+using GeneradorDeModelos.Dtos;
+using GeneradorDeModelos.Models;
+using GeneradorDeModelos.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Linq;
 
-namespace FRED.Controllers
+namespace GeneradorDeModelos.Controllers
 {
-    // DTO para la actualización de un foro
-    public class ForoUpdateDto
-    {
-        public string NombreForo { get; set; }
-        public string Descripcion { get; set; }
-    }
-
     [Route("api/[controller]")]
     [ApiController]
     public class ForosController : ControllerBase
     {
-        private readonly FreadContext _context;
+        private readonly IForoService _foroService;
 
-        public ForosController(FreadContext context)
+        public ForosController(IForoService foroService)
         {
-            _context = context;
+            _foroService = foroService;
         }
 
         // GET: api/foros -> Cualquiera puede ver la lista de foros
@@ -32,7 +23,8 @@ namespace FRED.Controllers
         [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<Foro>>> GetForos()
         {
-            return await _context.Foros.Include(f => f.Usuario).ToListAsync();
+            var foros = await _foroService.GetForosAsync();
+            return Ok(foros);
         }
 
         // POST: api/foros -> Solo administradores pueden crear foros
@@ -41,14 +33,12 @@ namespace FRED.Controllers
         public async Task<ActionResult<Foro>> CreateForo(Foro foroRequest)
         {
             var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var nuevoForo = new Foro
+            if (string.IsNullOrEmpty(userIdString) || !int.TryParse(userIdString, out int usuarioId))
             {
-                NombreForo = foroRequest.NombreForo,
-                Descripcion = foroRequest.Descripcion,
-                UsuarioId = int.Parse(userIdString)
-            };
-            _context.Foros.Add(nuevoForo);
-            await _context.SaveChangesAsync();
+                return Unauthorized();
+            }
+
+            var nuevoForo = await _foroService.CreateForoAsync(foroRequest, usuarioId);
             return CreatedAtAction(nameof(GetForos), new { id = nuevoForo.Id }, nuevoForo);
         }
 
@@ -58,44 +48,42 @@ namespace FRED.Controllers
         public async Task<IActionResult> DeleteForo(int id)
         {
             var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdString) || !int.TryParse(userIdString, out int usuarioId))
+            {
+                return Unauthorized();
+            }
+
             var userIsAdmin = User.IsInRole("Administrador");
-            var foro = await _context.Foros.FindAsync(id);
-            if (foro == null) return NotFound();
-            if (foro.UsuarioId.ToString() != userIdString && !userIsAdmin) return Forbid();
-            _context.Foros.Remove(foro);
-            await _context.SaveChangesAsync();
+            var deleted = await _foroService.DeleteForoAsync(id, usuarioId, userIsAdmin);
+            
+            if (!deleted) return NotFound();
             return NoContent();
         }
 
-        // --- MÉTODO AÑADIDO ---
         // GET: api/Foros/ByUsuario/5
         [HttpGet("ByUsuario/{userId}")]
         [Authorize]
         public async Task<ActionResult<IEnumerable<Foro>>> GetForosByUsuario(int userId)
         {
-            var foros = await _context.Foros
-                .Where(f => f.UsuarioId == userId)
-                .OrderBy(f => f.NombreForo)
-                .ToListAsync();
+            var foros = await _foroService.GetForosByUsuarioAsync(userId);
             return Ok(foros);
         }
 
-        // --- MÉTODO AÑADIDO ---
         // PUT: api/Foros/5 -> Actualiza un foro (dueño o admin)
         [HttpPut("{id}")]
         [Authorize]
         public async Task<IActionResult> UpdateForo(int id, ForoUpdateDto foroUpdateDto)
         {
             var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdString) || !int.TryParse(userIdString, out int usuarioId))
+            {
+                return Unauthorized();
+            }
+
             var userIsAdmin = User.IsInRole("Administrador");
-            var foro = await _context.Foros.FindAsync(id);
-            if (foro == null) return NotFound();
-            if (foro.UsuarioId.ToString() != userIdString && !userIsAdmin) return Forbid();
-
-            foro.NombreForo = foroUpdateDto.NombreForo;
-            foro.Descripcion = foroUpdateDto.Descripcion;
-
-            await _context.SaveChangesAsync();
+            var updated = await _foroService.UpdateForoAsync(id, foroUpdateDto.NombreForo, foroUpdateDto.Descripcion, usuarioId, userIsAdmin);
+            
+            if (!updated) return NotFound();
             return NoContent();
         }
     }

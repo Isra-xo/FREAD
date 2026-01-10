@@ -24,10 +24,12 @@ public partial class FreadContext : DbContext
 
     // --- LÍNEA AÑADIDA ---
     public virtual DbSet<Comentario> Comentarios { get; set; }
+    
+    // --- NUEVA ENTIDAD PARA SISTEMA DE VOTOS ---
+    public virtual DbSet<Voto> Votos { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=tcp:sqlserver-wb.database.windows.net,1433;Initial Catalog=fread;Persist Security Info=False;User ID=ISRA;Password=Web12345;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
+    // OnConfiguring eliminado - La connection string se configura mediante inyección de dependencias en Program.cs
+    // Esto previene que se exponga información sensible en el código fuente
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -141,6 +143,32 @@ public partial class FreadContext : DbContext
                 .HasForeignKey(d => d.RolId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Usuarios__RolID__619B8048");
+        });
+
+        // Configuración de la entidad Voto
+        modelBuilder.Entity<Voto>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Votos__3214EC27");
+
+            entity.Property(e => e.Id).HasColumnName("ID");
+            entity.Property(e => e.UsuarioId).HasColumnName("UsuarioID");
+            entity.Property(e => e.HiloId).HasColumnName("HiloID");
+            entity.Property(e => e.FechaVoto).HasDefaultValueSql("(sysdatetimeoffset())");
+
+            // Índice único compuesto para prevenir múltiples votos del mismo usuario en el mismo hilo
+            entity.HasIndex(e => new { e.UsuarioId, e.HiloId })
+                .IsUnique()
+                .HasDatabaseName("IX_Votos_UsuarioId_HiloId");
+
+            entity.HasOne(d => d.Usuario).WithMany()
+                .HasForeignKey(d => d.UsuarioId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK_Votos_Usuarios");
+
+            entity.HasOne(d => d.Hilo).WithMany()
+                .HasForeignKey(d => d.HiloId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK_Votos_Hilos");
         });
 
         OnModelCreatingPartial(modelBuilder);

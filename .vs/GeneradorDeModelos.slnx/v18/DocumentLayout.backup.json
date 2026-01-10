@@ -3,56 +3,8 @@
   "WorkspaceRootPath": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{B0C09646-7504-E2CF-CB8F-C50B934EF1F8}|GeneradorDeModelos\\GeneradorDeModelos.csproj|c:\\users\\isra_\\source\\repos\\generadordemodelos\\generadordemodelos\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B0C09646-7504-E2CF-CB8F-C50B934EF1F8}|GeneradorDeModelos\\GeneradorDeModelos.csproj|solutionrelative:generadordemodelos\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B0C09646-7504-E2CF-CB8F-C50B934EF1F8}|GeneradorDeModelos\\GeneradorDeModelos.csproj|c:\\users\\isra_\\source\\repos\\generadordemodelos\\generadordemodelos\\controllers\\comentarioscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B0C09646-7504-E2CF-CB8F-C50B934EF1F8}|GeneradorDeModelos\\GeneradorDeModelos.csproj|solutionrelative:generadordemodelos\\controllers\\comentarioscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B0C09646-7504-E2CF-CB8F-C50B934EF1F8}|GeneradorDeModelos\\GeneradorDeModelos.csproj|c:\\users\\isra_\\source\\repos\\generadordemodelos\\generadordemodelos\\controllers\\hiloscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B0C09646-7504-E2CF-CB8F-C50B934EF1F8}|GeneradorDeModelos\\GeneradorDeModelos.csproj|solutionrelative:generadordemodelos\\controllers\\hiloscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B0C09646-7504-E2CF-CB8F-C50B934EF1F8}|GeneradorDeModelos\\GeneradorDeModelos.csproj|c:\\users\\isra_\\source\\repos\\generadordemodelos\\generadordemodelos\\migrations\\20250930075422_addcontenidoandvotostohilos.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B0C09646-7504-E2CF-CB8F-C50B934EF1F8}|GeneradorDeModelos\\GeneradorDeModelos.csproj|solutionrelative:generadordemodelos\\migrations\\20250930075422_addcontenidoandvotostohilos.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B0C09646-7504-E2CF-CB8F-C50B934EF1F8}|GeneradorDeModelos\\GeneradorDeModelos.csproj|c:\\users\\isra_\\source\\repos\\generadordemodelos\\generadordemodelos\\models\\hilo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B0C09646-7504-E2CF-CB8F-C50B934EF1F8}|GeneradorDeModelos\\GeneradorDeModelos.csproj|solutionrelative:generadordemodelos\\models\\hilo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B0C09646-7504-E2CF-CB8F-C50B934EF1F8}|GeneradorDeModelos\\GeneradorDeModelos.csproj|c:\\users\\isra_\\source\\repos\\generadordemodelos\\generadordemodelos\\dtos\\hilocreatedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B0C09646-7504-E2CF-CB8F-C50B934EF1F8}|GeneradorDeModelos\\GeneradorDeModelos.csproj|solutionrelative:generadordemodelos\\dtos\\hilocreatedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B0C09646-7504-E2CF-CB8F-C50B934EF1F8}|GeneradorDeModelos\\GeneradorDeModelos.csproj|c:\\users\\isra_\\source\\repos\\generadordemodelos\\generadordemodelos\\controllers\\foroscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B0C09646-7504-E2CF-CB8F-C50B934EF1F8}|GeneradorDeModelos\\GeneradorDeModelos.csproj|solutionrelative:generadordemodelos\\controllers\\foroscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B0C09646-7504-E2CF-CB8F-C50B934EF1F8}|GeneradorDeModelos\\GeneradorDeModelos.csproj|c:\\users\\isra_\\source\\repos\\generadordemodelos\\generadordemodelos\\models\\usuario.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B0C09646-7504-E2CF-CB8F-C50B934EF1F8}|GeneradorDeModelos\\GeneradorDeModelos.csproj|solutionrelative:generadordemodelos\\models\\usuario.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B0C09646-7504-E2CF-CB8F-C50B934EF1F8}|GeneradorDeModelos\\GeneradorDeModelos.csproj|c:\\users\\isra_\\source\\repos\\generadordemodelos\\generadordemodelos\\controllers\\usuarioscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B0C09646-7504-E2CF-CB8F-C50B934EF1F8}|GeneradorDeModelos\\GeneradorDeModelos.csproj|solutionrelative:generadordemodelos\\controllers\\usuarioscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B0C09646-7504-E2CF-CB8F-C50B934EF1F8}|GeneradorDeModelos\\GeneradorDeModelos.csproj|c:\\users\\isra_\\source\\repos\\generadordemodelos\\generadordemodelos\\controllers\\admincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B0C09646-7504-E2CF-CB8F-C50B934EF1F8}|GeneradorDeModelos\\GeneradorDeModelos.csproj|solutionrelative:generadordemodelos\\controllers\\admincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B0C09646-7504-E2CF-CB8F-C50B934EF1F8}|GeneradorDeModelos\\GeneradorDeModelos.csproj|c:\\users\\isra_\\source\\repos\\generadordemodelos\\generadordemodelos\\dtos\\comentariocreatedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B0C09646-7504-E2CF-CB8F-C50B934EF1F8}|GeneradorDeModelos\\GeneradorDeModelos.csproj|solutionrelative:generadordemodelos\\dtos\\comentariocreatedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B0C09646-7504-E2CF-CB8F-C50B934EF1F8}|GeneradorDeModelos\\GeneradorDeModelos.csproj|c:\\users\\isra_\\source\\repos\\generadordemodelos\\generadordemodelos\\models\\freadcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B0C09646-7504-E2CF-CB8F-C50B934EF1F8}|GeneradorDeModelos\\GeneradorDeModelos.csproj|solutionrelative:generadordemodelos\\models\\freadcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B0C09646-7504-E2CF-CB8F-C50B934EF1F8}|GeneradorDeModelos\\GeneradorDeModelos.csproj|c:\\users\\isra_\\source\\repos\\generadordemodelos\\generadordemodelos\\dtos\\userregisterdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B0C09646-7504-E2CF-CB8F-C50B934EF1F8}|GeneradorDeModelos\\GeneradorDeModelos.csproj|solutionrelative:generadordemodelos\\dtos\\userregisterdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:GeneradorDeModelos\\Program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Migrations\\20250929073754_AddComentariosTable.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -63,32 +15,76 @@
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:GeneradorDeModelos\\Migrations\\20250929071218_AddComentariosTable.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B0C09646-7504-E2CF-CB8F-C50B934EF1F8}|GeneradorDeModelos\\GeneradorDeModelos.csproj|c:\\users\\isra_\\source\\repos\\generadordemodelos\\generadordemodelos\\models\\comentario.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B0C09646-7504-E2CF-CB8F-C50B934EF1F8}|GeneradorDeModelos\\GeneradorDeModelos.csproj|solutionrelative:generadordemodelos\\models\\comentario.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Migrations\\20250929074437_InitialCreate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:GeneradorDeModelos\\Migrations\\20250929074437_InitialCreate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B0C09646-7504-E2CF-CB8F-C50B934EF1F8}|GeneradorDeModelos\\GeneradorDeModelos.csproj|c:\\users\\isra_\\source\\repos\\generadordemodelos\\generadordemodelos\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B0C09646-7504-E2CF-CB8F-C50B934EF1F8}|GeneradorDeModelos\\GeneradorDeModelos.csproj|solutionrelative:generadordemodelos\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Migrations\\20250930065721_AddProfilePictureToUsuario.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:GeneradorDeModelos\\Migrations\\20250930065721_AddProfilePictureToUsuario.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B0C09646-7504-E2CF-CB8F-C50B934EF1F8}|GeneradorDeModelos\\GeneradorDeModelos.csproj|c:\\users\\isra_\\source\\repos\\generadordemodelos\\generadordemodelos\\controllers\\menuitemscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B0C09646-7504-E2CF-CB8F-C50B934EF1F8}|GeneradorDeModelos\\GeneradorDeModelos.csproj|solutionrelative:generadordemodelos\\controllers\\menuitemscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:GeneradorDeModelos\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B0C09646-7504-E2CF-CB8F-C50B934EF1F8}|GeneradorDeModelos\\GeneradorDeModelos.csproj|c:\\users\\isra_\\source\\repos\\generadordemodelos\\generadordemodelos\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{B0C09646-7504-E2CF-CB8F-C50B934EF1F8}|GeneradorDeModelos\\GeneradorDeModelos.csproj|solutionrelative:generadordemodelos\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Controllers\\ComentariosController.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:GeneradorDeModelos\\Controllers\\ComentariosController.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B0C09646-7504-E2CF-CB8F-C50B934EF1F8}|GeneradorDeModelos\\GeneradorDeModelos.csproj|c:\\users\\isra_\\source\\repos\\generadordemodelos\\generadordemodelos\\dtos\\userlogindto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B0C09646-7504-E2CF-CB8F-C50B934EF1F8}|GeneradorDeModelos\\GeneradorDeModelos.csproj|solutionrelative:generadordemodelos\\dtos\\userlogindto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Controllers\\HilosController.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:GeneradorDeModelos\\Controllers\\HilosController.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B0C09646-7504-E2CF-CB8F-C50B934EF1F8}|GeneradorDeModelos\\GeneradorDeModelos.csproj|c:\\users\\isra_\\source\\repos\\generadordemodelos\\generadordemodelos\\migrations\\20250929074437_initialcreate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B0C09646-7504-E2CF-CB8F-C50B934EF1F8}|GeneradorDeModelos\\GeneradorDeModelos.csproj|solutionrelative:generadordemodelos\\migrations\\20250929074437_initialcreate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Controllers\\ForosController.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:GeneradorDeModelos\\Controllers\\ForosController.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B0C09646-7504-E2CF-CB8F-C50B934EF1F8}|GeneradorDeModelos\\GeneradorDeModelos.csproj|c:\\users\\isra_\\source\\repos\\generadordemodelos\\generadordemodelos\\migrations\\20250930065721_addprofilepicturetousuario.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B0C09646-7504-E2CF-CB8F-C50B934EF1F8}|GeneradorDeModelos\\GeneradorDeModelos.csproj|solutionrelative:generadordemodelos\\migrations\\20250930065721_addprofilepicturetousuario.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Migrations\\20250930075422_AddContenidoAndVotosToHilos.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:GeneradorDeModelos\\Migrations\\20250930075422_AddContenidoAndVotosToHilos.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Models\\Hilo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:GeneradorDeModelos\\Models\\Hilo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Dtos\\HiloCreateDto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:GeneradorDeModelos\\Dtos\\HiloCreateDto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Controllers\\UsuariosController.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:GeneradorDeModelos\\Controllers\\UsuariosController.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Models\\Usuario.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:GeneradorDeModelos\\Models\\Usuario.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Controllers\\AdminController.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:GeneradorDeModelos\\Controllers\\AdminController.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Dtos\\ComentarioCreateDto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:GeneradorDeModelos\\Dtos\\ComentarioCreateDto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Models\\FreadContext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:GeneradorDeModelos\\Models\\FreadContext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Dtos\\UserRegisterDto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:GeneradorDeModelos\\Dtos\\UserRegisterDto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Models\\Comentario.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:GeneradorDeModelos\\Models\\Comentario.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Controllers\\MenuItemsController.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:GeneradorDeModelos\\Controllers\\MenuItemsController.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Dtos\\UserLoginDto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:GeneradorDeModelos\\Dtos\\UserLoginDto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -98,145 +94,15 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 3,
           "Children": [
             {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "AuthController.cs",
-              "DocumentMoniker": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Controllers\\AuthController.cs",
-              "RelativeDocumentMoniker": "GeneradorDeModelos\\Controllers\\AuthController.cs",
-              "ToolTip": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Controllers\\AuthController.cs",
-              "RelativeToolTip": "GeneradorDeModelos\\Controllers\\AuthController.cs",
-              "ViewState": "AgIAABcAAAAAAAAAAAAiwEwAAAAvAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-28T19:39:51.652Z",
-              "EditorCaption": ""
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{cce594b6-0c39-4442-ba28-10c64ac7e89f}"
             },
             {
               "$type": "Document",
               "DocumentIndex": 3,
-              "Title": "20250930075422_AddContenidoAndVotosToHilos.cs",
-              "DocumentMoniker": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Migrations\\20250930075422_AddContenidoAndVotosToHilos.cs",
-              "RelativeDocumentMoniker": "GeneradorDeModelos\\Migrations\\20250930075422_AddContenidoAndVotosToHilos.cs",
-              "ToolTip": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Migrations\\20250930075422_AddContenidoAndVotosToHilos.cs",
-              "RelativeToolTip": "GeneradorDeModelos\\Migrations\\20250930075422_AddContenidoAndVotosToHilos.cs",
-              "ViewState": "AgIAACcAAAAAAAAAAAAAACcAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-30T07:54:22.491Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "ForosController.cs",
-              "DocumentMoniker": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Controllers\\ForosController.cs",
-              "RelativeDocumentMoniker": "GeneradorDeModelos\\Controllers\\ForosController.cs",
-              "ToolTip": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Controllers\\ForosController.cs",
-              "RelativeToolTip": "GeneradorDeModelos\\Controllers\\ForosController.cs",
-              "ViewState": "AgIAAFQAAAAAAAAAAAAmwGUAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-29T04:09:54.173Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "HilosController.cs",
-              "DocumentMoniker": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Controllers\\HilosController.cs",
-              "RelativeDocumentMoniker": "GeneradorDeModelos\\Controllers\\HilosController.cs",
-              "ToolTip": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Controllers\\HilosController.cs",
-              "RelativeToolTip": "GeneradorDeModelos\\Controllers\\HilosController.cs",
-              "ViewState": "AgIAAC0AAAAAAAAAAAD4vzkAAAAwAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-28T21:23:02.127Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "ComentariosController.cs",
-              "DocumentMoniker": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Controllers\\ComentariosController.cs",
-              "RelativeDocumentMoniker": "GeneradorDeModelos\\Controllers\\ComentariosController.cs",
-              "ToolTip": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Controllers\\ComentariosController.cs",
-              "RelativeToolTip": "GeneradorDeModelos\\Controllers\\ComentariosController.cs",
-              "ViewState": "AgIAADIAAAAAAAAAAAAmwDoAAAA2AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-29T07:13:32.612Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 21,
-              "Title": "20250930065721_AddProfilePictureToUsuario.cs",
-              "DocumentMoniker": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Migrations\\20250930065721_AddProfilePictureToUsuario.cs",
-              "RelativeDocumentMoniker": "GeneradorDeModelos\\Migrations\\20250930065721_AddProfilePictureToUsuario.cs",
-              "ToolTip": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Migrations\\20250930065721_AddProfilePictureToUsuario.cs",
-              "RelativeToolTip": "GeneradorDeModelos\\Migrations\\20250930065721_AddProfilePictureToUsuario.cs",
-              "ViewState": "AgIAAA4AAAAAAAAAAAAAAAYAAAAWAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-30T06:57:21.819Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "Hilo.cs",
-              "DocumentMoniker": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Models\\Hilo.cs",
-              "RelativeDocumentMoniker": "GeneradorDeModelos\\Models\\Hilo.cs",
-              "ToolTip": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Models\\Hilo.cs",
-              "RelativeToolTip": "GeneradorDeModelos\\Models\\Hilo.cs",
-              "ViewState": "AgIAABEAAAAAAAAAAAAiwBYAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-30T07:49:49.782Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "HiloCreateDto.cs",
-              "DocumentMoniker": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Dtos\\HiloCreateDto.cs",
-              "RelativeDocumentMoniker": "GeneradorDeModelos\\Dtos\\HiloCreateDto.cs",
-              "ToolTip": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Dtos\\HiloCreateDto.cs",
-              "RelativeToolTip": "GeneradorDeModelos\\Dtos\\HiloCreateDto.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-29T04:30:14.844Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "UsuariosController.cs",
-              "DocumentMoniker": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Controllers\\UsuariosController.cs",
-              "RelativeDocumentMoniker": "GeneradorDeModelos\\Controllers\\UsuariosController.cs",
-              "ToolTip": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Controllers\\UsuariosController.cs",
-              "RelativeToolTip": "GeneradorDeModelos\\Controllers\\UsuariosController.cs",
-              "ViewState": "AgIAABQAAAAAAAAAAAAswBwAAAAhAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-30T06:45:08.864Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "Usuario.cs",
-              "DocumentMoniker": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Models\\Usuario.cs",
-              "RelativeDocumentMoniker": "GeneradorDeModelos\\Models\\Usuario.cs",
-              "ToolTip": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Models\\Usuario.cs",
-              "RelativeToolTip": "GeneradorDeModelos\\Models\\Usuario.cs",
-              "ViewState": "AgIAAA0AAAAAAAAAAAAcwBYAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-30T06:47:09.55Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "AdminController.cs",
-              "DocumentMoniker": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Controllers\\AdminController.cs",
-              "RelativeDocumentMoniker": "GeneradorDeModelos\\Controllers\\AdminController.cs",
-              "ToolTip": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Controllers\\AdminController.cs",
-              "RelativeToolTip": "GeneradorDeModelos\\Controllers\\AdminController.cs",
-              "ViewState": "AgIAAFAAAAAAAAAAAAAAAFAAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-29T08:59:31.808Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 20,
               "Title": "20250929074437_InitialCreate.cs",
               "DocumentMoniker": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Migrations\\20250929074437_InitialCreate.cs",
               "RelativeDocumentMoniker": "GeneradorDeModelos\\Migrations\\20250929074437_InitialCreate.cs",
@@ -248,103 +114,32 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
-              "Title": "ComentarioCreateDto.cs",
-              "DocumentMoniker": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Dtos\\ComentarioCreateDto.cs",
-              "RelativeDocumentMoniker": "GeneradorDeModelos\\Dtos\\ComentarioCreateDto.cs",
-              "ToolTip": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Dtos\\ComentarioCreateDto.cs",
-              "RelativeToolTip": "GeneradorDeModelos\\Dtos\\ComentarioCreateDto.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAtAAAAAAAAAA==",
+              "DocumentIndex": 4,
+              "Title": "20250930065721_AddProfilePictureToUsuario.cs",
+              "DocumentMoniker": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Migrations\\20250930065721_AddProfilePictureToUsuario.cs",
+              "RelativeDocumentMoniker": "GeneradorDeModelos\\Migrations\\20250930065721_AddProfilePictureToUsuario.cs",
+              "ToolTip": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Migrations\\20250930065721_AddProfilePictureToUsuario.cs",
+              "RelativeToolTip": "GeneradorDeModelos\\Migrations\\20250930065721_AddProfilePictureToUsuario.cs",
+              "ViewState": "AgIAABEAAAAAAAAAAAAAABkAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-29T08:44:48.995Z"
+              "WhenOpened": "2025-09-30T06:57:21.819Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
-              "Title": "FreadContext.cs",
-              "DocumentMoniker": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Models\\FreadContext.cs",
-              "RelativeDocumentMoniker": "GeneradorDeModelos\\Models\\FreadContext.cs",
-              "ToolTip": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Models\\FreadContext.cs",
-              "RelativeToolTip": "GeneradorDeModelos\\Models\\FreadContext.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAACEAAAArAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-29T07:01:47.382Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 13,
-              "Title": "20250929073754_AddComentariosTable.cs",
-              "DocumentMoniker": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Migrations\\20250929073754_AddComentariosTable.cs",
-              "RelativeDocumentMoniker": "GeneradorDeModelos\\Migrations\\20250929073754_AddComentariosTable.cs",
-              "ToolTip": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Migrations\\20250929073754_AddComentariosTable.cs",
-              "RelativeToolTip": "GeneradorDeModelos\\Migrations\\20250929073754_AddComentariosTable.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-29T07:37:54.941Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 12,
-              "Title": "UserRegisterDto.cs",
-              "DocumentMoniker": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Dtos\\UserRegisterDto.cs",
-              "RelativeDocumentMoniker": "GeneradorDeModelos\\Dtos\\UserRegisterDto.cs",
-              "ToolTip": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Dtos\\UserRegisterDto.cs",
-              "RelativeToolTip": "GeneradorDeModelos\\Dtos\\UserRegisterDto.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAA5AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-28T19:42:32.388Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 14,
-              "Title": "20250929071218_AddComentariosTable.cs",
-              "DocumentMoniker": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Migrations\\20250929071218_AddComentariosTable.cs",
-              "RelativeDocumentMoniker": "GeneradorDeModelos\\Migrations\\20250929071218_AddComentariosTable.cs",
-              "ToolTip": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Migrations\\20250929071218_AddComentariosTable.cs",
-              "RelativeToolTip": "GeneradorDeModelos\\Migrations\\20250929071218_AddComentariosTable.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-29T07:12:18.379Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 15,
-              "Title": "Comentario.cs",
-              "DocumentMoniker": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Models\\Comentario.cs",
-              "RelativeDocumentMoniker": "GeneradorDeModelos\\Models\\Comentario.cs",
-              "ToolTip": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Models\\Comentario.cs",
-              "RelativeToolTip": "GeneradorDeModelos\\Models\\Comentario.cs",
-              "ViewState": "AgIAABsAAAAAAAAAAAAAAAgAAAAFAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-29T07:01:19.52Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 16,
+              "DocumentIndex": 0,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Program.cs",
               "RelativeDocumentMoniker": "GeneradorDeModelos\\Program.cs",
               "ToolTip": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Program.cs",
               "RelativeToolTip": "GeneradorDeModelos\\Program.cs",
-              "ViewState": "AgIAAC8AAAAAAAAAAAAmwDoAAAAHAAAAAAAAAA==",
+              "ViewState": "AgIAAC0AAAAAAAAAAAAAwC4AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-28T19:25:40.96Z"
+              "WhenOpened": "2025-09-28T19:25:40.96Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 17,
-              "Title": "MenuItemsController.cs",
-              "DocumentMoniker": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Controllers\\MenuItemsController.cs",
-              "RelativeDocumentMoniker": "GeneradorDeModelos\\Controllers\\MenuItemsController.cs",
-              "ToolTip": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Controllers\\MenuItemsController.cs",
-              "RelativeToolTip": "GeneradorDeModelos\\Controllers\\MenuItemsController.cs",
-              "ViewState": "AgIAABgAAAAAAAAAAAAmwB0AAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-28T19:40:57.71Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 18,
+              "DocumentIndex": 5,
               "Title": "appsettings.json",
               "DocumentMoniker": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\appsettings.json",
               "RelativeDocumentMoniker": "GeneradorDeModelos\\appsettings.json",
@@ -356,7 +151,199 @@
             },
             {
               "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "ComentariosController.cs",
+              "DocumentMoniker": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Controllers\\ComentariosController.cs",
+              "RelativeDocumentMoniker": "GeneradorDeModelos\\Controllers\\ComentariosController.cs",
+              "ToolTip": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Controllers\\ComentariosController.cs",
+              "RelativeToolTip": "GeneradorDeModelos\\Controllers\\ComentariosController.cs",
+              "ViewState": "AgIAADIAAAAAAAAAAAAmwDoAAAA2AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-29T07:13:32.612Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "HilosController.cs",
+              "DocumentMoniker": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Controllers\\HilosController.cs",
+              "RelativeDocumentMoniker": "GeneradorDeModelos\\Controllers\\HilosController.cs",
+              "ToolTip": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Controllers\\HilosController.cs",
+              "RelativeToolTip": "GeneradorDeModelos\\Controllers\\HilosController.cs",
+              "ViewState": "AgIAAC0AAAAAAAAAAAD4vzkAAAAwAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-28T21:23:02.127Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "ForosController.cs",
+              "DocumentMoniker": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Controllers\\ForosController.cs",
+              "RelativeDocumentMoniker": "GeneradorDeModelos\\Controllers\\ForosController.cs",
+              "ToolTip": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Controllers\\ForosController.cs",
+              "RelativeToolTip": "GeneradorDeModelos\\Controllers\\ForosController.cs",
+              "ViewState": "AgIAAFQAAAAAAAAAAAAmwGUAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-29T04:09:54.173Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "20250930075422_AddContenidoAndVotosToHilos.cs",
+              "DocumentMoniker": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Migrations\\20250930075422_AddContenidoAndVotosToHilos.cs",
+              "RelativeDocumentMoniker": "GeneradorDeModelos\\Migrations\\20250930075422_AddContenidoAndVotosToHilos.cs",
+              "ToolTip": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Migrations\\20250930075422_AddContenidoAndVotosToHilos.cs",
+              "RelativeToolTip": "GeneradorDeModelos\\Migrations\\20250930075422_AddContenidoAndVotosToHilos.cs",
+              "ViewState": "AgIAACcAAAAAAAAAAAAAACcAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-30T07:54:22.491Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "Hilo.cs",
+              "DocumentMoniker": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Models\\Hilo.cs",
+              "RelativeDocumentMoniker": "GeneradorDeModelos\\Models\\Hilo.cs",
+              "ToolTip": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Models\\Hilo.cs",
+              "RelativeToolTip": "GeneradorDeModelos\\Models\\Hilo.cs",
+              "ViewState": "AgIAABEAAAAAAAAAAAAiwBYAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-30T07:49:49.782Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "HiloCreateDto.cs",
+              "DocumentMoniker": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Dtos\\HiloCreateDto.cs",
+              "RelativeDocumentMoniker": "GeneradorDeModelos\\Dtos\\HiloCreateDto.cs",
+              "ToolTip": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Dtos\\HiloCreateDto.cs",
+              "RelativeToolTip": "GeneradorDeModelos\\Dtos\\HiloCreateDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-29T04:30:14.844Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "UsuariosController.cs",
+              "DocumentMoniker": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Controllers\\UsuariosController.cs",
+              "RelativeDocumentMoniker": "GeneradorDeModelos\\Controllers\\UsuariosController.cs",
+              "ToolTip": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Controllers\\UsuariosController.cs",
+              "RelativeToolTip": "GeneradorDeModelos\\Controllers\\UsuariosController.cs",
+              "ViewState": "AgIAABQAAAAAAAAAAAAswBwAAAAhAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-30T06:45:08.864Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "Usuario.cs",
+              "DocumentMoniker": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Models\\Usuario.cs",
+              "RelativeDocumentMoniker": "GeneradorDeModelos\\Models\\Usuario.cs",
+              "ToolTip": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Models\\Usuario.cs",
+              "RelativeToolTip": "GeneradorDeModelos\\Models\\Usuario.cs",
+              "ViewState": "AgIAAA0AAAAAAAAAAAAcwBYAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-30T06:47:09.55Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "AdminController.cs",
+              "DocumentMoniker": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Controllers\\AdminController.cs",
+              "RelativeDocumentMoniker": "GeneradorDeModelos\\Controllers\\AdminController.cs",
+              "ToolTip": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Controllers\\AdminController.cs",
+              "RelativeToolTip": "GeneradorDeModelos\\Controllers\\AdminController.cs",
+              "ViewState": "AgIAAFAAAAAAAAAAAAAAAFAAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-29T08:59:31.808Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "ComentarioCreateDto.cs",
+              "DocumentMoniker": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Dtos\\ComentarioCreateDto.cs",
+              "RelativeDocumentMoniker": "GeneradorDeModelos\\Dtos\\ComentarioCreateDto.cs",
+              "ToolTip": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Dtos\\ComentarioCreateDto.cs",
+              "RelativeToolTip": "GeneradorDeModelos\\Dtos\\ComentarioCreateDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAtAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-29T08:44:48.995Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "FreadContext.cs",
+              "DocumentMoniker": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Models\\FreadContext.cs",
+              "RelativeDocumentMoniker": "GeneradorDeModelos\\Models\\FreadContext.cs",
+              "ToolTip": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Models\\FreadContext.cs",
+              "RelativeToolTip": "GeneradorDeModelos\\Models\\FreadContext.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACEAAAArAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-29T07:01:47.382Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "20250929073754_AddComentariosTable.cs",
+              "DocumentMoniker": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Migrations\\20250929073754_AddComentariosTable.cs",
+              "RelativeDocumentMoniker": "GeneradorDeModelos\\Migrations\\20250929073754_AddComentariosTable.cs",
+              "ToolTip": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Migrations\\20250929073754_AddComentariosTable.cs",
+              "RelativeToolTip": "GeneradorDeModelos\\Migrations\\20250929073754_AddComentariosTable.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-29T07:37:54.941Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "UserRegisterDto.cs",
+              "DocumentMoniker": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Dtos\\UserRegisterDto.cs",
+              "RelativeDocumentMoniker": "GeneradorDeModelos\\Dtos\\UserRegisterDto.cs",
+              "ToolTip": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Dtos\\UserRegisterDto.cs",
+              "RelativeToolTip": "GeneradorDeModelos\\Dtos\\UserRegisterDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAA5AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-28T19:42:32.388Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "20250929071218_AddComentariosTable.cs",
+              "DocumentMoniker": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Migrations\\20250929071218_AddComentariosTable.cs",
+              "RelativeDocumentMoniker": "GeneradorDeModelos\\Migrations\\20250929071218_AddComentariosTable.cs",
+              "ToolTip": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Migrations\\20250929071218_AddComentariosTable.cs",
+              "RelativeToolTip": "GeneradorDeModelos\\Migrations\\20250929071218_AddComentariosTable.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-29T07:12:18.379Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "Comentario.cs",
+              "DocumentMoniker": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Models\\Comentario.cs",
+              "RelativeDocumentMoniker": "GeneradorDeModelos\\Models\\Comentario.cs",
+              "ToolTip": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Models\\Comentario.cs",
+              "RelativeToolTip": "GeneradorDeModelos\\Models\\Comentario.cs",
+              "ViewState": "AgIAABsAAAAAAAAAAAAAAAgAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-29T07:01:19.52Z"
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 19,
+              "Title": "MenuItemsController.cs",
+              "DocumentMoniker": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Controllers\\MenuItemsController.cs",
+              "RelativeDocumentMoniker": "GeneradorDeModelos\\Controllers\\MenuItemsController.cs",
+              "ToolTip": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Controllers\\MenuItemsController.cs",
+              "RelativeToolTip": "GeneradorDeModelos\\Controllers\\MenuItemsController.cs",
+              "ViewState": "AgIAABgAAAAAAAAAAAAmwB0AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-28T19:40:57.71Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
               "Title": "UserLoginDto.cs",
               "DocumentMoniker": "C:\\Users\\isra_\\source\\repos\\GeneradorDeModelos\\GeneradorDeModelos\\Dtos\\UserLoginDto.cs",
               "RelativeDocumentMoniker": "GeneradorDeModelos\\Dtos\\UserLoginDto.cs",
