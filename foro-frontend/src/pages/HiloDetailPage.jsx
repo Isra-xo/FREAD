@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { getHiloById, deleteHilo, getComentariosByHiloId, createComentario } from '../services/apiService';
-import { extractItems, getTotalPages } from '../services/apiHelpers';
+import { extractItems, getTotalPages, getTotalCount } from '../services/apiHelpers';
+import { useNotification } from '../context/NotificationContext';
 import { useAuth } from '../context/AuthContext';
 import './HiloDetailPage.css';
 
@@ -10,14 +11,15 @@ const HiloDetailPage = () => {
     const [comentarios, setComentarios] = useState([]);
     const [comentariosPage, setComentariosPage] = useState(1);
     const [comentariosTotalPages, setComentariosTotalPages] = useState(1);
+    const [comentariosTotalCount, setComentariosTotalCount] = useState(0);
     const [loading, setLoading] = useState(true);
     const [nuevoComentario, setNuevoComentario] = useState("");
     
     const { id } = useParams();
     const navigate = useNavigate();
     const { user } = useAuth();
-    const userRole = user ? user.role : null;
     const userName = user ? (user.name || user['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name']) : '';
+    const { showToast } = useNotification();
 
     useEffect(() => {
         const fetchAllData = async () => {
@@ -29,6 +31,7 @@ const HiloDetailPage = () => {
                 setHilo(hiloRes.data);
                 setComentarios(extractItems(comentariosRes));
                 setComentariosTotalPages(getTotalPages(comentariosRes));
+                setComentariosTotalCount(getTotalCount(comentariosRes));
             } catch (error) {
                 console.error("Error al cargar los datos:", error);
             } finally {
@@ -46,9 +49,10 @@ const HiloDetailPage = () => {
             setNuevoComentario("");
             // Reset to first page after posting a comment to trigger refetch
             setComentariosPage(1);
+            showToast('Comentario publicado con éxito', 'success');
         } catch (error) {
             console.error("Error al publicar comentario:", error);
-            alert("No se pudo publicar el comentario.");
+            showToast('No se pudo publicar el comentario', 'error');
         }
     };
 
@@ -80,7 +84,7 @@ const HiloDetailPage = () => {
                 <p className="hilo-body">{hilo.contenido}</p>
 
                 {/* --- Opciones de Administrador --- */}
-                {userRole === 'Administrador' && (
+                {user?.role === 'Administrador' && (
                     <div className="admin-actions">
                         <button className="btn btn-secondary">Editar Hilo</button>
                         <button onClick={handleDeleteHilo} className="btn btn-delete">Eliminar Hilo</button>
@@ -89,7 +93,7 @@ const HiloDetailPage = () => {
             </div>
 
             <div className="comentarios-section">
-                <h3>Comentarios ({comentarios.length})</h3>
+                <h3>Comentarios ({comentariosTotalCount})</h3>
                 {user && (
                     <form onSubmit={handleCommentSubmit} className="comment-form">
                         <textarea

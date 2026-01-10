@@ -22,7 +22,7 @@
 
 ### Propósito del Sistema
 
-**GeneradorDeModelos** (también referido como **FREAD** en el código) es una plataforma de foros de discusión tipo Reddit/Stack Overflow que implementa:
+**GeneradorDeModelos** (**FREAD**) es una plataforma de foros de discusión tipo Reddit/Stack Overflow que implementa:
 
 - **Sistema de Foros**: Categorías temáticas (Foros) donde los usuarios organizan discusiones
 - **Hilos de Discusión**: Posts principales que inician conversaciones
@@ -51,9 +51,52 @@
 **Base de Datos:**
 - **SQL Server** (Azure)
 - **Connection String**: `tcp:sqlserver-wb.database.windows.net,1433`
-- **Database**: `fread` / `foro` (nombres alternativos en configuraciones)
+- **Database**: `foro` (nombres alternativos en configuraciones)
 
 ---
+
+## Pilares Tecnológicos 
+
+Breve resumen de las decisiones arquitectónicas y dónde encontrarlas en el código fuente. Cada punto indica la **ubicación exacta** (archivo y líneas relevantes) y una explicación corta de su funcionalidad.
+
+### 1) Caché de Respuestas (OutputCache) 
+- **Qué hace**: Cachea respuestas HTTP en memoria para reducir llamadas a la BD en endpoints que no cambian con alta frecuencia (p. ej. menús y listados públicos).
+- **Ubicación (registro)**: `Program.cs` — `builder.Services.AddOutputCache(...)` (líneas 40-43).
+- **Ubicación (middleware)**: `Program.cs` — `app.UseOutputCache();` (línea 89). Nota: el middleware debe ir antes de `UseAuthentication()`.
+- **Ubicación (uso por controlador)**: `Controllers/AuthController.cs` — atributo `[OutputCache(Duration = 60)]` en `GetUserMenu()` (línea 106); `Controllers/ForosController.cs` — atributo `[OutputCache(Duration = 60)]` en `GetForos()` (línea 26).
+- **Recomendación**: invalidar explícitamente cache cuando se modifiquen recursos dependientes o usar etiquetas/keys si se introduce un cache distribuido.
+
+### 2) Paginación (PagedResult<T>) 
+- **Qué hace**: Normaliza respuestas paginadas con metadata útil para el frontend (Items, PageNumber, PageSize, TotalCount, TotalPages, HasPrevious, HasNext).
+- **Ubicación**: `Helpers/PagedResult.cs` — definición de `PagedResult<T>` (líneas 7-55), propiedad calculada `TotalPages` en la línea 32.
+- **Impacto en frontend**: el frontend debe consumir `Items` (lista) y usar `TotalCount/TotalPages` para controles de paginación y UX. Se implementó un helper en `src/services/apiHelpers.js` para extraer `Items` y metadatos de `PagedResult<T>`.
+
+### 3) Concurrencia Optimista (RowVersion + reintentos) 
+- **Qué hace**: Evita conflictos en actualizaciones simultáneas usando un token de concurrencia (`RowVersion`) y reintentos controlados en operaciones críticas (ej. votaciones).
+- **Ubicación (modelo)**: `Models/Hilo.cs` — atributo `[Timestamp]` en la propiedad `RowVersion` (línea 20).
+- **Ubicación (lógica de negocio)**: `Services/VoteService.cs` — método `VoteOnHiloAsync(...)` que implementa reintentos y captura `DbUpdateConcurrencyException` (método comienza en la línea 19; manejo de excepción en la línea 89). Máximo 3 reintentos con small backoff.
+- **Recomendación**: añadir métricas para contar `DbUpdateConcurrencyException` y ajustar backoff/retries según la carga.
+
+### 4) Autenticación y Políticas (JWT + Roles) 
+- **Qué hace**: Genera y valida JWT con claims básicos; define políticas (p. ej. `AdminOnly`) para proteger endpoints.
+- **Ubicación (JWT config)**: `Program.cs` — configuración de `AddAuthentication().AddJwtBearer(...)` (líneas 45-55).
+- **Ubicación (politica)**: `Program.cs` — `AddAuthorization(...)` con `options.AddPolicy("AdminOnly", ...)` (líneas 58-62).
+- **Ubicación (generación de token)**: `Controllers/AuthController.cs` — método privado `CreateToken(Usuario user)` (línea 132) genera JWT con claims `NameIdentifier`, `Name` y `Role`.
+- **Recomendación**: mover secretos (`AppSettings:Token`) a User Secrets o variables de entorno y activar `ValidateIssuer`/`ValidateAudience` en producción.
+
+### 5) Resiliencia de la Capa de Datos (Retry SQL) 
+- **Qué hace**: Habilita reintentos automáticos para errores transitorios de SQL Server evitando fallos temporales.
+- **Ubicación**: `Program.cs` — `options.UseSqlServer(...).EnableRetryOnFailure(...)` (líneas 19-28).
+- **Recomendación**: ajustar `maxRetryCount`/`maxRetryDelay` según la observabilidad y registrar métricas de reintentos.
+
+### 6) CORS / Seguridad de Cliente 
+- **Qué hace**: Política CORS restrictiva para desarrollo (`http://localhost:3000`).
+- **Ubicación**: `Program.cs` — `builder.Services.AddCors(...)` y `app.UseCors("MyCorsPolicy")` (líneas 64-72 y 88-89).
+- **Recomendación**: en producción limitar a orígenes y métodos necesarios y considerar políticas más granulares.
+
+---
+
+
 
 ## Arquitectura de Datos y Flujo Dinámico
 
@@ -207,9 +250,9 @@ setMenuItems(response.data);  // Array: [{id, titulo, url, icono}, ...]
 | `PagedResult<T>` | Clase genérica para resultados paginados con metadatos (PageNumber, PageSize, TotalCount, TotalPages, HasPrevious, HasNext) |
 
 **Características**:
-- ✅ Genérica: puede usarse con cualquier tipo `T`
-- ✅ Metadatos completos: información de paginación para el frontend
-- ✅ Propiedades calculadas: `TotalPages`, `HasPrevious`, `HasNext`
+-  Genérica: puede usarse con cualquier tipo `T`
+-  Metadatos completos: información de paginación para el frontend
+-  Propiedades calculadas: `TotalPages`, `HasPrevious`, `HasNext`
 
 **Ejemplo de Uso**:
 ```csharp
@@ -217,7 +260,7 @@ var result = new PagedResult<Hilo>(items, totalCount, pageNumber, pageSize);
 // Retorna: { Items: [...], PageNumber: 1, PageSize: 10, TotalCount: 50, TotalPages: 5, HasPrevious: false, HasNext: true }
 ```
 
-#### 1. **Services/** - Capa de Servicios (NUEVA) ✅
+#### 1. **Services/** - Capa de Servicios (NUEVA) 
 
 **Patrón de Diseño**: Service Layer Pattern - Separación de lógica de negocio de controladores
 
@@ -231,13 +274,13 @@ var result = new PagedResult<Hilo>(items, totalCount, pageNumber, pageSize);
 | `VoteService` | `IVoteService` | Sistema de votos con prevención de múltiples votos, toggle de votos, actualización de contadores, manejo de concurrencia optimista |
 
 **Características**:
-- ✅ Todos los métodos son `async/await` de extremo a extremo
-- ✅ Validación de permisos centralizada en servicios
-- ✅ Mapeo automático a DTOs de respuesta (sin PasswordHash)
-- ✅ Registrados en DI container con `AddScoped` en `Program.cs`
-- ✅ Paginación implementada en servicios de listado (HiloService, ForoService)
-- ✅ Filtrado de búsqueda en HiloService (por título y contenido)
-- ✅ Manejo de concurrencia optimista en VoteService (con RowVersion y reintentos)
+-  Todos los métodos son `async/await` de extremo a extremo
+-  Validación de permisos centralizada en servicios
+-  Mapeo automático a DTOs de respuesta (sin PasswordHash)
+-  Registrados en DI container con `AddScoped` en `Program.cs`
+-  Paginación implementada en servicios de listado (HiloService, ForoService)
+-  Filtrado de búsqueda en HiloService (por título y contenido)
+-  Manejo de concurrencia optimista en VoteService (con RowVersion y reintentos)
 
 **Ejemplo de Uso**:
 ```csharp
@@ -285,15 +328,15 @@ public class XController : ControllerBase
 
 | Controlador | Namespace | Responsabilidades | Patrón de Autorización | Servicios Utilizados |
 |------------|-----------|-------------------|------------------------|---------------------|
-| `AuthController` | `GeneradorDeModelos.Controllers` ✅ | Autenticación, registro, generación JWT, menús dinámicos | `[Authorize]` en `/menu` | Ninguno (acceso directo a DbContext) |
-| `ForosController` | `GeneradorDeModelos.Controllers` ✅ | CRUD de foros, listado público | `[AllowAnonymous]` en GET, `[Authorize(Roles = "Administrador")]` en POST | `IForoService` |
-| `HilosController` | `GeneradorDeModelos.Controllers` ✅ | CRUD de hilos, sistema de votos | `[AllowAnonymous]` en GET, `[Authorize]` en POST/PUT/DELETE | `IHiloService`, `IVoteService` |
-| `ComentariosController` | `GeneradorDeModelos.Controllers` ✅ | CRUD de comentarios anidados en hilos | `[Authorize]` en POST, público en GET | Ninguno (acceso directo a DbContext) |
-| `UsuariosController` | `GeneradorDeModelos.Controllers` ✅ | Perfil de usuario, subida de fotos | `[Authorize]` con validación de propiedad | `IUsuarioService` |
-| `AdminController` | `GeneradorDeModelos.Controllers` ✅ | Gestión de usuarios, cambio de roles | `[Authorize(Roles = "Administrador")]` a nivel de clase | Ninguno (acceso directo a DbContext) |
-| `MenuItemsController` | `GeneradorDeModelos.Controllers` ✅ | Menús dinámicos (alternativa a `/Auth/menu`) | `[Authorize]` | Ninguno (acceso directo a DbContext) |
+| `AuthController` | `GeneradorDeModelos.Controllers`  | Autenticación, registro, generación JWT, menús dinámicos | `[Authorize]` en `/menu` | Ninguno (acceso directo a DbContext) |
+| `ForosController` | `GeneradorDeModelos.Controllers`  | CRUD de foros, listado público | `[AllowAnonymous]` en GET, `[Authorize(Roles = "Administrador")]` en POST | `IForoService` |
+| `HilosController` | `GeneradorDeModelos.Controllers`  | CRUD de hilos, sistema de votos | `[AllowAnonymous]` en GET, `[Authorize]` en POST/PUT/DELETE | `IHiloService`, `IVoteService` |
+| `ComentariosController` | `GeneradorDeModelos.Controllers`  | CRUD de comentarios anidados en hilos | `[Authorize]` en POST, público en GET | Ninguno (acceso directo a DbContext) |
+| `UsuariosController` | `GeneradorDeModelos.Controllers`  | Perfil de usuario, subida de fotos | `[Authorize]` con validación de propiedad | `IUsuarioService` |
+| `AdminController` | `GeneradorDeModelos.Controllers`  | Gestión de usuarios, cambio de roles | `[Authorize(Roles = "Administrador")]` a nivel de clase | Ninguno (acceso directo a DbContext) |
+| `MenuItemsController` | `GeneradorDeModelos.Controllers`  | Menús dinámicos (alternativa a `/Auth/menu`) | `[Authorize]` | Ninguno (acceso directo a DbContext) |
 
-✅ **REFACTORIZACIÓN COMPLETADA**: Todos los controladores ahora usan el namespace unificado `GeneradorDeModelos.Controllers`. Los controladores principales (Hilos, Foros, Usuarios) ahora usan servicios para separar la lógica de negocio.
+ **REFACTORIZACIÓN COMPLETADA**: Todos los controladores ahora usan el namespace unificado `GeneradorDeModelos.Controllers`. Los controladores principales (Hilos, Foros, Usuarios) ahora usan servicios para separar la lógica de negocio.
 
 #### 3. **Models/** - Domain Models y DbContext
 
@@ -308,7 +351,7 @@ public partial class FreadContext : DbContext
     public virtual DbSet<Foro> Foros { get; set; }
     public virtual DbSet<Hilo> Hilos { get; set; }
     public virtual DbSet<Comentario> Comentarios { get; set; }
-    public virtual DbSet<Voto> Votos { get; set; }  // ✅ NUEVA ENTIDAD
+    public virtual DbSet<Voto> Votos { get; set; }  //  NUEVA ENTIDAD
     // ...
     
     // OnConfiguring() eliminado - Connection string se configura en Program.cs
@@ -326,9 +369,9 @@ public partial class FreadContext : DbContext
 - **Navigation Properties**: Propiedades `virtual` para lazy loading (aunque se usa eager loading con `Include()`)
 - **Data Annotations**: `[Key]`, `[Required]` en `Comentario.cs`, pero Fluent API en `FreadContext` para otros modelos
 - **Valores por Defecto**: `DateTimeOffset?` con `HasDefaultValueSql("(sysdatetimeoffset())")`
-- **Concurrencia Optimista**: `Hilo` tiene propiedad `RowVersion` con `[Timestamp]` para prevenir conflictos de actualización simultánea ✅ **NUEVO**
+- **Concurrencia Optimista**: `Hilo` tiene propiedad `RowVersion` con `[Timestamp]` para prevenir conflictos de actualización simultánea  **NUEVO**
 
-**Nueva Entidad: Voto** ✅
+**Nueva Entidad: Voto** 
 - **Propósito**: Rastrear votos individuales de usuarios en hilos para prevenir múltiples votos
 - **Campos**: `Id`, `UsuarioId`, `HiloId`, `Valor` (1 para upvote, -1 para downvote), `FechaVoto`
 - **Índice Único**: `(UsuarioId, HiloId)` previene múltiples votos del mismo usuario en el mismo hilo
@@ -342,10 +385,10 @@ public partial class FreadContext : DbContext
 | Usuario → Foros | One-to-Many | Cascade implícito | `FK_Foros_Usuarios` |
 | Usuario → Hilos | One-to-Many | `ClientSetNull` | `FK__Hilos__UsuarioID__68487DD7` |
 | Usuario → Comentarios | One-to-Many | `Cascade` (migración) | `FK_Comentarios_Usuarios_UsuarioId` |
-| Usuario → Votos | One-to-Many | `Cascade` | `FK_Votos_Usuarios` ✅ **NUEVA** |
+| Usuario → Votos | One-to-Many | `Cascade` | `FK_Votos_Usuarios`  **NUEVA** |
 | Foro → Hilos | One-to-Many | `ClientSetNull` | `FK__Hilos__ForoID__6754599E` |
 | Hilo → Comentarios | One-to-Many | `Cascade` | `FK_Comentarios_Hilos_HiloId` |
-| Hilo → Votos | One-to-Many | `Cascade` | `FK_Votos_Hilos` ✅ **NUEVA** |
+| Hilo → Votos | One-to-Many | `Cascade` | `FK_Votos_Hilos`  **NUEVA** |
 | Role ↔ MenuItem | Many-to-Many | `ClientSetNull` | Tabla intermedia: `Rol_MenuItem_Permisos` |
 
 #### 3. **Dtos/** - Data Transfer Objects
@@ -356,21 +399,21 @@ public partial class FreadContext : DbContext
 
 | DTO | Propósito | Validador | Uso | Estado |
 |-----|-----------|-----------|-----|--------|
-| `UserRegisterDto` | Registro de usuario | Implícito (propiedades requeridas) | `POST /api/Auth/register` | ✅ Existente |
-| `UserLoginDto` | Credenciales de login | Implícito | `POST /api/Auth/login` | ✅ Existente |
-| `UsuarioResponseDto` | Respuesta de usuario (sin PasswordHash) | Ninguno | Respuestas de `GET /api/Usuarios/{id}`, `GET /api/Admin/users`, `POST /api/Auth/register` | ✅ **NUEVO** |
-| `HiloCreateDto` | Creación de hilo | Implícito | `POST /api/Hilos` | ✅ Existente |
-| `HiloUpdateDto` | Actualización de hilo | Ninguno | `PUT /api/Hilos/{id}` | ✅ **Movido desde inline** |
-| `ComentarioCreateDto` | Creación de comentario | `[Required]` en modelo | `POST /api/Hilos/{id}/Comentarios` | ✅ Existente |
-| `ForoUpdateDto` | Actualización de foro | Ninguno | `PUT /api/Foros/{id}` | ✅ **Movido desde inline** |
-| `UsuarioUpdateDto` | Actualización de perfil | Ninguno | `PUT /api/Usuarios/{id}` | ✅ **Movido desde inline** |
-| `RoleChangeDto` | Cambio de rol | Ninguno | `PUT /api/Admin/users/{id}/role` | ✅ **Movido desde inline** |
-| `VoteRequestDto` | Voto en hilo | Ninguno | `POST /api/Hilos/{id}/vote` | ✅ **Movido desde inline** (antes `VoteRequest`) |
+| `UserRegisterDto` | Registro de usuario | Implícito (propiedades requeridas) | `POST /api/Auth/register` |  Existente |
+| `UserLoginDto` | Credenciales de login | Implícito | `POST /api/Auth/login` |  Existente |
+| `UsuarioResponseDto` | Respuesta de usuario (sin PasswordHash) | Ninguno | Respuestas de `GET /api/Usuarios/{id}`, `GET /api/Admin/users`, `POST /api/Auth/register` |  **NUEVO** |
+| `HiloCreateDto` | Creación de hilo | Implícito | `POST /api/Hilos` |  Existente |
+| `HiloUpdateDto` | Actualización de hilo | Ninguno | `PUT /api/Hilos/{id}` |  **Movido desde inline** |
+| `ComentarioCreateDto` | Creación de comentario | `[Required]` en modelo | `POST /api/Hilos/{id}/Comentarios` |  Existente |
+| `ForoUpdateDto` | Actualización de foro | Ninguno | `PUT /api/Foros/{id}` |  **Movido desde inline** |
+| `UsuarioUpdateDto` | Actualización de perfil | Ninguno | `PUT /api/Usuarios/{id}` |  **Movido desde inline** |
+| `RoleChangeDto` | Cambio de rol | Ninguno | `PUT /api/Admin/users/{id}/role` |  **Movido desde inline** |
+| `VoteRequestDto` | Voto en hilo | Ninguno | `POST /api/Hilos/{id}/vote` |  **Movido desde inline** (antes `VoteRequest`) |
 
 **Mejoras Implementadas**:
-- ✅ Todos los DTOs ahora están en la carpeta `Dtos/` (no inline en controladores)
-- ✅ `UsuarioResponseDto` asegura que NUNCA se envíe `PasswordHash` al frontend
-- ⚠️ Falta validación con Data Annotations o FluentValidation (pendiente para Fase 3)
+-  Todos los DTOs ahora están en la carpeta `Dtos/` (no inline en controladores)
+-  `UsuarioResponseDto` asegura que NUNCA se envíe `PasswordHash` al frontend
+-  Falta validación con Data Annotations o FluentValidation (pendiente para Fase 3)
 
 #### 5. **Program.cs** - Startup y Configuración
 
@@ -386,7 +429,7 @@ if (app.Environment.IsDevelopment())
 // 2. CORS (debe ir antes de autenticación para preflight requests)
 app.UseCors("MyCorsPolicy");
 
-// 3. OutputCache (debe ir antes de autenticación) ✅ NUEVO
+// 3. OutputCache (debe ir antes de autenticación)  NUEVO
 app.UseOutputCache();
 
 // 4. Autenticación (lee token JWT)
@@ -400,17 +443,17 @@ app.MapControllers();
 ```
 
 **Configuración de Servicios**:
-- **DbContext**: Scoped lifetime (una instancia por request) con retry policy para errores transitorios ✅
+- **DbContext**: Scoped lifetime (una instancia por request) con retry policy para errores transitorios 
 - **JWT Authentication**: Configurado con clave simétrica desde `appsettings.json`
 - **JSON Serialization**: `ReferenceHandler.IgnoreCycles` para evitar referencias circulares
 - **CORS**: Política restrictiva solo para `http://localhost:3000`
-- **OutputCache**: Configurado con duración por defecto de 60 segundos ✅ **NUEVO**
-- **Políticas de Autorización**: Política `AdminOnly` configurada que requiere rol "Administrador" ✅ **NUEVO**
+- **OutputCache**: Configurado con duración por defecto de 60 segundos  **NUEVO**
+- **Políticas de Autorización**: Política `AdminOnly` configurada que requiere rol "Administrador"  **NUEVO**
 
 **Mejoras de Seguridad Implementadas**:
-- ✅ Connection string eliminada de `FreadContext.OnConfiguring()` - ahora solo en `appsettings.json` y Program.cs
-- ⚠️ Token JWT en `appsettings.json` (debe estar en User Secrets/Environment Variables para producción)
-- ⚠️ `ValidateIssuer = false` y `ValidateAudience = false` (no recomendado para producción)
+-  Connection string eliminada de `FreadContext.OnConfiguring()` - ahora solo en `appsettings.json` y Program.cs
+-  Token JWT en `appsettings.json` (debe estar en User Secrets/Environment Variables para producción)
+-  `ValidateIssuer = false` y `ValidateAudience = false` (no recomendado para producción)
 
 ### Frontend - Estructura y Patrones
 
@@ -438,9 +481,9 @@ apiClient.interceptors.request.use(config => {
 - Admin: `getUsers()`, `deleteUser()`, `changeUserRole()`
 
 **Problemas Detectados**:
-- ❌ `getForoById()` definido pero no existe endpoint `GET /api/Foros/{id}`
-- ❌ `getComentariosByUserId()` llama a endpoint inexistente
-- ❌ URL base hardcodeada: `http://localhost:5153/api`
+-  `getForoById()` definido pero no existe endpoint `GET /api/Foros/{id}`
+-  `getComentariosByUserId()` llama a endpoint inexistente
+-  URL base hardcodeada: `http://localhost:5153/api`
 
 #### 2. **src/context/AuthContext.jsx** - Context API Pattern
 
@@ -471,9 +514,9 @@ apiClient.interceptors.request.use(config => {
    - Actualiza estado global
 
 **Problemas Detectados**:
-- ⚠️ `jwtDecode()` no valida firma del token (solo decodifica)
-- ⚠️ No hay refresh token mechanism
-- ⚠️ Token expira después de 1 día sin renovación automática
+-  `jwtDecode()` no valida firma del token (solo decodifica)
+-  No hay refresh token mechanism
+-  Token expira después de 1 día sin renovación automática
 
 #### 3. **src/components/** - Component Composition Pattern
 
@@ -547,24 +590,24 @@ HTTP Request → CORS Middleware → Authentication Middleware → Authorization
 ```csharp
 // En múltiples controladores:
 var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-var nuevoForo = new Foro { UsuarioId = int.Parse(userIdString) };  // ⚠️ Puede ser null
+var nuevoForo = new Foro { UsuarioId = int.Parse(userIdString) };  //  Puede ser null
 ```
 
 **Riesgo**: Si el token no tiene el claim (caso edge), `int.Parse(null)` lanza `ArgumentNullException`.
 
-### 2. Inconsistencias de Namespace ✅ RESUELTO
+### 2. Inconsistencias de Namespace  RESUELTO
 
 **Problema Resuelto**: Todos los controladores ahora usan el namespace unificado `GeneradorDeModelos.Controllers`.
 
 | Controlador | Namespace Actual | Estado |
 |------------|----------------|--------|
-| `AuthController` | `GeneradorDeModelos.Controllers` | ✅ Correcto |
-| `HilosController` | `GeneradorDeModelos.Controllers` | ✅ Correcto |
-| `MenuItemsController` | `GeneradorDeModelos.Controllers` | ✅ Correcto |
-| `ForosController` | `GeneradorDeModelos.Controllers` | ✅ **CORREGIDO** |
-| `ComentariosController` | `GeneradorDeModelos.Controllers` | ✅ **CORREGIDO** |
-| `UsuariosController` | `GeneradorDeModelos.Controllers` | ✅ **CORREGIDO** |
-| `AdminController` | `GeneradorDeModelos.Controllers` | ✅ **CORREGIDO** |
+| `AuthController` | `GeneradorDeModelos.Controllers` |  Correcto |
+| `HilosController` | `GeneradorDeModelos.Controllers` |  Correcto |
+| `MenuItemsController` | `GeneradorDeModelos.Controllers` |  Correcto |
+| `ForosController` | `GeneradorDeModelos.Controllers` |  **CORREGIDO** |
+| `ComentariosController` | `GeneradorDeModelos.Controllers` |  **CORREGIDO** |
+| `UsuariosController` | `GeneradorDeModelos.Controllers` |  **CORREGIDO** |
+| `AdminController` | `GeneradorDeModelos.Controllers` |  **CORREGIDO** |
 
 **Cambio Realizado**: Refactorización completa - todos los controladores ahora usan el namespace correcto.
 
@@ -581,7 +624,7 @@ var nuevoForo = new Foro { UsuarioId = int.Parse(userIdString) };  // ⚠️ Pue
 - Esto significa que `ComentariosController` está conceptualmente subordinado a `HilosController`
 - **Impacto**: Si se elimina un hilo, los comentarios se eliminan en cascada (configurado en BD)
 
-### 4. Relación entre FreadContext y Migraciones ✅ RESUELTO
+### 4. Relación entre FreadContext y Migraciones --> RESUELTO
 
 **OnConfiguring() Eliminado**:
 ```csharp
@@ -726,14 +769,14 @@ erDiagram
 | `UsuarioId` | Foros | Usuarios | (No especificado, probablemente `NoAction`) | `FK_Foros_Usuarios` |
 | `ForoID` | Hilos | Foros | `ClientSetNull` | `FK__Hilos__ForoID__6754599E` |
 | `UsuarioID` | Hilos | Usuarios | `ClientSetNull` | `FK__Hilos__UsuarioID__68487DD7` |
-| `HiloId` | Comentarios | Hilos | `Cascade` ⚠️ | `FK_Comentarios_Hilos_HiloId` |
-| `UsuarioId` | Comentarios | Usuarios | `Cascade` ⚠️ | `FK_Comentarios_Usuarios_UsuarioId` |
+| `HiloId` | Comentarios | Hilos | `Cascade`  | `FK_Comentarios_Hilos_HiloId` |
+| `UsuarioId` | Comentarios | Usuarios | `Cascade`  | `FK_Comentarios_Usuarios_UsuarioId` |
 | `HiloID` | Posts | Hilos | `ClientSetNull` | `FK__Posts__HiloID__6C190EBB` |
 | `UsuarioID` | Posts | Usuarios | `ClientSetNull` | `FK__Posts__UsuarioID__6D0D32F4` |
 | `RolID` | Rol_MenuItem_Permisos | Roles | `ClientSetNull` | `FK__Rol_MenuI__RolID__71D1E811` |
 | `MenuItemID` | Rol_MenuItem_Permisos | MenuItems | `ClientSetNull` | `FK__Rol_MenuI__MenuI__72C60C4A` |
 
-⚠️ **IMPORTANTE**: `Comentarios` tiene `ON DELETE CASCADE`, lo que significa que si se elimina un `Hilo` o un `Usuario`, todos sus comentarios se eliminan automáticamente. Esto es diferente de `Hilos` y `Posts` que usan `ClientSetNull`.
+ **IMPORTANTE**: `Comentarios` tiene `ON DELETE CASCADE`, lo que significa que si se elimina un `Hilo` o un `Usuario`, todos sus comentarios se eliminan automáticamente. Esto es diferente de `Hilos` y `Posts` que usan `ClientSetNull`.
 
 #### Valores por Defecto
 
@@ -892,25 +935,25 @@ flowchart LR
 
 | Método | HTTP | Endpoint | Lógica Actual | Problemas/Mejoras Necesarias |
 |--------|------|----------|---------------|------------------------------|
-| `Register` | POST | `/api/Auth/register` | 1. Valida NombreUsuario único<br>2. Valida Email único<br>3. Busca rol "Usuario" por defecto<br>4. Hash password SHA512<br>5. Crea Usuario<br>6. Retorna Usuario completo (⚠️ incluye PasswordHash) | ❌ Retorna PasswordHash en respuesta<br>❌ No valida formato de email<br>❌ SHA512 sin salt (inseguro, debería usar BCrypt/PBKDF2)<br>❌ No hay validación de fortaleza de contraseña |
-| `Login` | POST | `/api/Auth/login` | 1. Busca Usuario por NombreUsuario<br>2. Hash password ingresada<br>3. Compara hashes<br>4. Genera JWT token<br>5. Retorna solo token string | ⚠️ Mensaje genérico "Usuario o contraseña incorrectos" (no especifica cuál)<br>❌ No hay rate limiting (vulnerable a brute force)<br>❌ Token expira en 1 día fijo, sin refresh mechanism |
-| `GetUserMenu` | GET | `/api/Auth/menu` | 1. Extrae rol de token<br>2. Query Roles con Include MenuItems<br>3. Retorna MenuItems ordenados por Id<br>4. Caché de 60 segundos con `[OutputCache]` | ✅ Lógica correcta<br>✅ **NUEVO**: Caché de respuestas para reducir latencia<br>⚠️ Ordenar por Id puede no ser ideal (debería tener campo Orden) |
-| `CreateToken` (privado) | - | - | Genera JWT con claims estándar, expiración 1 día, firma HMAC SHA512 | ✅ Funcional<br>⚠️ ValidateIssuer/Audience deshabilitados |
+| `Register` | POST | `/api/Auth/register` | 1. Valida NombreUsuario único<br>2. Valida Email único<br>3. Busca rol "Usuario" por defecto<br>4. Hash password SHA512<br>5. Crea Usuario<br>6. Retorna Usuario completo ( incluye PasswordHash) |  Retorna PasswordHash en respuesta<br> No valida formato de email<br> SHA512 sin salt (inseguro, debería usar BCrypt/PBKDF2)<br> No hay validación de fortaleza de contraseña |
+| `Login` | POST | `/api/Auth/login` | 1. Busca Usuario por NombreUsuario<br>2. Hash password ingresada<br>3. Compara hashes<br>4. Genera JWT token<br>5. Retorna solo token string |  Mensaje genérico "Usuario o contraseña incorrectos" (no especifica cuál)<br> No hay rate limiting (vulnerable a brute force)<br> Token expira en 1 día fijo, sin refresh mechanism |
+| `GetUserMenu` | GET | `/api/Auth/menu` | 1. Extrae rol de token<br>2. Query Roles con Include MenuItems<br>3. Retorna MenuItems ordenados por Id<br>4. Caché de 60 segundos con `[OutputCache]` |  Lógica correcta<br> **NUEVO**: Caché de respuestas para reducir latencia<br> Ordenar por Id puede no ser ideal (debería tener campo Orden) |
+| `CreateToken` (privado) | - | - | Genera JWT con claims estándar, expiración 1 día, firma HMAC SHA512 |  Funcional<br> ValidateIssuer/Audience deshabilitados |
 
 **Lógica a Mover a Servicio**:
 - Hash de contraseñas → `IPasswordHasherService`
 - Generación de tokens → `ITokenService`
 - Validación de usuario único → `IUserService`
 
-#### ForosController (`FRED.Controllers` ⚠️)
+#### ForosController (`FRED.Controllers` )
 
 | Método | HTTP | Endpoint | Lógica Actual | Problemas/Mejoras Necesarias |
 |--------|------|----------|---------------|------------------------------|
-| `GetForos` | GET | `/api/Foros` | 1. Query Foros con Include Usuario<br>2. Paginación con `pageNumber` y `pageSize`<br>3. Retorna `PagedResult<Foro>`<br>4. Caché de 60 segundos con `[OutputCache]` | ✅ **MEJORADO**: Paginación implementada<br>✅ **NUEVO**: Caché de respuestas para reducir latencia<br>✅ Retorna metadatos de paginación |
-| `CreateForo` | POST | `/api/Foros` | 1. Valida [Authorize(Roles = "Administrador")]<br>2. Extrae UsuarioId del token<br>3. Crea Foro con UsuarioId<br>4. Retorna Foro creado | ✅ Lógica correcta<br>⚠️ No valida si Foro con mismo nombre ya existe<br>❌ DTO inline `ForoUpdateDto` debería ser `ForoCreateDto` |
-| `DeleteForo` | DELETE | `/api/Foros/{id}` | 1. Valida [Authorize]<br>2. Busca Foro por Id<br>3. Valida propiedad (UsuarioId coincide) o rol Admin<br>4. Elimina Foro | ⚠️ No valida si Foro tiene Hilos asociados (puede dejar Hilos huérfanos por ClientSetNull)<br>❌ No hay soft delete |
-| `UpdateForo` | PUT | `/api/Foros/{id}` | 1. Valida propiedad o Admin<br>2. Actualiza NombreForo y Descripcion<br>3. SaveChanges | ✅ Lógica correcta<br>⚠️ No valida longitud de campos<br>⚠️ No valida si nuevo nombre ya existe |
-| `GetForosByUsuario` | GET | `/api/Foros/ByUsuario/{userId}` | 1. Query Foros filtrado por UsuarioId<br>2. Ordena por NombreForo | ✅ Funcional<br>⚠️ No valida que userId exista<br>⚠️ No valida que usuario autenticado tenga permiso de ver foros de otro usuario |
+| `GetForos` | GET | `/api/Foros` | 1. Query Foros con Include Usuario<br>2. Paginación con `pageNumber` y `pageSize`<br>3. Retorna `PagedResult<Foro>`<br>4. Caché de 60 segundos con `[OutputCache]` |  **MEJORADO**: Paginación implementada<br> **NUEVO**: Caché de respuestas para reducir latencia<br> Retorna metadatos de paginación |
+| `CreateForo` | POST | `/api/Foros` | 1. Valida [Authorize(Roles = "Administrador")]<br>2. Extrae UsuarioId del token<br>3. Crea Foro con UsuarioId<br>4. Retorna Foro creado |  Lógica correcta<br> No valida si Foro con mismo nombre ya existe<br> DTO inline `ForoUpdateDto` debería ser `ForoCreateDto` |
+| `DeleteForo` | DELETE | `/api/Foros/{id}` | 1. Valida [Authorize]<br>2. Busca Foro por Id<br>3. Valida propiedad (UsuarioId coincide) o rol Admin<br>4. Elimina Foro |  No valida si Foro tiene Hilos asociados (puede dejar Hilos huérfanos por ClientSetNull)<br> No hay soft delete |
+| `UpdateForo` | PUT | `/api/Foros/{id}` | 1. Valida propiedad o Admin<br>2. Actualiza NombreForo y Descripcion<br>3. SaveChanges |  Lógica correcta<br> No valida longitud de campos<br> No valida si nuevo nombre ya existe |
+| `GetForosByUsuario` | GET | `/api/Foros/ByUsuario/{userId}` | 1. Query Foros filtrado por UsuarioId<br>2. Ordena por NombreForo |  Funcional<br> No valida que userId exista<br> No valida que usuario autenticado tenga permiso de ver foros de otro usuario |
 
 **Lógica a Mover a Servicio**:
 - Validación de permisos → `IAuthorizationService`
@@ -920,50 +963,50 @@ flowchart LR
 
 | Método | HTTP | Endpoint | Lógica Actual | Problemas/Mejoras Necesarias |
 |--------|------|----------|---------------|------------------------------|
-| `GetHilos` | GET | `/api/Hilos` | 1. Query Hilos con Include Usuario y Foro<br>2. Aplica filtro de búsqueda si se proporciona `searchTerm`<br>3. Paginación con `pageNumber` y `pageSize`<br>4. Ordena por FechaCreacion DESC<br>5. Retorna `PagedResult<Hilo>` | ✅ **MEJORADO**: Paginación implementada<br>✅ **MEJORADO**: Filtrado por título/contenido implementado<br>✅ Retorna metadatos de paginación (TotalCount, TotalPages, HasPrevious, HasNext) |
-| `GetHilo` | GET | `/api/Hilos/{id}` | 1. Query Hilo por Id con Include<br>2. Retorna Hilo o 404 | ✅ Funcional<br>⚠️ No incluye Comentarios (se cargan por separado) |
-| `CreateHilo` | POST | `/api/Hilos` | 1. Extrae UsuarioId del token<br>2. Crea Hilo con Votos=0, FechaCreacion=Now<br>3. Retorna Hilo creado | ✅ Lógica correcta<br>⚠️ No valida que ForoId exista<br>⚠️ No valida longitud de Titulo (150 max en BD) |
-| `UpdateHilo` | PUT | `/api/Hilos/{id}` | 1. Valida propiedad o Admin<br>2. Actualiza Titulo y Contenido<br>3. SaveChanges | ✅ Funcional<br>⚠️ No valida longitud |
-| `DeleteHilo` | DELETE | `/api/Hilos/{id}` | 1. Valida propiedad o Admin<br>2. Elimina Hilo<br>3. SaveChanges | ⚠️ Comentarios se eliminan en cascada (OK)<br>⚠️ Posts se quedan con HiloId=null por ClientSetNull (puede ser problema) |
-| `GetHilosByUsuario` | GET | `/api/Hilos/ByUsuario/{userId}` | 1. Query Hilos filtrado por UsuarioId<br>2. Ordena por FechaCreacion DESC | ⚠️ Mismo problema de permisos que GetForosByUsuario |
-| `VoteOnHilo` | POST | `/api/Hilos/{id}/vote` | 1. Busca Hilo con verificación de RowVersion<br>2. Valida si usuario ya votó (tabla Votos)<br>3. Toggle: si vota lo mismo, elimina el voto<br>4. Cambio: si cambia de up/down, actualiza<br>5. Maneja concurrencia con reintentos (máx 3)<br>6. SaveChanges con verificación de RowVersion<br>7. Retorna nuevo contador | ✅ **RESUELTO**: Valida votos únicos mediante tabla Votos<br>✅ **RESUELTO**: Tabla Votos implementada con índice único (UsuarioId, HiloId)<br>✅ **RESUELTO**: Validación de direction ("up" o "down")<br>✅ **NUEVO**: Concurrencia optimista con RowVersion y reintentos |
+| `GetHilos` | GET | `/api/Hilos` | 1. Query Hilos con Include Usuario y Foro<br>2. Aplica filtro de búsqueda si se proporciona `searchTerm`<br>3. Paginación con `pageNumber` y `pageSize`<br>4. Ordena por FechaCreacion DESC<br>5. Retorna `PagedResult<Hilo>` |  **MEJORADO**: Paginación implementada<br> **MEJORADO**: Filtrado por título/contenido implementado<br> Retorna metadatos de paginación (TotalCount, TotalPages, HasPrevious, HasNext) |
+| `GetHilo` | GET | `/api/Hilos/{id}` | 1. Query Hilo por Id con Include<br>2. Retorna Hilo o 404 |  Funcional<br> No incluye Comentarios (se cargan por separado) |
+| `CreateHilo` | POST | `/api/Hilos` | 1. Extrae UsuarioId del token<br>2. Crea Hilo con Votos=0, FechaCreacion=Now<br>3. Retorna Hilo creado |  Lógica correcta<br> No valida que ForoId exista<br> No valida longitud de Titulo (150 max en BD) |
+| `UpdateHilo` | PUT | `/api/Hilos/{id}` | 1. Valida propiedad o Admin<br>2. Actualiza Titulo y Contenido<br>3. SaveChanges |  Funcional<br> No valida longitud |
+| `DeleteHilo` | DELETE | `/api/Hilos/{id}` | 1. Valida propiedad o Admin<br>2. Elimina Hilo<br>3. SaveChanges |  Comentarios se eliminan en cascada (OK)<br> Posts se quedan con HiloId=null por ClientSetNull (puede ser problema) |
+| `GetHilosByUsuario` | GET | `/api/Hilos/ByUsuario/{userId}` | 1. Query Hilos filtrado por UsuarioId<br>2. Ordena por FechaCreacion DESC |  Mismo problema de permisos que GetForosByUsuario |
+| `VoteOnHilo` | POST | `/api/Hilos/{id}/vote` | 1. Busca Hilo con verificación de RowVersion<br>2. Valida si usuario ya votó (tabla Votos)<br>3. Toggle: si vota lo mismo, elimina el voto<br>4. Cambio: si cambia de up/down, actualiza<br>5. Maneja concurrencia con reintentos (máx 3)<br>6. SaveChanges con verificación de RowVersion<br>7. Retorna nuevo contador |  **RESUELTO**: Valida votos únicos mediante tabla Votos<br> **RESUELTO**: Tabla Votos implementada con índice único (UsuarioId, HiloId)<br> **RESUELTO**: Validación de direction ("up" o "down")<br> **NUEVO**: Concurrencia optimista con RowVersion y reintentos |
 
 **Lógica a Mover a Servicio**:
 - Sistema de votos → `IVoteService` (con validación de votos únicos)
 - Validación de permisos → `IAuthorizationService`
 - Lógica de negocio de Hilos → `IHiloService`
 
-#### ComentariosController (`FRED.Controllers` ⚠️)
+#### ComentariosController (`FRED.Controllers` )
 
 | Método | HTTP | Endpoint | Lógica Actual | Problemas/Mejoras Necesarias |
 |--------|------|----------|---------------|------------------------------|
-| `GetComentarios` | GET | `/api/Hilos/{hiloId}/Comentarios` | 1. Query Comentarios filtrado por HiloId<br>2. Include Usuario<br>3. Ordena por FechaCreacion ASC | ✅ Funcional<br>⚠️ No hay paginación (puede ser lento con muchos comentarios) |
-| `PostComentario` | POST | `/api/Hilos/{hiloId}/Comentarios` | 1. Extrae UsuarioId del token<br>2. Valida hiloId de URL<br>3. Crea Comentario con DateTime.UtcNow<br>4. Retorna Comentario creado | ✅ Lógica correcta<br>⚠️ No valida que HiloId exista antes de crear<br>⚠️ FechaCreacion usa UtcNow pero modelo es DateTime (no DateTimeOffset) - inconsistencia |
+| `GetComentarios` | GET | `/api/Hilos/{hiloId}/Comentarios` | 1. Query Comentarios filtrado por HiloId<br>2. Include Usuario<br>3. Ordena por FechaCreacion ASC |  Funcional<br> No hay paginación (puede ser lento con muchos comentarios) |
+| `PostComentario` | POST | `/api/Hilos/{hiloId}/Comentarios` | 1. Extrae UsuarioId del token<br>2. Valida hiloId de URL<br>3. Crea Comentario con DateTime.UtcNow<br>4. Retorna Comentario creado |  Lógica correcta<br> No valida que HiloId exista antes de crear<br> FechaCreacion usa UtcNow pero modelo es DateTime (no DateTimeOffset) - inconsistencia |
 
 **Lógica a Mover a Servicio**:
 - Validación de Hilo existente → `IHiloService`
 - Lógica de negocio de Comentarios → `IComentarioService`
 
-#### UsuariosController (`FRED.Controllers` ⚠️)
+#### UsuariosController (`FRED.Controllers` )
 
 | Método | HTTP | Endpoint | Lógica Actual | Problemas/Mejoras Necesarias |
 |--------|------|----------|---------------|------------------------------|
-| `GetUsuario` | GET | `/api/Usuarios/{id}` | 1. Busca Usuario por Id<br>2. Retorna Usuario completo | ❌ Retorna PasswordHash (riesgo de seguridad)<br>⚠️ No valida permisos (cualquiera autenticado puede ver cualquier usuario) |
-| `PutUsuario` | PUT | `/api/Usuarios/{id}` | 1. Valida que usuario autenticado == id<br>2. Actualiza NombreUsuario y Email si proporcionados<br>3. Lógica de cambio de password comentada (no implementada)<br>4. SaveChanges | ❌ Cambio de password NO implementado (código comentado)<br>⚠️ No valida si nuevo Email/NombreUsuario ya existe<br>⚠️ No valida formato de email |
-| `UploadProfilePicture` | POST | `/api/Usuarios/{id}/uploadPicture` | 1. Valida propiedad<br>2. Crea directorio si no existe<br>3. Genera nombre único con Guid<br>4. Guarda archivo en wwwroot/uploads/profile_pictures<br>5. Actualiza ProfilePictureUrl en BD | ✅ Funcional<br>⚠️ No valida tipo de archivo (puede subir cualquier archivo)<br>⚠️ No valida tamaño de archivo<br>⚠️ No redimensiona imágenes<br>⚠️ Archivos se guardan en wwwroot (no escalable, debería usar blob storage) |
+| `GetUsuario` | GET | `/api/Usuarios/{id}` | 1. Busca Usuario por Id<br>2. Retorna Usuario completo |  Retorna PasswordHash (riesgo de seguridad)<br> No valida permisos (cualquiera autenticado puede ver cualquier usuario) |
+| `PutUsuario` | PUT | `/api/Usuarios/{id}` | 1. Valida que usuario autenticado == id<br>2. Actualiza NombreUsuario y Email si proporcionados<br>3. Lógica de cambio de password comentada (no implementada)<br>4. SaveChanges |  Cambio de password NO implementado (código comentado)<br> No valida si nuevo Email/NombreUsuario ya existe<br> No valida formato de email |
+| `UploadProfilePicture` | POST | `/api/Usuarios/{id}/uploadPicture` | 1. Valida propiedad<br>2. Crea directorio si no existe<br>3. Genera nombre único con Guid<br>4. Guarda archivo en wwwroot/uploads/profile_pictures<br>5. Actualiza ProfilePictureUrl en BD |  Funcional<br> No valida tipo de archivo (puede subir cualquier archivo)<br> No valida tamaño de archivo<br> No redimensiona imágenes<br> Archivos se guardan en wwwroot (no escalable, debería usar blob storage) |
 
 **Lógica a Mover a Servicio**:
 - Gestión de archivos → `IFileStorageService`
 - Validación de usuario → `IUserService`
 - Cambio de password → `IPasswordService`
 
-#### AdminController (`FRED.Controllers` ⚠️)
+#### AdminController (`FRED.Controllers` )
 
 | Método | HTTP | Endpoint | Lógica Actual | Problemas/Mejoras Necesarias |
 |--------|------|----------|---------------|------------------------------|
-| `GetUsers` | GET | `/api/Admin/users` | 1. Query Usuarios con Include Rol<br>2. Mapea a UsuarioResponseDto (sin PasswordHash)<br>3. Retorna lista completa | ✅ **RESUELTO**: No retorna PasswordHash (usa UsuarioResponseDto)<br>⚠️ No hay paginación (pendiente para futuras mejoras)<br>✅ **MEJORADO**: Usa política `AdminOnly` en lugar de `[Authorize(Roles)]` |
-| `DeleteUser` | DELETE | `/api/Admin/users/{id}` | 1. Busca Usuario<br>2. Valida que no se elimine a sí mismo<br>3. Elimina Usuario<br>4. SaveChanges | ⚠️ No valida dependencias (Foros, Hilos, Comentarios del usuario)<br>⚠️ Eliminación en cascada puede ser peligrosa |
-| `ChangeUserRole` | PUT | `/api/Admin/users/{id}/role` | 1. Busca Usuario<br>2. Valida que NewRoleId existe<br>3. Actualiza RolId<br>4. SaveChanges | ✅ Funcional<br>⚠️ No hay auditoría de cambios de rol<br>⚠️ Usuario debe re-autenticarse para ver nuevo menú |
+| `GetUsers` | GET | `/api/Admin/users` | 1. Query Usuarios con Include Rol<br>2. Mapea a UsuarioResponseDto (sin PasswordHash)<br>3. Retorna lista completa |  **RESUELTO**: No retorna PasswordHash (usa UsuarioResponseDto)<br> No hay paginación (pendiente para futuras mejoras)<br> **MEJORADO**: Usa política `AdminOnly` en lugar de `[Authorize(Roles)]` |
+| `DeleteUser` | DELETE | `/api/Admin/users/{id}` | 1. Busca Usuario<br>2. Valida que no se elimine a sí mismo<br>3. Elimina Usuario<br>4. SaveChanges |  No valida dependencias (Foros, Hilos, Comentarios del usuario)<br> Eliminación en cascada puede ser peligrosa |
+| `ChangeUserRole` | PUT | `/api/Admin/users/{id}/role` | 1. Busca Usuario<br>2. Valida que NewRoleId existe<br>3. Actualiza RolId<br>4. SaveChanges |  Funcional<br> No hay auditoría de cambios de rol<br> Usuario debe re-autenticarse para ver nuevo menú |
 
 **Lógica a Mover a Servicio**:
 - Gestión de usuarios admin → `IAdminService`
@@ -973,7 +1016,7 @@ flowchart LR
 
 | Método | HTTP | Endpoint | Lógica Actual | Problemas/Mejoras Necesarias |
 |--------|------|----------|---------------|------------------------------|
-| `GetMenuItemsForUser` | GET | `/api/MenuItems` | 1. Extrae rol del token<br>2. Query Roles con SelectMany MenuItems<br>3. Retorna MenuItems | ⚠️ Duplica funcionalidad de `/api/Auth/menu`<br>✅ Usa SelectMany (más eficiente que Include + ToList) |
+| `GetMenuItemsForUser` | GET | `/api/MenuItems` | 1. Extrae rol del token<br>2. Query Roles con SelectMany MenuItems<br>3. Retorna MenuItems |  Duplica funcionalidad de `/api/Auth/menu`<br> Usa SelectMany (más eficiente que Include + ToList) |
 
 ---
 
