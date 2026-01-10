@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { login as loginService } from '../services/apiService';
 import { Link, useNavigate } from 'react-router-dom';
+import { useNotification } from '../context/NotificationContext';
 import './AuthForm.css'; 
 
 const LoginPage = () => {
@@ -10,6 +11,7 @@ const LoginPage = () => {
     const [error, setError] = useState('');
     const { login } = useAuth();
     const navigate = useNavigate();
+    const { showToast } = useNotification();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -20,6 +22,7 @@ const LoginPage = () => {
             navigate('/');
         } catch (err) {
             setError('Usuario o contraseña incorrectos.');
+            showToast('Usuario o contrase\u00f1a incorrectos.', 'error');
         }
     };
 
