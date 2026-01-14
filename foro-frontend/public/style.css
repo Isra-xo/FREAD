@@ -81,8 +81,40 @@ body {
     color: white; 
 }
 .btn-primary:hover { filter: brightness(1.2); }
-.user-menu { display: flex; align-items: center; cursor: pointer; gap: 8px; }
-.user-avatar { width: 30px; height: 30px; border-radius: 50%; }
+/*.user-menu { display: flex; align-items: center; cursor: pointer; gap: 8px; } */
+¨/* Estilos para el menú de usuario */
+.user-menu {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #2a2a2a;
+    padding: 6px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s;
+}
+
+.user-menu:hover {
+    background-color: #3a3a3a;
+    box-shadow: 0 0 0 2px rgba(109,40,217,0.4);
+}
+
+.user-name {
+    font-size: 0.85em;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+
+/*.user-avatar { width: 30px; height: 30px; border-radius: 50%; }*/
+.user-avatar { 
+    width: 30px; 
+    height: 30px; 
+    border-radius: 50%; 
+}
+.user-avatar:hover {
+    box-shadow: 0 0 0 2px rgba(109,40,217,0.6);
+}
 
 /* --- Layout Principal --- */
 .main-container {
@@ -100,6 +132,7 @@ body {
     flex-direction: column;
     gap: 15px;
 }
+/*
 .post-card {
     display: flex;
     background-color: var(--card-background);
@@ -110,6 +143,23 @@ body {
 .post-card:hover {
     border-color: var(--primary-accent);
 }
+    */
+
+.post-card {
+    display: flex;
+    background-color: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    transition: border-color 0.2s, transform 0.15s, box-shadow 0.15s;
+    align-items: stretch;
+}
+
+.post-card:hover {
+    border-color: var(--primary-accent);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+
 .vote {
     display: flex;
     flex-direction: column;
@@ -122,13 +172,36 @@ body {
 .vote i { cursor: pointer; color: var(--secondary-text); }
 .vote i:hover { color: var(--primary-accent); }
 .vote span { font-weight: 700; margin: 5px 0; color: var(--primary-text); }
+/*
 .post-content {
     padding: 10px 15px;
     width: 100%;
+}*/
+
+.post-content {
+    padding: 14px 20px;
+    width: 100%;
+    max-width: 720px;
 }
-.post-meta { font-size: 0.8em; color: var(--secondary-text); }
+
+/*.post-meta { font-size: 0.8em; color: var(--secondary-text); }*/
 .post-meta .forum-name { color: var(--primary-text); font-weight: 700; }
-.post-title { font-size: 1.2em; margin: 8px 0; color: var(--primary-text); }
+
+/*.post-title { font-size: 1.2em; margin: 8px 0; color: var(--primary-text); }*/
+.post-meta {
+    font-size: 0.75em;
+    color: var(--secondary-text);
+    margin-bottom: 4px;
+}
+
+.post-title {
+    font-size: 1.2em;
+    font-weight: 700;
+    margin: 6px 0;
+}
+
+
+
 .post-body { font-size: 0.95em; line-height: 1.5; margin-bottom: 10px; color: #c2c2c2; }
 .post-actions { display: flex; gap: 20px; }
 .post-actions a {
@@ -169,3 +242,30 @@ body {
 .btn-full { display: block; text-align: center; width: 100%; color: white; background-image: var(--gradient-brand); }
 .widget-rules { padding-left: 20px; color: var(--secondary-text); }
 .widget-rules li { margin-bottom: 10px; }
+
+
+/* --- Estilos Responsivos --- */
+@media (max-width: 900px) {
+
+    .main-container {
+        grid-template-columns: 1fr;
+        padding: 0 12px;
+    }
+
+    .sidebar {
+        order: -1;
+    }
+
+    .nav-center {
+        display: none;
+    }
+
+    .post-content {
+        max-width: 100%;
+        padding: 12px 14px;
+    }
+
+    .user-name {
+        display: none; /* solo avatar en móvil */
+    }
+}
