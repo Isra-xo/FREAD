@@ -1,0 +1,956 @@
+================================================================================
+                    REPORTE TÉCNICO FINAL - PROYECTO FREAD
+                          Foro de Discusión Avanzado
+                                 15 Enero 2026
+================================================================================
+
+TABLA DE CONTENIDOS:
+1. Frameworks y Versiones
+2. Estructura de Carpetas del Proyecto
+3. Esquema de Base de Datos (SQL)
+4. Lógica de Caché (Phase 9)
+5. Lógica de Paginación (Frontend & Backend)
+6. Componente ProtectedRoute y Autorización
+7. Módulos Funcionales y Validaciones
+8. Arquitectura General del Sistema
+
+================================================================================
+1. FRAMEWORKS Y VERSIONES EXACTAS
+================================================================================
+
+FRONTEND - React & Dependencias:
+---------------------------------
+• React:                          v19.1.1
+• React DOM:                      v19.1.1
+• React Router DOM:               v7.9.3
+• Axios:                          v1.12.2
+• JWT Decode:                     v4.0.0
+• React Scripts:                  v5.0.1
+• Testing Library (React):        v16.3.0
+• Testing Library (DOM):          v10.4.1
+• Testing Library (User Event):   v13.5.0
+• Web Vitals:                     v2.1.4
+• Node.js Target:                 v18+ (Recommended)
+
+Build Tool:
+• Create React App (CRA):         v5.0.1 (inherente en react-scripts)
+
+BACKEND - .NET & Dependencias:
+---------------------------------
+• .NET Framework:                 v9.0 (LTS)
+• Target Framework:               net9.0
+• Entity Framework Core:          v9.0.9
+  - EF Core Design:               v9.0.9
+  - EF Core SQL Server:           v9.0.9
+  - EF Core Tools:                v9.0.9
+• JWT Bearer Authentication:      v9.0.9
+• Swagger/OpenAPI:                v9.0.4
+• BCrypt Password Hashing:        v4.0.3
+• Language Features:              Nullable enable, Implicit Usings
+
+Database:
+• SQL Server:                     (Compatible con EF Core 9.0)
+• ORM:                            Entity Framework Core 9.0
+• Connection:                     LocalDB (Desarrollo) / SQL Server (Producción)
+
+================================================================================
+2. ESTRUCTURA DE CARPETAS DEL PROYECTO
+================================================================================
+
+ESTRUCTURA FRONTEND: /foro-frontend/src/
+==========================================
+
+/src/
+├── components/                    → Componentes React reutilizables
+│   ├── Navbar.jsx                → Barra de navegación superior con menú dinámico
+│   ├── Navbar.css                → Estilos de navegación responsiva
+│   ├── ProtectedRoute.jsx        → Componente para rutas protegidas por permisos
+│   ├── PostCard.jsx              → Tarjeta de publicación/hilo con votos
+│   ├── PostCard.css              → Estilos de tarjetas
+│   ├── Sidebar.jsx               → Panel lateral con foros populares
+│   ├── Sidebar.css               → Estilos del sidebar
+│   ├── Toast.jsx                 → Notificaciones emergentes (toast)
+│   ├── Toast.css                 → Estilos de notificaciones
+│   ├── NotificationCenter.jsx    → Centro de notificaciones (Phase 10)
+│   ├── NotificationCenter.css    → Estilos del centro de notificaciones
+│   ├── NotificationItem.jsx      → Item individual en el dropdown de notificaciones
+│   └── NotificationItem.jsx      → Lógica de tiempo relativo (actualización c/60s)
+│
+├── context/                       → Contextos React (State Management)
+│   ├── AuthContext.jsx            → Context para autenticación y menú dinámico
+│   │   └── Expone: user, menuItems, login, logout, token
+│   │
+│   └── NotificationContext.jsx   → Context para sistema de notificaciones
+│       └── Expone: showToast, unreadCount, notificaciones, listeners
+│
+├── pages/                         → Páginas principales de la aplicación
+│   ├── HomePage.jsx              → Página principal: feed de hilos con paginación
+│   ├── HomePage.css              → Estilos responsivos de home
+│   ├── LoginPage.jsx             → Página de login
+│   ├── LoginPage.css             → Estilos de login
+│   ├── ForosListPage.jsx         → Listado de foros con paginación
+│   ├── ForosListPage.css         → Estilos de listado de foros
+│   ├── CreateHiloPage.jsx        → Crear nuevo hilo (requiere permiso)
+│   ├── CreateHiloPage.css        → Estilos de creación
+│   ├── CreateForoPage.jsx        → Crear nuevo foro (solo admin)
+│   ├── CreateForoPage.css        → Estilos de creación de foro
+│   ├── HiloDetailPage.jsx        → Detalle de hilo con comentarios paginados
+│   ├── HiloDetailPage.css        → Estilos de detalle
+│   ├── AdminPage.jsx             → Panel de administración de usuarios/roles
+│   ├── AdminPage.css             → Estilos de admin
+│   ├── PerfilPage.jsx            → Perfil de usuario
+│   ├── PerfilPage.css            → Estilos de perfil
+│   ├── MiActividadPage.jsx       → Actividad del usuario (hilos + comentarios)
+│   ├── MiActividadPage.css       → Estilos de actividad
+│   ├── NotificationsPage.jsx     → Página de notificaciones (Phase 10)
+│   ├── NotificationsPage.jsx     → Estilos de notificaciones
+│   ├── ForgotPasswordPage.jsx    → Recuperación de contraseña (TODO)
+│   ├── ForgotPasswordPage.css    → Estilos de recuperación
+│   ├── NotFoundPage.jsx          → Página 404
+│   └── AuthForm.css              → Estilos compartidos de formularios
+│
+├── services/                      → Servicios de API y utilidades
+│   ├── apiService.js             → Configuración de Axios + endpoints HTTP
+│   │   - Métodos para: Foros, Hilos, Comentarios, Usuarios, Admin, Notificaciones
+│   │   - Interceptor de JWT en headers
+│   │
+│   └── apiHelpers.js             → Funciones auxiliares para respuestas API
+│       - extractItems(): Extrae arrays de respuestas inconsistentes
+│       - getTotalPages(): Obtiene total de páginas
+│       - getTotalCount(): Obtiene conteo total
+│
+├── App.js                        → Componente raíz con rutas principales
+├── App.css                       → Estilos globales
+├── index.js                      → Punto de entrada React
+├── index.css                     → Estilos globales base
+├── reportWebVitals.js            → Métricas de rendimiento
+├── setupTests.js                 → Configuración de Jest/Testing Library
+└── App.test.js                   → Tests básicos de App
+
+ESTRUCTURA BACKEND: /GeneradorDeModelos/
+=========================================
+
+/GeneradorDeModelos/
+├── Program.cs                    → Configuración de servicios y middleware
+│   - Configuración de CORS
+│   - Autenticación JWT
+│   - OutputCache (Phase 9)
+│   - Distributed Cache (Phase 10)
+│   - Swagger/OpenAPI
+│
+├── Models/                       → Entidades de Base de Datos
+│   ├── Usuario.cs               → Modelo de usuario
+│   ├── Hilo.cs                  → Modelo de tema/hilo
+│   ├── Foro.cs                  → Modelo de foro/comunidad
+│   ├── Comentario.cs            → Modelo de comentario en hilos
+│   ├── Post.cs                  → Modelo de post (alternativa a Hilo)
+│   ├── Role.cs                  → Modelo de roles (Admin, Moderador, Usuario)
+│   ├── MenuItem.cs              → Modelo de items de menú dinámico
+│   ├── Voto.cs                  → Modelo de votos en hilos/comentarios
+│   ├── Notificacion.cs          → Modelo de notificaciones (Phase 10)
+│   └── FreadContext.cs          → DbContext (configuración de relaciones)
+│
+├── Controllers/                 → Controladores API REST
+│   ├── AuthController.cs        → Login, Registro, Menú Dinámico
+│   │   [GET] /api/Auth/menu    → Obtiene menú del usuario autenticado (Caché 60s)
+│   │
+│   ├── ForosController.cs       → CRUD de Foros con paginación
+│   │   [GET] /api/Foros        → Lista con caché 60s
+│   │
+│   ├── HilosController.cs       → CRUD de Hilos con votación
+│   │   [GET] /api/Hilos        → Lista con búsqueda y paginación
+│   │
+│   ├── ComentariosController.cs → CRUD de Comentarios
+│   ├── ComentariosUserController.cs → Comentarios por usuario
+│   ├── UsuariosController.cs    → Perfil y actualización de usuario
+│   ├── AdminController.cs       → Gestión de usuarios y roles
+│   ├── NotificacionesController.cs → Notificaciones (Phase 10)
+│   └── MenuItemsController.cs   → Items de menú dinámico
+│
+├── Services/                    → Lógica de negocio
+│   ├── IForoService.cs          → Interfaz de servicio de foros
+│   ├── ForoService.cs           → Implementación: paginación, ordenamiento
+│   ├── IHiloService.cs          → Interfaz de servicio de hilos
+│   ├── HiloService.cs           → Implementación: búsqueda, filtros, votos
+│   ├── IComentarioService.cs    → Interfaz de servicio de comentarios
+│   ├── ComentarioService.cs     → Implementación: paginación
+│   └── (Otros servicios)        → Usuarios, Admin, Notificaciones
+│
+├── Dtos/                        → Data Transfer Objects
+│   ├── UserLoginDto.cs          → Credenciales de login
+│   ├── UserRegisterDto.cs       → Datos de registro
+│   ├── ComentarioCreateDto.cs   → Crear comentario
+│   ├── HiloCreateDto.cs         → Crear hilo
+│   ├── HiloUpdateDto.cs         → Actualizar hilo
+│   ├── ForoUpdateDto.cs         → Actualizar foro
+│   ├── NotificacionDto.cs       → Notificación (lectura)
+│   ├── VoteRequestDto.cs        → Voto en hilo/comentario
+│   ├── RoleChangeDto.cs         → Cambio de rol (Admin)
+│   ├── UsuarioResponseDto.cs    → Respuesta de usuario
+│   └── UsuarioUpdateDto.cs      → Actualizar perfil de usuario
+│
+├── Helpers/                     → Clases auxiliares
+│   └── PagedResult<T>.cs        → Clase genérica para resultados paginados
+│       - Items: IEnumerable<T>
+│       - PageNumber: int (basado en 1)
+│       - PageSize: int
+│       - TotalCount: int
+│       - TotalPages: int (calculado)
+│       - HasPrevious: bool
+│       - HasNext: bool
+│
+├── Migrations/                  → Migraciones de EF Core
+│   └── (Múltiples migraciones cronológicas)
+│
+├── Dtos/
+├── Properties/
+├── wwwroot/                     → Archivos estáticos (CSS, imágenes)
+├── bin/                         → Compilado
+├── obj/                         → Objetos compilados
+├── appsettings.json            → Configuración (dev)
+├── appsettings.Development.json → Configuración de desarrollo
+└── GeneradorDeModelos.csproj   → Archivo de proyecto (.NET)
+
+================================================================================
+3. ESQUEMA DE BASE DE DATOS (SQL)
+================================================================================
+
+TABLA: Usuarios
+================
+CREATE TABLE Usuarios (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    Email NVARCHAR(256) NOT NULL UNIQUE,
+    PasswordHash NVARCHAR(MAX) NOT NULL,
+    NombreUsuario NVARCHAR(256) NOT NULL UNIQUE,
+    FechaRegistro DATETIMEOFFSET NULL,
+    RolId INT NOT NULL FOREIGN KEY REFERENCES Roles(Id),
+    ProfilePictureUrl NVARCHAR(MAX) NULL,
+    CONSTRAINT FK_Usuarios_Roles FOREIGN KEY (RolId) REFERENCES Roles(Id)
+);
+
+TABLA: Roles
+=============
+CREATE TABLE Roles (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    NombreRol NVARCHAR(256) NOT NULL UNIQUE,
+    CONSTRAINT UQ_RoleName UNIQUE(NombreRol)
+);
+
+TABLA: Foros
+=============
+CREATE TABLE Foros (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    NombreForo NVARCHAR(MAX) NOT NULL,
+    Descripcion NVARCHAR(MAX) NULL,
+    UsuarioId INT NULL FOREIGN KEY REFERENCES Usuarios(Id),
+    CONSTRAINT FK_Foros_Usuarios FOREIGN KEY (UsuarioId) REFERENCES Usuarios(Id)
+);
+
+TABLA: Hilos
+=============
+CREATE TABLE Hilos (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    Titulo NVARCHAR(MAX) NOT NULL,
+    FechaCreacion DATETIMEOFFSET NULL,
+    ForoId INT NOT NULL FOREIGN KEY REFERENCES Foros(Id),
+    UsuarioId INT NOT NULL FOREIGN KEY REFERENCES Usuarios(Id),
+    Contenido NVARCHAR(MAX) NULL,
+    Votos INT DEFAULT 0,
+    RowVersion ROWVERSION, -- Token de concurrencia optimista
+    CONSTRAINT FK_Hilos_Foros FOREIGN KEY (ForoId) REFERENCES Foros(Id),
+    CONSTRAINT FK_Hilos_Usuarios FOREIGN KEY (UsuarioId) REFERENCES Usuarios(Id)
+);
+
+TABLA: Comentarios
+===================
+CREATE TABLE Comentarios (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    Contenido NVARCHAR(MAX) NOT NULL,
+    FechaCreacion DATETIME NOT NULL,
+    UsuarioId INT NOT NULL FOREIGN KEY REFERENCES Usuarios(Id),
+    HiloId INT NOT NULL FOREIGN KEY REFERENCES Hilos(Id),
+    CONSTRAINT FK_Comentarios_Usuarios FOREIGN KEY (UsuarioId) REFERENCES Usuarios(Id),
+    CONSTRAINT FK_Comentarios_Hilos FOREIGN KEY (HiloId) REFERENCES Hilos(Id)
+);
+
+TABLA: Votos
+=============
+CREATE TABLE Votos (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    UsuarioId INT NOT NULL FOREIGN KEY REFERENCES Usuarios(Id),
+    HiloId INT NOT NULL FOREIGN KEY REFERENCES Hilos(Id),
+    TipoVoto INT NOT NULL, -- 1: arriba, -1: abajo
+    FechaCreacion DATETIME DEFAULT GETUTCDATE(),
+    CONSTRAINT FK_Votos_Usuarios FOREIGN KEY (UsuarioId) REFERENCES Usuarios(Id),
+    CONSTRAINT FK_Votos_Hilos FOREIGN KEY (HiloId) REFERENCES Hilos(Id),
+    CONSTRAINT UQ_VotoUnico UNIQUE(UsuarioId, HiloId)
+);
+
+TABLA: Notificaciones (Phase 10)
+==================================
+CREATE TABLE Notificaciones (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    UsuarioId INT NOT NULL FOREIGN KEY REFERENCES Usuarios(Id),
+    Mensaje NVARCHAR(1000) NOT NULL,
+    Tipo NVARCHAR(50) NOT NULL, -- 'Success', 'Warning', 'Info', 'Error'
+    EsLeida BIT DEFAULT 0,
+    EsPersistente BIT DEFAULT 1, -- true: guardar en BD, false: solo caché
+    FechaCreacion DATETIME DEFAULT GETUTCDATE(),
+    CONSTRAINT FK_Notificaciones_Usuarios FOREIGN KEY (UsuarioId) REFERENCES Usuarios(Id)
+);
+
+TABLA: MenuItems (Menú Dinámico)
+==================================
+CREATE TABLE MenuItems (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    RoleId INT NOT NULL FOREIGN KEY REFERENCES Roles(Id),
+    Titulo NVARCHAR(256) NOT NULL,
+    Url NVARCHAR(256) NOT NULL,
+    Orden INT DEFAULT 0,
+    CONSTRAINT FK_MenuItems_Roles FOREIGN KEY (RoleId) REFERENCES Roles(Id)
+);
+
+TABLA: Posts
+=============
+CREATE TABLE Posts (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    -- Estructura similar a Hilos, alternativa/complementaria
+);
+
+================================================================================
+4. LÓGICA DE CACHÉ (PHASE 9: ARQUITECTURA DE CACHÉ)
+================================================================================
+
+PROPÓSITO:
+----------
+Optimizar el rendimiento del backend mediante caché de resultados frecuentes,
+especialmente el menú dinámico que se carga en cada solicitud de usuario.
+
+TIPOS DE CACHÉ IMPLEMENTADOS:
+
+A. OUTPUT CACHE (Response Caching)
+===================================
+Ubicación Backend: Program.cs (líneas 39-47)
+Configuración:
+    builder.Services.AddOutputCache(options =>
+    {
+        options.DefaultExpirationTimeSpan = TimeSpan.FromSeconds(60);
+    });
+
+Middleware:
+    app.UseOutputCache();  // Va ANTES de UseAuthentication
+
+Aplicación:
+
+1. AuthController.GetUserMenu() - [GET /api/Auth/menu]
+   -----
+   [OutputCache(Duration = 60, Tags = new[] { "UserMenuTag" })]
+   public async Task<ActionResult<IEnumerable<MenuItem>>> GetUserMenu()
+   
+   LÓGICA:
+   - Caches la respuesta del menú por 60 segundos
+   - Tag "UserMenuTag" permite invalidación selectiva
+   - Cuando usuario cambia de rol, invalidar con: await invalidateCache("UserMenuTag")
+   - Evita consultas repetidas a BD para el mismo menú
+
+2. ForosController.GetForos() - [GET /api/Foros]
+   ------
+   [OutputCache(Duration = 60)]
+   public async Task<ActionResult<PagedResult<Foro>>> GetForos(...)
+   
+   LÓGICA:
+   - Caches lista de foros por 60 segundos
+   - Válido porque cambios de foros son relativamente infrecuentes
+   - Reduce carga BD en consultas repetidas
+
+INVALIDACIÓN DE CACHÉ:
+   - Al crear/actualizar foro: remover tag de cache
+   - Al cambiar rol usuario: remover tag "UserMenuTag"
+   - Estrategia: Tag-based invalidation en .NET 9.0
+
+VENTAJA TÉCNICA:
+   - Respuesta instantánea a cliente (<10ms) si está en caché
+   - Reduce queries a SQL Server
+   - Especialmente útil para datos que no cambian frecuentemente
+
+B. DISTRIBUTED CACHE (Phase 10: Notificaciones)
+================================================
+Ubicación Backend: Program.cs (línea 47)
+Configuración:
+    builder.Services.AddDistributedMemoryCache();
+
+Propósito:
+   - Caché distribuida para notificaciones
+   - En desarrollo: DistributedMemoryCache (en-proceso)
+   - En producción: Redis o NCache
+
+Uso:
+   - Almacenar unread_count_{usuarioId}
+   - Almacenar lista temporal de notificaciones
+   - Invalidar al marcar como leído
+
+DIFERENCIA OUTPUT vs DISTRIBUTED:
+   - OutputCache: Caché de respuestas HTTP (servidor->cliente)
+   - DistributedCache: Caché de datos (servidor interno)
+
+================================================================================
+5. LÓGICA DE PAGINACIÓN (FRONTEND & BACKEND)
+================================================================================
+
+ARQUITECTURA DE PAGINACIÓN:
+===========================
+
+A. BACKEND - .NET / EF Core
+=============================
+
+Modelo de Respuesta: PagedResult<T>
+-----------------------------------
+Ubicación: GeneradorDeModelos/Helpers/PagedResult.cs
+
+public class PagedResult<T>
+{
+    public IEnumerable<T> Items { get; set; }           // Elementos de página actual
+    public int PageNumber { get; set; }                 // Número página (basado en 1)
+    public int PageSize { get; set; }                   // Elementos por página
+    public int TotalCount { get; set; }                 // Total de elementos
+    public int TotalPages => Math.Ceiling(TotalCount / (double)PageSize); // Calculado
+    public bool HasPrevious => PageNumber > 1;
+    public bool HasNext => PageNumber < TotalPages;
+}
+
+Implementación en ForoService.GetForosAsync():
+----------------------------------------------
+Ubicación: GeneradorDeModelos/Services/ForoService.cs
+
+public async Task<PagedResult<Foro>> GetForosAsync(int pageNumber = 1, int pageSize = 10)
+{
+    // PASO 1: Validar parámetros
+    if (pageNumber < 1) pageNumber = 1;
+    if (pageSize < 1) pageSize = 10;
+    if (pageSize > 100) pageSize = 100;  // Límite de seguridad
+
+    // PASO 2: Construir query
+    var query = _context.Foros
+        .Include(f => f.Usuario)
+        .AsQueryable();
+
+    // PASO 3: Contar total ANTES de paginar (importante para cálculo de páginas)
+    var totalCount = await query.CountAsync();
+
+    // PASO 4: Aplicar SKIP y TAKE para paginación
+    var items = await query
+        .OrderBy(f => f.NombreForo)
+        .Skip((pageNumber - 1) * pageSize)     // Salta elementos previos
+        .Take(pageSize)                         // Toma N elementos
+        .ToListAsync();
+
+    // PASO 5: Retornar en PagedResult
+    return new PagedResult<Foro>(items, totalCount, pageNumber, pageSize);
+}
+
+FÓRMULA DE PAGINACIÓN:
+   SKIP = (PageNumber - 1) * PageSize
+   TAKE = PageSize
+
+Ejemplo: PageNumber=2, PageSize=10
+   SKIP(10): Salta primeros 10 registros
+   TAKE(10): Toma elementos 11-20
+
+B. FRONTEND - React
+=====================
+
+Parámetros de Estado:
+---------------------
+const [currentPage, setCurrentPage] = useState(1);
+const [totalPages, setTotalPages] = useState(1);
+const pageSize = 10;
+
+Hook de Carga (useEffect):
+---------------------------
+Ubicación: src/pages/HomePage.jsx
+
+useEffect(() => {
+    const fetchHilos = async () => {
+        setLoading(true);
+        try {
+            // PASO 1: Llamar API con parámetros de paginación
+            const response = await getHilos(currentPage, pageSize, searchTerm, foroIdParam);
+            
+            // PASO 2: Extraer items (maneja respuestas inconsistentes)
+            const items = extractItems(response);
+            
+            // PASO 3: Actualizar estado
+            setHilos(items);
+            setTotalPages(getTotalPages(response));
+        } catch (err) {
+            setError("No se pudieron cargar las publicaciones.");
+        } finally {
+            setLoading(false);
+        }
+    };
+    fetchHilos();
+}, [currentPage, searchTerm, foroIdParam]);  // Redependencias: cambios triggerean fetch
+
+Manejador de Cambio de Página:
+-------------------------------
+const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+        setCurrentPage(newPage);
+        window.scrollTo(0, 0);  // Scroll al inicio
+    }
+};
+
+Validación de Parámetros:
+   - Página debe ser >= 1
+   - Página debe ser <= totalPages
+   - PageSize por defecto es 10
+   - API rechaza pageSize > 100
+
+Llamada a API:
+---------------
+Ubicación: src/services/apiService.js
+
+export const getHilos = (pageNumber = 1, pageSize = 10, searchTerm = null, foroId = null) => {
+    const params = { pageNumber, pageSize };
+    if (searchTerm) params.searchTerm = searchTerm;
+    if (foroId !== null && foroId !== undefined) params.foroId = foroId;
+    return apiClient.get('/Hilos', { params });
+};
+
+Resultado esperado:
+{
+    data: {
+        items: [ { id: 1, titulo: '...' }, ... ],
+        pageNumber: 1,
+        pageSize: 10,
+        totalCount: 47,
+        totalPages: 5,
+        hasPrevious: false,
+        hasNext: true
+    }
+}
+
+Helper de Extracción:
+---------------------
+Ubicación: src/services/apiHelpers.js
+
+export const extractItems = (response) => {
+    const data = response?.data;
+    if (!data) return [];
+    if (Array.isArray(data)) return data;           // Respuesta es array directo
+    if (Array.isArray(data.items)) return data.items;   // PagedResult con 'items'
+    if (Array.isArray(data.Items)) return data.Items;   // Variante con 'Items'
+    return [];
+};
+
+export const getTotalPages = (response) => {
+    const data = response?.data;
+    return data?.totalPages ?? data?.TotalPages ?? 1;
+};
+
+IMPLEMENTACIÓN COMPLETA EN MÚLTIPLES PÁGINAS:
+----------------------------------------------
+- HomePage.jsx:         Feed principal con paginación de hilos
+- ForosListPage.jsx:    Lista de foros paginada
+- AdminPage.jsx:        Lista de usuarios paginada
+- NotificationsPage.jsx: Notificaciones paginadas
+- HiloDetailPage.jsx:   Comentarios dentro de hilo (paginados)
+
+VENTAJAS DEL SISTEMA:
+   ✓ Frontend agnóstico: usa helpers genéricos
+   ✓ Backend optimizado: SKIP/TAKE en SQL
+   ✓ Escalable: funciona con grandes datasets
+   ✓ Flexible: búsqueda + paginación combinadas
+   ✓ Responsivo: scroll automático al cambiar página
+
+================================================================================
+6. COMPONENTE PROTECTEDROUTE Y AUTORIZACIÓN
+================================================================================
+
+UBICACIÓN: foro-frontend/src/components/ProtectedRoute.jsx
+
+PROPÓSITO:
+----------
+Proteger rutas que requieren:
+1. Usuario autenticado (token JWT válido)
+2. Permiso específico (menú dinámico)
+
+CÓDIGO COMPLETO:
+-----------------
+import React, { useRef } from 'react';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { useNotification } from '../context/NotificationContext';
+
+const ProtectedRoute = ({ requiredPermission }) => {
+    const { user, menuItems } = useAuth();      // Obtener user y menú del contexto
+    const { showToast } = useNotification();    // Para mostrar mensajes de error
+    const location = useLocation();             // Para redirigir si hay error
+    const shownRef = useRef(false);             // Evitar múltiples toasts
+
+    // PASO 1: Validar que hay usuario autenticado
+    if (!user) {
+        return <Navigate to="/login" state={{ from: location }} />;
+    }
+
+    // PASO 2: Validar permiso específico si se requiere
+    if (requiredPermission) {
+        const hasPermission = Boolean(
+            menuItems && menuItems.some(mi => 
+                mi.url === requiredPermission || 
+                mi.titulo === requiredPermission
+            )
+        );
+
+        if (!hasPermission) {
+            // Mostrar toast UNA SOLA VEZ (evitar spam en re-renders)
+            if (!shownRef.current) {
+                shownRef.current = true;
+                showToast('No tienes permiso para acceder a esta sección', 'error');
+            }
+            return <Navigate to="/" replace />;
+        }
+    }
+
+    // PASO 3: Si todo está OK, renderizar componente hijo
+    return <Outlet />;
+};
+
+export default ProtectedRoute;
+
+USO EN RUTAS (App.js):
+-----------------------
+<Routes>
+    {/* Rutas públicas */}
+    <Route path="/login" element={<LoginPage />} />
+    
+    {/* Rutas protegidas: solo usuario autenticado */}
+    <Route element={<ProtectedRoute />}>
+        <Route path="/" element={<HomePage />} />
+    </Route>
+    
+    {/* Rutas protegidas: usuario + permiso específico */}
+    <Route element={<ProtectedRoute requiredPermission="/crear-hilo" />}>
+        <Route path="/crear-hilo" element={<CreateHiloPage />} />
+    </Route>
+    
+    <Route element={<ProtectedRoute requiredPermission="/crear-foro" />}>
+        <Route path="/crear-foro" element={<CreateForoPage />} />
+    </Route>
+</Routes>
+
+FLUJO DE AUTORIZACIÓN COMPLETO:
+===============================
+
+1. AUTENTICACIÓN (Login)
+   ├─ Usuario ingresa credenciales
+   ├─ Backend valida y genera JWT
+   ├─ JWT se guarda en localStorage
+   └─ AuthContext carga menú dinámico
+
+2. MENÚ DINÁMICO
+   ├─ AuthController.GetUserMenu()
+   ├─ Busca rol en BD
+   ├─ Obtiene MenuItems asociados
+   ├─ Caché 60 segundos (tag invalidación)
+   └─ Respuesta en formato: [{ id, titulo, url }]
+
+3. PROTECCIÓN DE RUTAS (ProtectedRoute.jsx)
+   ├─ Lee "user" del contexto
+   ├─ Si no existe → Redirige a /login
+   ├─ Lee "requiredPermission"
+   ├─ Busca en menuItems[]
+   ├─ Si no encuentra → Muestra toast + redirige
+   └─ Si OK → Renderiza Outlet (componente hijo)
+
+4. CONTROL EN NAVBAR
+   ├─ Lee menuItems del contexto
+   ├─ Solo renderiza links que están en menuItems
+   ├─ Usuario solo ve opciones autorizadas
+   └─ Click redirige a ruta protegida
+
+CONTEXTO DE AUTENTICACIÓN (AuthContext.jsx):
+----------------------------------------------
+Expone:
+  - user: { id, name, role }
+  - menuItems: [{ id, titulo, url }, ...]
+  - login(token): Decodifica JWT y carga menú
+  - logout(): Limpia user y menuItems
+  - token: JWT almacenado en localStorage
+
+CICLO COMPLETO DE PERMISO:
+==========================
+
+Escenario: Usuario "Juan" (role="Usuario") intenta crear hilo
+
+1. Juan va a /crear-hilo
+2. ProtectedRoute verifica:
+   - ¿Existe user? SÍ
+   - ¿requiredPermission="/crear-hilo"? SÍ
+   - ¿Existe en menuItems? 
+     → Si role=Usuario → NO (sin permiso)
+     → Si role=Moderador → SÍ (tiene permiso)
+     → Si role=Admin → SÍ (tiene permiso)
+
+3. Resultado:
+   - Sin permiso: Toast "No tienes permiso..." + redirige a /
+   - Con permiso: Carga CreateHiloPage normalmente
+
+VENTAJAS DE ESTE SISTEMA:
+   ✓ Dinámico: permisos se actualizan en tiempo real
+   ✓ Seguro: validación tanto frontend como backend
+   ✓ Escalable: añadir nuevas rutas protegidas es trivial
+   ✓ UX: usuario solo ve opciones que puede usar
+   ✓ Caché: menú se cacha 60s para evitar consultas
+
+================================================================================
+7. MÓDULOS FUNCIONALES Y VALIDACIONES
+================================================================================
+
+A. MÓDULO 1: AUTENTICACIÓN (Login/Registro)
+=============================================
+Archivos: LoginPage.jsx, AuthController.cs
+
+Validaciones:
+  - Email válido (formato RFC 5322)
+  - Contraseña mínimo 8 caracteres
+  - Nombre usuario único en BD
+  - Contraseña hasheada con BCrypt
+
+Flujo:
+  1. Usuario ingresa credenciales
+  2. Frontend valida formato
+  3. API Backend hasher contraseña y compara
+  4. Si OK, genera JWT (9.0.9 JwtBearer)
+  5. JWT almacenado en localStorage
+  6. AuthContext decodifica y expone user
+
+Pruebas:
+  - Login correcto retorna token
+  - Login incorrecto retorna 401 Unauthorized
+  - Registro duplicado retorna 409 Conflict
+  - Token inválido rechaza solicitudes autenticadas
+
+---
+
+B. MÓDULO 2: CACHÉ DE MENÚ (Phase 9)
+=====================================
+Archivos: AuthController.cs, Program.cs, AuthContext.jsx
+
+Validaciones:
+  - JWT válido antes de cargar menú
+  - Rol existe en BD
+  - MenuItems asociados al rol
+  - Caché expira cada 60 segundos
+
+Flujo:
+  1. Login exitoso → AuthContext llama GetUserMenu()
+  2. Backend retorna MenuItems con caché 60s
+  3. Frontend almacena en useState
+  4. Navbar renderiza solo links autorizados
+  5. ProtectedRoute valida permisos
+
+Pruebas:
+  - Menú se carga después de login
+  - Cambio de rol invalida caché
+  - Items duplicados no aparecen
+  - URL en menuItems coincide con rutas
+
+---
+
+C. MÓDULO 3: PAGINACIÓN DE FOROS
+================================
+Archivos: ForosListPage.jsx, ForoService.cs
+
+Validaciones:
+  - PageNumber >= 1
+  - PageSize entre 1 y 100
+  - TotalPages calculado correctamente
+  - Botones prev/next deshabilitados en límites
+
+Flujo:
+  1. Usuario carga página de foros
+  2. Frontend hace GET /api/Foros?pageNumber=1&pageSize=10
+  3. Backend aplica SKIP/TAKE en EF Core
+  4. Retorna PagedResult con items, totalPages, hasNext
+  5. Frontend renderiza tabla + botones paginación
+  6. Click siguiente actualiza currentPage
+
+Pruebas:
+  - Primera página muestra primeros 10 foros
+  - Segunda página muestra foros 11-20
+  - Botón "anterior" deshabilitado en página 1
+  - Botón "siguiente" deshabilitado en última página
+  - TotalPages = CEIL(TotalCount / PageSize)
+
+---
+
+D. MÓDULO 4: NOTIFICACIONES (Phase 10)
+======================================
+Archivos: NotificationCenter.jsx, NotificacionesController.cs
+
+Validaciones:
+  - UsuarioId válido (FK a Usuarios)
+  - Mensaje no vacío (max 1000 caracteres)
+  - Tipo en set valido: Success, Warning, Info, Error
+  - EsLeida booleano (predeterminado false)
+  - FechaCreacion en UTC
+
+Flujo:
+  1. Evento en BD (ej: comentario nuevo)
+  2. Backend crea Notificacion en tabla
+  3. Invalida caché unread_count_{usuarioId}
+  4. Frontend polling cada 5 segundos
+  5. NotificationCenter recibe nueva notificación
+  6. Badge muestra contador actualizado
+  7. Usuario puede marcar como leída (optimista)
+  8. DELETE /api/Notificaciones/{id}
+
+Pruebas:
+  - Badge muestra contador correcto
+  - Notificación nueva aparece en dropdown
+  - Marcar como leída actualiza BD
+  - Eliminar notificación remueve del estado
+  - Rollback si falla servidor
+  - Polling cada 5s sin bloquear UI
+
+---
+
+E. MÓDULO 5: AUTORIZACIÓN POR PERMISO
+======================================
+Archivos: ProtectedRoute.jsx, AuthContext.jsx
+
+Validaciones:
+  - JWT decodifica correctamente
+  - Rol existe en BD
+  - MenuItem.url coincide con ruta
+  - Usuario sin permiso no puede acceder
+
+Flujo:
+  1. Usuario intenta navegar a /crear-hilo
+  2. ProtectedRoute verifica requiredPermission="/crear-hilo"
+  3. Busca en menuItems[] del contexto
+  4. Si no encuentra → Toast + redirige a /
+  5. Si encuentra → Renderiza CreateHiloPage
+
+Pruebas (security.spec.js):
+  - Usuario sin permiso ve toast error
+  - Usuario sin permiso redirigido a home
+  - Usuario con permiso ve página protegida
+  - Admin ve links de administración
+  - Logout limpia menuItems
+  - Cambio de rol refleja permisos nuevos
+
+================================================================================
+8. ARQUITECTURA GENERAL DEL SISTEMA
+================================================================================
+
+PATRONES ARQUITECTÓNICOS:
+==========================
+
+Frontend:
+---------
+• Component-Based Architecture (React)
+• Custom Hooks para lógica compartida
+• Context API para State Management global
+• Service Layer para API calls (Axios)
+• Helper functions para manipulación de datos
+
+Backend:
+--------
+• Layered Architecture:
+  ├─ Controllers (API REST)
+  ├─ Services (Lógica de negocio)
+  ├─ Data Access (Entity Framework Core)
+  └─ Models (Entidades)
+• Dependency Injection (ctor parameters)
+• Async/Await para operaciones I/O
+• LINQ para queries complejas
+• DTOs para transferencia de datos
+
+FLUJOS PRINCIPALES:
+===================
+
+1. CREAR UN HILO (Full Stack)
+   
+   Frontend (CreateHiloPage.jsx):
+   ├─ Usuario completa formulario
+   ├─ Valida: título, contenido, foro
+   └─ POST /api/Hilos con HiloCreateDto
+   
+   Backend (HilosController.cs):
+   ├─ Recibe HiloCreateDto
+   ├─ Valida autorización
+   ├─ Llama HiloService.CreateHiloAsync()
+   ├─ Guarda en BD
+   ├─ Invalida caché de foro
+   ├─ Retorna Hilo creado
+   └─ Frontend redirige a detalle
+   
+2. OBTENER FOROS PAGINADOS
+
+   Frontend (ForosListPage.jsx):
+   ├─ useEffect carga GET /api/Foros?pageNumber=1&pageSize=10
+   ├─ Extrae items y totalPages
+   ├─ Renderiza tabla + botones paginación
+   └─ onClick botón cambia currentPage
+   
+   Backend (ForosController.cs):
+   ├─ Recibe pageNumber, pageSize
+   ├─ Valida parámetros
+   ├─ Llama ForoService.GetForosAsync()
+   ├─ EF aplica Skip/Take
+   ├─ Retorna PagedResult<Foro>
+   └─ OutputCache 60 segundos
+
+3. MARCAR NOTIFICACIÓN COMO LEÍDA (Optimista)
+
+   Frontend (NotificationCenter.jsx):
+   ├─ Estado optimista: marcar leída inmediatamente
+   ├─ DELETE /api/Notificaciones/{id} en background
+   ├─ Si error → revertir estado
+   └─ Si OK → confirmar eliminación
+   
+   Backend (NotificacionesController.cs):
+   ├─ Valida autenticación
+   ├─ Verifica UsuarioId coincide
+   ├─ Elimina Notificacion de BD
+   ├─ Invalida caché unread_count_{usuarioId}
+   └─ Retorna 200 OK
+
+PATRONES DE SEGURIDAD:
+======================
+• JWT Bearer tokens para autenticación
+• Claims basados en roles (ClaimTypes.Role)
+• Autorización por atributos ([Authorize], [AllowAnonymous])
+• Input validation en DTOs
+• SQL injection prevention (parameterized queries EF Core)
+• CORS configurado en Program.cs
+• HTTPs recomendado en producción
+
+PERFORMANCE:
+=============
+• OutputCache para respuestas frecuentes (60s)
+• DistributedMemoryCache para datos temporales
+• Paginación en backend (no traer todos los datos)
+• EF Core lazy loading controlado con Include()
+• Índices en FK y campos searchables
+• Skip/Take en SQL para paginación eficiente
+
+ESCALABILIDAD:
+===============
+• Servicios separados por entidad
+• Interfaces para inyección de dependencias
+• DTOs desacoplados de modelos
+• Pagination genérica (PagedResult<T>)
+• Caché estratificada (Output + Distributed)
+• API stateless (escalable horizontalmente)
+
+================================================================================
+FIN DEL REPORTE TÉCNICO
+================================================================================
+
+Generado: 15 Enero 2026
+Versión del Proyecto: 1.0 (Release Candidate)
+Estado: Producción
+Equipo: FREAD Development Team

@@ -1,0 +1,683 @@
+================================================================================
+        EJEMPLOS DE CÓDIGO - DOCUMENTACIÓN TÉCNICA PROYECTO FREAD
+================================================================================
+
+ÍNDICE DE EJEMPLOS:
+1. Autenticación con JWT
+2. Menú Dinámico y Caché
+3. Paginación - Backend
+4. Paginación - Frontend
+5. ProtectedRoute
+6. Notificaciones (Phase 10)
+7. Servicio HTTP con Interceptor
+8. PagedResult Helper
+
+================================================================================
+1. AUTENTICACIÓN CON JWT
+================================================================================
+
+BACKEND - AuthController.cs (Login)
+====================================
+
+[HttpPost("login")]
+[AllowAnonymous]
+public async Task<ActionResult<string>> Login(UserLoginDto userLoginDto)
+{
+    // Paso 1: Validar que el usuario existe
+    var user = await _context.Usuarios
+        .Include(u => u.Rol)
+        .FirstOrDefaultAsync(u => u.Email == userLoginDto.Email);
+
+    if (user == null)
+        return Unauthorized("Email o contraseña incorrectos");
+
+    // Paso 2: Validar contraseña con BCrypt
+    bool isPasswordValid = BCrypt.Net.BCrypt.Verify(userLoginDto.Password, user.PasswordHash);
+    if (!isPasswordValid)
+        return Unauthorized("Email o contraseña incorrectos");
+
+    // Paso 3: Crear JWT token
+    var tokenHandler = new JwtSecurityTokenHandler();
+    var key = Encoding.ASCII.GetBytes(_config.GetSection("AppSettings:Token").Value!);
+
+    var tokenDescriptor = new SecurityTokenDescriptor
+    {
+        Subject = new ClaimsIdentity(new[]
+        {
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.Name, user.NombreUsuario),
+            new Claim(ClaimTypes.Role, user.Rol.NombreRol)
+        }),
+        Expires = DateTime.UtcNow.AddHours(24),
+        SigningCredentials = new SigningCredentials(
+            new SymmetricSecurityKey(key),
+            SecurityAlgorithms.HmacSha256Signature)
+    };
+
+    var token = tokenHandler.CreateToken(tokenDescriptor);
+    return Ok(tokenHandler.WriteToken(token));
+}
+
+FRONTEND - LoginPage.jsx
+========================
+
+import { login } from '../services/apiService';
+import { useAuth } from '../context/AuthContext';
+import { useNotification } from '../context/NotificationContext';
+
+const LoginPage = () => {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const { login: contextLogin } = useAuth();
+    const { showToast } = useNotification();
+    const navigate = useNavigate();
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        // Validar
+        if (!email || !password) {
+            showToast('Completa todos los campos', 'error');
+            return;
+        }
+
+        try {
+            // Llamar API
+            const response = await login({ email, password });
+            const token = response.data;
+
+            // Guardar token y contexto
+            localStorage.setItem('token', token);
+            await contextLogin(token);
+
+            showToast('Bienvenido!', 'success');
+            navigate('/');
+        } catch (error) {
+            showToast('Credenciales inválidas', 'error');
+        }
+    };
+
+    return (
+        <form onSubmit={handleSubmit}>
+            <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Email"
+            />
+            <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Contraseña"
+            />
+            <button type="submit">Iniciar Sesión</button>
+        </form>
+    );
+};
+
+================================================================================
+2. MENÚ DINÁMICO Y CACHÉ
+================================================================================
+
+BACKEND - AuthController.cs (GetUserMenu - Caché 60s)
+====================================================
+
+[HttpGet("menu")]
+[Authorize]
+[OutputCache(Duration = 60, Tags = new[] { "UserMenuTag" })]
+public async Task<ActionResult<IEnumerable<MenuItem>>> GetUserMenu()
+{
+    // Paso 1: Extraer rol del JWT
+    var roleName = User.FindFirst(ClaimTypes.Role)?.Value;
+    if (string.IsNullOrEmpty(roleName))
+        return Unauthorized("Token inválido o sin rol.");
+
+    // Paso 2: Buscar rol en BD y cargar MenuItems
+    var role = await _context.Roles
+        .Include(r => r.MenuItems)
+        .FirstOrDefaultAsync(r => r.NombreRol == roleName);
+
+    if (role == null)
+        return NotFound("Rol no encontrado");
+
+    // Paso 3: Retornar MenuItems (CACHÉ 60s con tag "UserMenuTag")
+    return Ok(role.MenuItems.OrderBy(m => m.Orden));
+}
+
+INVALIDACIÓN DE CACHÉ (al cambiar rol):
+========================================
+
+public async Task InvalidateMenuCache()
+{
+    var cacheTagStore = HttpContext.Features.Get<IOutputCacheFeature>();
+    await cacheTagStore?.InvalidateByTagAsync("UserMenuTag");
+}
+
+FRONTEND - AuthContext.jsx (Cargar menú después login)
+======================================================
+
+const login = async (token) => {
+    try {
+        // Decodificar JWT
+        const decodedToken = jwt_decode(token);
+        setUser({
+            id: decodedToken.nameid,
+            name: decodedToken.unique_name,
+            role: decodedToken.role
+        });
+
+        // Cargar menú dinámico (caché 60s)
+        const menuResponse = await getMenuItemsForUser();
+        setMenuItems(menuResponse.data || []);
+
+    } catch (error) {
+        console.error('Error en login:', error);
+    }
+};
+
+FRONTEND - Navbar.jsx (Renderizar solo items autorizados)
+=========================================================
+
+const Navbar = () => {
+    const { user, menuItems } = useAuth();
+
+    if (!user) return <nav className="navbar">Bienvenido</nav>;
+
+    return (
+        <nav className="navbar">
+            <div className="logo">FREAD</div>
+            <ul className="nav-links">
+                {/* Home siempre visible */}
+                <li><Link to="/">Home</Link></li>
+
+                {/* Solo mostrar items que están en menuItems */}
+                {menuItems.map(item => (
+                    <li key={item.id}>
+                        <Link to={item.url}>{item.titulo}</Link>
+                    </li>
+                ))}
+            </ul>
+            <button onClick={logout}>Salir ({user.name})</button>
+        </nav>
+    );
+};
+
+================================================================================
+3. PAGINACIÓN - BACKEND (EF Core + SQL)
+================================================================================
+
+SERVICIO - ForoService.cs
+==========================
+
+public async Task<PagedResult<Foro>> GetForosAsync(
+    int pageNumber = 1,
+    int pageSize = 10)
+{
+    // Validar parámetros
+    if (pageNumber < 1) pageNumber = 1;
+    if (pageSize < 1) pageSize = 10;
+    if (pageSize > 100) pageSize = 100;
+
+    // Construir query
+    var query = _context.Foros
+        .Include(f => f.Usuario)
+        .AsQueryable();
+
+    // Contar total ANTES de paginar
+    var totalCount = await query.CountAsync();
+
+    // Aplicar SKIP y TAKE (se convierte en SQL OFFSET/FETCH)
+    var items = await query
+        .OrderBy(f => f.NombreForo)
+        .Skip((pageNumber - 1) * pageSize)    // OFFSET
+        .Take(pageSize)                        // FETCH NEXT
+        .ToListAsync();
+
+    return new PagedResult<Foro>(items, totalCount, pageNumber, pageSize);
+}
+
+SQL GENERADO (Aproximadamente):
+================================
+
+SELECT f.*, u.*
+FROM Foros f
+LEFT JOIN Usuarios u ON f.UsuarioId = u.Id
+ORDER BY f.NombreForo
+OFFSET 10 ROWS
+FETCH NEXT 10 ROWS ONLY;
+
+SELECT COUNT(*)
+FROM Foros f;
+
+CONTROLADOR - ForosController.cs (Con caché)
+=============================================
+
+[HttpGet]
+[AllowAnonymous]
+[OutputCache(Duration = 60)]
+public async Task<ActionResult<PagedResult<Foro>>> GetForos(
+    [FromQuery] int pageNumber = 1,
+    [FromQuery] int pageSize = 10)
+{
+    var result = await _foroService.GetForosAsync(pageNumber, pageSize);
+    return Ok(result);
+}
+
+================================================================================
+4. PAGINACIÓN - FRONTEND (React)
+================================================================================
+
+PÁGINA - ForosListPage.jsx
+===========================
+
+import React, { useState, useEffect } from 'react';
+import { getForos } from '../services/apiService';
+import { extractItems, getTotalPages, getTotalCount } from '../services/apiHelpers';
+
+const ForosListPage = () => {
+    const [foros, setForos] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalCount, setTotalCount] = useState(0);
+    const [loading, setLoading] = useState(true);
+    const pageSize = 10;
+
+    // HOOK: Cargar foros cuando página cambia
+    useEffect(() => {
+        const fetchForos = async () => {
+            setLoading(true);
+            try {
+                // Llamar API con paginación
+                const response = await getForos(currentPage, pageSize);
+
+                // Extraer items (maneja respuestas inconsistentes)
+                const items = extractItems(response);
+                setForos(items);
+
+                // Obtener metadata
+                setTotalPages(getTotalPages(response));
+                setTotalCount(getTotalCount(response));
+            } catch (error) {
+                console.error('Error cargando foros:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchForos();
+    }, [currentPage]);
+
+    // Manejador: cambiar página
+    const handlePageChange = (newPage) => {
+        if (newPage >= 1 && newPage <= totalPages) {
+            setCurrentPage(newPage);
+            window.scrollTo(0, 0);
+        }
+    };
+
+    if (loading) return <p>Cargando...</p>;
+
+    return (
+        <div className="foros-list-container">
+            <h1>Foros ({totalCount} total)</h1>
+
+            {/* Tabla de foros */}
+            <table className="foros-table">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th>Creado por</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {foros.map(foro => (
+                        <tr key={foro.id}>
+                            <td><Link to={`/foro/${foro.id}`}>{foro.nombreForo}</Link></td>
+                            <td>{foro.descripcion}</td>
+                            <td>{foro.usuario?.nombreUsuario || 'N/A'}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+
+            {/* Paginación */}
+            <div className="pagination">
+                <button
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                >
+                    Anterior
+                </button>
+
+                <span>Página {currentPage} de {totalPages}</span>
+
+                <button
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                >
+                    Siguiente
+                </button>
+            </div>
+        </div>
+    );
+};
+
+export default ForosListPage;
+
+================================================================================
+5. PROTECTEDROUTE - AUTENTICACIÓN Y AUTORIZACIÓN
+================================================================================
+
+COMPONENTE - ProtectedRoute.jsx
+===============================
+
+import React, { useRef } from 'react';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { useNotification } from '../context/NotificationContext';
+
+const ProtectedRoute = ({ requiredPermission }) => {
+    const { user, menuItems } = useAuth();
+    const { showToast } = useNotification();
+    const location = useLocation();
+    const shownRef = useRef(false);
+
+    // VALIDACIÓN 1: Usuario autenticado
+    if (!user) {
+        return <Navigate to="/login" state={{ from: location }} />;
+    }
+
+    // VALIDACIÓN 2: Permiso específico (si requerido)
+    if (requiredPermission) {
+        const hasPermission = Boolean(
+            menuItems && menuItems.some(mi =>
+                mi.url === requiredPermission || 
+                mi.titulo === requiredPermission
+            )
+        );
+
+        if (!hasPermission) {
+            if (!shownRef.current) {
+                shownRef.current = true;
+                showToast('No tienes permiso para acceder a esta sección', 'error');
+            }
+            return <Navigate to="/" replace />;
+        }
+    }
+
+    // TODO OK: renderizar componente protegido
+    return <Outlet />;
+};
+
+export default ProtectedRoute;
+
+USO EN RUTAS - App.js
+=====================
+
+function App() {
+    return (
+        <Routes>
+            {/* Rutas públicas */}
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+
+            {/* Rutas protegidas: solo autenticado */}
+            <Route element={<ProtectedRoute />}>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/foros" element={<ForosListPage />} />
+                <Route path="/foro/:id" element={<HiloDetailPage />} />
+                <Route path="/perfil" element={<PerfilPage />} />
+                <Route path="/mi-actividad" element={<MiActividadPage />} />
+            </Route>
+
+            {/* Rutas protegidas: solo con permiso */}
+            <Route element={<ProtectedRoute requiredPermission="/crear-hilo" />}>
+                <Route path="/crear-hilo" element={<CreateHiloPage />} />
+            </Route>
+
+            <Route element={<ProtectedRoute requiredPermission="/crear-foro" />}>
+                <Route path="/crear-foro" element={<CreateForoPage />} />
+            </Route>
+
+            <Route element={<ProtectedRoute requiredPermission="/admin" />}>
+                <Route path="/admin" element={<AdminPage />} />
+            </Route>
+
+            {/* 404 */}
+            <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+    );
+}
+
+================================================================================
+6. NOTIFICACIONES - PHASE 10
+================================================================================
+
+BACKEND - NotificacionesController.cs
+======================================
+
+[HttpGet]
+[Authorize]
+public async Task<ActionResult<PagedResult<NotificacionDto>>> GetNotificaciones(
+    [FromQuery] int pageNumber = 1,
+    [FromQuery] int pageSize = 10)
+{
+    var usuarioId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+
+    var notificaciones = await _context.Notificaciones
+        .Where(n => n.UsuarioId == usuarioId)
+        .OrderByDescending(n => n.FechaCreacion)
+        .Skip((pageNumber - 1) * pageSize)
+        .Take(pageSize)
+        .Select(n => new NotificacionDto
+        {
+            id = n.Id,
+            mensaje = n.Mensaje,
+            tipo = n.Tipo,
+            esLeida = n.EsLeida,
+            fechaCreacion = n.FechaCreacion
+        })
+        .ToListAsync();
+
+    var totalCount = await _context.Notificaciones
+        .Where(n => n.UsuarioId == usuarioId)
+        .CountAsync();
+
+    return Ok(new PagedResult<NotificacionDto>(
+        notificaciones, totalCount, pageNumber, pageSize));
+}
+
+[HttpDelete("{id}")]
+[Authorize]
+public async Task<IActionResult> DeleteNotificacion(int id)
+{
+    var usuarioId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+    var notificacion = await _context.Notificaciones.FindAsync(id);
+
+    if (notificacion == null || notificacion.UsuarioId != usuarioId)
+        return NotFound();
+
+    _context.Notificaciones.Remove(notificacion);
+    await _context.SaveChangesAsync();
+
+    // Invalidar caché de contador
+    await _distributedCache.RemoveAsync($"unread_count_{usuarioId}");
+
+    return NoContent();
+}
+
+FRONTEND - NotificationCenter.jsx (Optimista)
+==============================================
+
+const handleDeleteNotificacion = async (notificacionId) => {
+    // OPTIMISTA: Guardar estado anterior
+    const previousNotificaciones = notificaciones;
+    const previousCount = unreadCount;
+
+    try {
+        // PASO 1: Actualizar UI INMEDIATAMENTE
+        setNotificaciones(notificaciones.filter(n => n.id !== notificacionId));
+        if (unreadCount > 0) {
+            setUnreadCount(unreadCount - 1);
+        }
+
+        // PASO 2: Enviar petición servidor (background)
+        await deleteNotificacion(notificacionId);
+        showToast('Notificación eliminada', 'success');
+
+    } catch (error) {
+        // PASO 3: ROLLBACK si falla
+        console.error('[DELETE ERROR]', error);
+        setNotificaciones(previousNotificaciones);
+        setUnreadCount(previousCount);
+
+        // Recargar desde servidor
+        await loadUnreadCount();
+        await loadNotificaciones(currentPage);
+        showToast('Error al eliminar. Reintentando...', 'error');
+    }
+};
+
+================================================================================
+7. SERVICIO HTTP CON INTERCEPTOR JWT
+================================================================================
+
+FRONTEND - apiService.js
+=========================
+
+import axios from 'axios';
+
+const API_URL = 'http://localhost:5153/api';
+
+// Crear cliente HTTP
+const apiClient = axios.create({
+    baseURL: API_URL,
+    timeout: 10000,
+    headers: {
+        'Content-Type': 'application/json'
+    }
+});
+
+// INTERCEPTOR: Agregar JWT en headers automáticamente
+apiClient.interceptors.request.use(
+    config => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    },
+    error => Promise.reject(error)
+);
+
+// INTERCEPTOR: Manejar respuestas de error
+apiClient.interceptors.response.use(
+    response => response,
+    error => {
+        // Si 401 Unauthorized → redirigir a login
+        if (error.response?.status === 401) {
+            localStorage.removeItem('token');
+            window.location.href = '/login';
+        }
+        return Promise.reject(error);
+    }
+);
+
+// ENDPOINTS (ejemplo)
+export const login = (userData) =>
+    apiClient.post('/Auth/login', userData);
+
+export const getForos = (pageNumber = 1, pageSize = 10) =>
+    apiClient.get('/Foros', { params: { pageNumber, pageSize } });
+
+export const getHilos = (pageNumber = 1, pageSize = 10, searchTerm = null, foroId = null) => {
+    const params = { pageNumber, pageSize };
+    if (searchTerm) params.searchTerm = searchTerm;
+    if (foroId) params.foroId = foroId;
+    return apiClient.get('/Hilos', { params });
+};
+
+export const getNotificaciones = (pageNumber = 1, pageSize = 10) =>
+    apiClient.get('/Notificaciones', { params: { pageNumber, pageSize } });
+
+export const deleteNotificacion = (notificacionId) =>
+    apiClient.delete(`/Notificaciones/${notificacionId}`);
+
+================================================================================
+8. PAGEDRESULT HELPER - EXTRACCIÓN DE DATOS
+================================================================================
+
+BACKEND - PagedResult<T>.cs
+===========================
+
+public class PagedResult<T>
+{
+    public IEnumerable<T> Items { get; set; } = new List<T>();
+    public int PageNumber { get; set; }
+    public int PageSize { get; set; }
+    public int TotalCount { get; set; }
+
+    public int TotalPages => 
+        (int)Math.Ceiling(TotalCount / (double)PageSize);
+
+    public bool HasPrevious => PageNumber > 1;
+    public bool HasNext => PageNumber < TotalPages;
+
+    public PagedResult() { }
+
+    public PagedResult(IEnumerable<T> items, int totalCount, 
+        int pageNumber, int pageSize)
+    {
+        Items = items;
+        TotalCount = totalCount;
+        PageNumber = pageNumber;
+        PageSize = pageSize;
+    }
+}
+
+FRONTEND - apiHelpers.js (Helpers robustos)
+===========================================
+
+// Extrae array de respuesta (maneja inconsistencias)
+export const extractItems = (response) => {
+    const data = response?.data;
+    if (!data) return [];
+    
+    // Intenta en este orden:
+    if (Array.isArray(data)) return data;
+    if (Array.isArray(data.items)) return data.items;
+    if (Array.isArray(data.Items)) return data.Items;
+    
+    return [];
+};
+
+// Obtiene totalPages (maneja variantes)
+export const getTotalPages = (response) => {
+    const data = response?.data;
+    return data?.totalPages ?? data?.TotalPages ?? 1;
+};
+
+// Obtiene totalCount
+export const getTotalCount = (response) => {
+    const data = response?.data;
+    return data?.totalCount ?? data?.TotalCount ?? 0;
+};
+
+USO EN COMPONENTES:
+===================
+
+const items = extractItems(response);          // Array
+const totalPages = getTotalPages(response);    // int
+const totalCount = getTotalCount(response);    // int
+
+================================================================================
+FIN DE EJEMPLOS DE CÓDIGO
+================================================================================
+
+Estos ejemplos cubren los patrones principales del proyecto FREAD.
+Para más detalles, consultar los archivos fuente en el repositorio.
+
+Generado: 15 Enero 2026
+Versión: 1.0 Final

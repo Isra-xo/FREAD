@@ -21,7 +21,7 @@ const NotificationsPage = () => {
     const loadNotificaciones = async (pageNumber = 1) => {
         setIsLoading(true);
         try {
-            // ✅ SIMPLIFICADO: Traer todas (sin filtro)
+            // SIMPLIFICADO: Traer todas (sin filtro)
             const response = await getNotificaciones(pageNumber, PAGE_SIZE);
             const data = response.data;
 
@@ -37,23 +37,23 @@ const NotificationsPage = () => {
         }
     };
 
-    // ✅ SIMPLIFICADO: SOLO ELIMINAR
+    // SIMPLIFICADO: SOLO ELIMINAR
     const handleDeleteNotificacion = async (notificacionId) => {
         try {
             console.log(`[NOTIF] Eliminar: ${notificacionId}`);
 
-            // 🟢 OPTIMISTA: Quitar de UI INMEDIATAMENTE
+            // OPTIMISTA: Quitar de UI INMEDIATAMENTE
             setNotificaciones(
                 notificaciones.filter(n => n.id !== notificacionId)
             );
 
-            // 🟡 ASYNC: Confirmar con servidor
+            // ASYNC: Confirmar con servidor
             await deleteNotificacion(notificacionId);
             showToast('Notificación eliminada', 'success');
         } catch (error) {
             console.error('[NOTIF] Error al eliminar:', error);
             
-            // 🔴 ROLLBACK
+            // ROLLBACK
             await loadNotificaciones(currentPage);
             showToast('Error al eliminar notificación', 'error');
         }

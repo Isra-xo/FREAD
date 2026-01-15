@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("GeneradorDeModelos")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8fe39292a8c845d8dcae1812fc6340428071db3e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2ebde021a7f78f7a76cffd0a3269cdca1e94190e")]
 [assembly: System.Reflection.AssemblyProductAttribute("GeneradorDeModelos")]
 [assembly: System.Reflection.AssemblyTitleAttribute("GeneradorDeModelos")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

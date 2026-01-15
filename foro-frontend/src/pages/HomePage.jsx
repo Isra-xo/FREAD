@@ -48,64 +48,86 @@ const HomePage = ({ searchTerm }) => {
         }
     };
 
+    //  MANEJADOR DE ELIMINACIÓN CON ACTUALIZACIÓN OPTIMISTA
+    const handleDeletePost = (hiloId) => {
+        // Remover el post del estado inmediatamente (actualización optimista)
+        setHilos(prevHilos => prevHilos.filter(hilo => hilo.id !== hiloId));
+    };
+
     if (loading) {
         return (
             <div className="home-container">
-                <div className="posts-list">
-                    <p>Cargando publicaciones...</p>
+                <div className="posts-feed">
+                    <div className="loading-skeleton">
+                        <p>Cargando publicaciones...</p>
+                    </div>
                 </div>
                 <Sidebar />
             </div>
         );
     }
 
-    if (error) return <p style={{ color: 'red' }}>{error}</p>;
+    if (error) return <p className="error-message">{error}</p>;
 
     return (
         <div className="home-container">
-            <div className="posts-list">
+            <div className="posts-feed">
                 {foroIdParam && (
-                    <h2 className="foro-header">Comunidad: {hilos[0]?.foro?.nombreForo ?? `ID ${foroIdParam}`}</h2>
+                    <div className="foro-header-container">
+                        <h2 className="foro-header">
+                            {hilos[0]?.foro?.nombreForo ?? `ID ${foroIdParam}`}
+                        </h2>
+                    </div>
                 )}
+                
                 {hilos.length > 0 ? (
                     <>
-                        {hilos.map(hilo => (
-                            <PostCard key={hilo.id} post={hilo} />
-                        ))}
+                        <div className="posts-grid">
+                            {hilos.map(hilo => (
+                                <PostCard 
+                                    key={hilo.id} 
+                                    post={hilo}
+                                    onDelete={handleDeletePost}
+                                />
+                            ))}
+                        </div>
                         
                         {/* Controles de Paginación */}
                         <div className="pagination-container">
                             <button 
                                 onClick={() => handlePageChange(currentPage - 1)}
                                 disabled={currentPage === 1}
-                                className="pagination-btn"
+                                className="pagination-btn pagination-prev"
                                 aria-label="Ir a página anterior"
                             >
-                                Anterior
+                                ← Anterior
                             </button>
                             <span className="pagination-info">
-                                Página {currentPage} de {totalPages}
+                                Página <strong>{currentPage}</strong> de <strong>{totalPages}</strong>
                             </span>
                             <button 
                                 onClick={() => handlePageChange(currentPage + 1)}
                                 disabled={currentPage === totalPages}
-                                className="pagination-btn"
+                                className="pagination-btn pagination-next"
                                 aria-label="Ir a página siguiente"
                             >
-                                Siguiente
+                                Siguiente →
                             </button>
                         </div>
                     </>
                 ) : (
-                    <p>
-                        {foroIdParam ? (
-                            "No hay hilos en esta comunidad."
-                        ) : (
-                            `No se encontraron resultados para "${searchTerm}"`
-                        )}
-                    </p>
+                    <div className="no-posts-container">
+                        <p className="no-posts-text">
+                            {foroIdParam ? (
+                                "No hay hilos en esta comunidad."
+                            ) : (
+                                `No se encontraron resultados para "${searchTerm}"`
+                            )}
+                        </p>
+                    </div>
                 )}
             </div>
+            
             <Sidebar />
         </div>
     );

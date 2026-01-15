@@ -35,7 +35,7 @@ const AdminPage = () => {
 
     const handleRoleChange = async (userId, newRoleId) => {
         try {
-            // 🔴 SEGURIDAD BLINDADA: Comparación numérica estricta de identidad
+            //  SEGURIDAD: Comparación numérica estricta de identidad
             const currentUserId = user ? Number(user.id || user.nameid || user.sub) : null;
             const targetUserId = Number(userId);
             const isSelfRoleChange = Boolean(
@@ -45,14 +45,14 @@ const AdminPage = () => {
                 currentUserId === targetUserId
             );
 
-            // 🟡 CALL: Cambiar rol y crear notificación en BD
+            // CALL: Cambiar rol y crear notificación en BD
             await changeUserRole(userId, newRoleId);
 
-            // 🟢 OPTIMISTIC: Actualizar UI inmediatamente
+            // OPTIMISTIC: Actualizar UI inmediatamente
             const newRoleObj = roles.find(r => r.id === newRoleId);
             setUsers(users.map(u => u.id === userId ? { ...u, rolId: newRoleId, rol: newRoleObj } : u));
 
-            // 🔴 AUTO-LOGOUT: Si es cambio de rol propio
+            // AUTO-LOGOUT: Si es cambio de rol propio
             if (isSelfRoleChange) {
                 showToast('Has cambiado tu propio rol. Cerrando sesión...', 'warning');
                 setTimeout(() => {
@@ -69,49 +69,85 @@ const AdminPage = () => {
     };
 
     return (
-        <div className="admin-container">
-            <h1>Panel de Administración</h1>
-            <h2>Gestionar Usuarios ({totalCount})</h2>
-            <div className="table-container">
-                <table className="admin-table">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Nombre</th>
-                            <th>Email</th>
-                            <th>Rol</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {users.map(u => (
-                            <tr key={u.id}>
-                                <td>{u.id}</td>
-                                <td>{u.nombreUsuario}</td>
-                                <td>{u.email}</td>
-                                <td>
-                                    <select 
-                                        value={u.rolId} 
-                                        onChange={(e) => handleRoleChange(u.id, parseInt(e.target.value))}
-                                        className="role-select"
-                                    >
-                                        {roles.map(rol => (
-                                            <option key={rol.id} value={rol.id}>{rol.nombreRol}</option>
-                                        ))}
-                                    </select>
-                                </td>
-                                <td>
-                                    <button onClick={() => deleteUser(u.id).then(() => fetchUsers(currentPage))} className="btn-delete">Eliminar</button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-            <div className="pagination">
-                <button onClick={() => setCurrentPage(p => p - 1)} disabled={currentPage === 1}>Anterior</button>
-                <span>{currentPage} de {totalPages}</span>
-                <button onClick={() => setCurrentPage(p => p + 1)} disabled={currentPage === totalPages}>Siguiente</button>
+        <div className="admin-wrapper">
+            <div className="admin-container">
+                <div className="admin-header">
+                    <h1> Panel de Administración</h1>
+                    <p className="subtitle">Gestiona usuarios y roles del sistema</p>
+                </div>
+
+                <div className="users-section">
+                    <div className="section-header">
+                        <h2>👥 Gestionar Usuarios</h2>
+                        <span className="badge">{totalCount}</span>
+                    </div>
+
+                    <div className="users-list">
+                        {users.length > 0 ? (
+                            users.map(u => (
+                                <div key={u.id} className="user-card">
+                                    <div className="user-avatar">
+                                        <span className="avatar-letter">
+                                            {u.nombreUsuario.charAt(0).toUpperCase()}
+                                        </span>
+                                    </div>
+
+                                    <div className="user-info">
+                                        <p className="user-name">ID: {u.id} - {u.nombreUsuario}</p>
+                                        <p className="user-email">{u.email}</p>
+                                    </div>
+
+                                    <div className="user-actions">
+                                        <div className="role-wrapper">
+                                            <select 
+                                                value={u.rolId} 
+                                                onChange={(e) => handleRoleChange(u.id, parseInt(e.target.value))}
+                                                className="role-select"
+                                            >
+                                                {roles.map(rol => (
+                                                    <option key={rol.id} value={rol.id}>{rol.nombreRol}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        
+                                        <button 
+                                            onClick={() => deleteUser(u.id).then(() => fetchUsers(currentPage))} 
+                                            className="btn-delete"
+                                            title="Eliminar usuario"
+                                        >
+                                            🗑️
+                                        </button>
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <div className="empty-state">
+                                <p className="empty-icon">👥</p>
+                                <p>No hay usuarios para mostrar</p>
+                            </div>
+                        )}
+                    </div>
+
+                    {totalPages > 1 && (
+                        <div className="pagination">
+                            <button 
+                                onClick={() => setCurrentPage(p => p - 1)} 
+                                disabled={currentPage === 1}
+                                className="pagination-btn"
+                            >
+                                ← Anterior
+                            </button>
+                            <span className="pagination-info">Página {currentPage} de {totalPages}</span>
+                            <button 
+                                onClick={() => setCurrentPage(p => p + 1)} 
+                                disabled={currentPage === totalPages}
+                                className="pagination-btn"
+                            >
+                                Siguiente →
+                            </button>
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );

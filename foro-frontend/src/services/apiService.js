@@ -78,12 +78,12 @@ export const getMenuItems = () => apiClient.get('/MenuItems');
 
 // --- NOTIFICACIONES (FASE 10) ---
 // Obtener notificaciones paginadas del usuario actual
-// ✅ SIMPLIFICADO: siempre traer todas (soloNoLeidas=null)
+// SIMPLIFICADO: siempre traer todas (soloNoLeidas=null)
 export const getNotificaciones = (pageNumber = 1, pageSize = 10, soloNoLeidas = null) =>
     apiClient.get('/Notificaciones', { params: { pageNumber, pageSize, soloNoLeidas } });
 
 // Obtener contador total de notificaciones
-// ✅ RENOMBRADO: GetUnreadCount → GetTotalCount (backend)
+// RENOMBRADO: GetUnreadCount → GetTotalCount (backend)
 export const getUnreadNotificationCount = () =>
     apiClient.get('/Notificaciones/count/total');
 

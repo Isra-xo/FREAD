@@ -10,10 +10,10 @@ const NotificationItem = ({
     onDelete,
     getColor,
 }) => {
-    // 🟡 ASINCRONÍA: Estado para forzar actualización del tiempo
+    // ASINCRONÍA: Estado para forzar actualización del tiempo
     const [, setTick] = useState(0);
 
-    // 🔄 TIEMPO RELATIVO: Actualizar cada 60 segundos
+    // TIEMPO RELATIVO: Actualizar cada 60 segundos
     useEffect(() => {
         const interval = setInterval(() => {
             setTick(prevTick => prevTick + 1);

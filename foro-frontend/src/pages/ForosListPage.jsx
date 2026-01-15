@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { getForos, deleteForo } from '../services/apiService';
 import { extractItems, getTotalPages } from '../services/apiHelpers';
 import { useAuth } from '../context/AuthContext';
+import './ForosListPage.css';
 
 const ForosListPage = () => {
     const [foros, setForos] = useState([]);
@@ -29,7 +30,7 @@ const ForosListPage = () => {
         if (window.confirm("¿Estás seguro de que quieres eliminar este foro?")) {
             try {
                 await deleteForo(foroId);
-                fetchForos();
+                fetchForos(currentPage);
             } catch (error) {
                 console.error("Error al eliminar el foro:", error);
                 alert("No tienes permiso para eliminar este foro.");
@@ -38,34 +39,87 @@ const ForosListPage = () => {
     };
 
     return (
-        <div>
-            <h1>Comunidades</h1>
-            <Link to="/crear-foro">
-                <button>+ Crear Nuevo Foro</button>
-            </Link>
-            <hr />
-            <div>
-                {foros.map(foro => (
-                    <div key={foro.id} style={{ border: '1px solid gray', padding: '10px', margin: '10px' }}>
-                        <h2><Link to={`/foro/${foro.id}`}>f/{foro.nombreForo}</Link></h2>
-                        <p>{foro.descripcion}</p>
-                        <small>Creado por: {foro.usuario?.nombreUsuario || 'Desconocido'}</small>
+        <div className="foros-wrapper">
+            <div className="foros-container">
+                <div className="foros-header">
+                    <h1>Comunidades de FREAD</h1>
+                    <p className="subtitle">Explora y únete a las comunidades que te interesan</p>
+                    <Link to="/crear-foro" className="btn-create-foro">
+                        Crear Nueva Comunidad
+                    </Link>
+                </div>
 
-                        {}
-                        {foro.usuarioId && Number(userId) === foro.usuarioId && (
-                            <button onClick={() => handleDelete(foro.id)} style={{ marginLeft: '20px', color: 'red' }}>
-                                Eliminar
-                            </button>
+                {foros.length > 0 ? (
+                    <>
+                        <div className="foros-grid">
+                            {foros.map(foro => (
+                                <div key={foro.id} className="foro-card">
+                                    <div className="foro-icon">
+                                        <span className="icon-letter">
+                                            {foro.nombreForo.charAt(0).toUpperCase()}
+                                        </span>
+                                    </div>
+
+                                    <div className="foro-content">
+                                        <Link to={`/foro/${foro.id}`} className="foro-name">
+                                            f/{foro.nombreForo}
+                                        </Link>
+                                        <p className="foro-description">{foro.descripcion}</p>
+                                        <p className="foro-meta">
+                                            Creado por: <span className="creator-name">{foro.usuario?.nombreUsuario || 'Desconocido'}</span>
+                                        </p>
+                                    </div>
+
+                                    <div className="foro-actions">
+                                        <Link to={`/foro/${foro.id}`} className="btn-visit">
+                                            Visitar →
+                                        </Link>
+                                        
+                                        {foro.usuarioId && Number(userId) === foro.usuarioId && (
+                                            <button 
+                                                onClick={() => handleDelete(foro.id)}
+                                                className="btn-delete-foro"
+                                                title="Eliminar foro"
+                                            >
+                                                🗑️
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        {totalPages > 1 && (
+                            <div className="pagination">
+                                <button 
+                                    aria-label="Página anterior" 
+                                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))} 
+                                    disabled={currentPage === 1}
+                                    className="pagination-btn"
+                                >
+                                    ← Anterior
+                                </button>
+                                <span className="pagination-info">Página {currentPage} de {totalPages}</span>
+                                <button 
+                                    aria-label="Página siguiente" 
+                                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} 
+                                    disabled={currentPage === totalPages}
+                                    className="pagination-btn"
+                                >
+                                    Siguiente →
+                                </button>
+                            </div>
                         )}
+                    </>
+                ) : (
+                    <div className="empty-state">
+                        <p className="empty-icon"></p>
+                        <p className="empty-text">No hay comunidades disponibles</p>
+                        <Link to="/crear-foro" className="btn-create-empty">
+                            + Crea la primera
+                        </Link>
                     </div>
-                ))}
-            </div>
-
-            {/* Pagination controls */}
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 12, marginTop: 16 }}>
-                <button aria-label="Ir a página anterior" onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1}>Anterior</button>
-                <span>Página {currentPage} de {totalPages}</span>
-                <button aria-label="Ir a página siguiente" onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}>Siguiente</button>
+                )}
             </div>
         </div>
     );

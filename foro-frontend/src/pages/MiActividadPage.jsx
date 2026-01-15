@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { getHilosByUserId, getComentariosByUserId } from '../services/apiService';
 import { extractItems, getTotalPages, getTotalCount } from '../services/apiHelpers';
 import { Link } from 'react-router-dom';
-import './PerfilPage.css'; // Componentes existentes de PerfilPage --> Nota: Craer un nuevo css para esto
+import './MiActividadPage.css';
 
 const MiActividadPage = () => {
     const { user } = useAuth();
@@ -76,7 +76,7 @@ const MiActividadPage = () => {
                     }
                     
                     // Paso 6: Resumen de datos cargados
-                    console.log("[MiActividadPage] ✅ Datos cargados exitosamente:", {
+                    console.log("[MiActividadPage] Datos cargados exitosamente:", {
                         hilos: {
                             cantidad: hilosItems.length,
                             totalCount: hilosTotalCountValue,
@@ -97,7 +97,7 @@ const MiActividadPage = () => {
                     setComentariosTotalPages(comentariosTotalPagesValue);
                     setComentariosTotalCount(comentariosTotalCountValue);
                 } catch (error) {
-                    console.error("[MiActividadPage] ❌ Error cargando actividad:", error.message);
+                    console.error("[MiActividadPage] Error cargando actividad:", error.message);
                     console.error("[MiActividadPage] Detalles completos del error:", {
                         message: error.message,
                         status: error.response?.status,
@@ -125,53 +125,122 @@ const MiActividadPage = () => {
     if (error) return <div className="profile-page-container"><p className="error-message">{error}</p></div>;
 
     return (
-        <div className="profile-page-container">
-            <h1>Mi Actividad</h1>
-            <div className="profile-sections">
-                <div className="user-hilos">
-                    <h3>Mis Hilos ({hilosTotalCount})</h3>
-                    <div className="scrollable-list">
-                        {Array.isArray(hilos) && hilos.length > 0 ? (
-                            hilos.map(hilo => (
-                                <div key={hilo.id} className="profile-item">
-                                    <Link to={`/hilo/${hilo.id}`}>{hilo.titulo}</Link>
-                                    <p className="meta-info">en f/{hilo.foro?.nombreForo || 'Foro'}</p>
-                                </div>
-                            ))
-                        ) : (
-                            <p>No has creado ningún hilo.</p>
-                        )}
-                    </div>
+        <div className="actividad-wrapper">
+            <div className="actividad-container">
+                <div className="actividad-header">
+                    <h1>Mi Actividad</h1>
+                    <p className="subtitle">Visualiza todos tus hilos y comentarios en un solo lugar</p>
                 </div>
-                <div className="user-foros">
-                    <h3>Mis Comentarios ({comentariosTotalCount})</h3>
-                    <div className="scrollable-list">
-                        {Array.isArray(comentarios) && comentarios.length > 0 ? (
-                            comentarios.map(comentario => (
-                                <div key={comentario.id} className="profile-item">
-                                    <p>"{comentario.contenido}"</p>
-                                    <Link to={`/hilo/${comentario.hiloId}`}>Ver en contexto</Link>
+
+                <div className="activity-dashboard">
+                    <div className="activity-card">
+                        <div className="card-header">
+                            <h2 className="card-title">Hilos Creados</h2>
+                            <span className="badge">{hilosTotalCount}</span>
+                        </div>
+                        
+                        <div className="activity-content">
+                            {Array.isArray(hilos) && hilos.length > 0 ? (
+                                <div className="items-list">
+                                    {hilos.map(hilo => (
+                                        <div key={hilo.id} className="activity-item-card">
+                                            <div className="item-content">
+                                                <Link to={`/hilo/${hilo.id}`} className="item-title">
+                                                    {hilo.titulo}
+                                                </Link>
+                                                <p className="item-meta">
+                                                    en <span className="foro-name">f/{hilo.foro?.nombreForo || 'Foro'}</span>
+                                                </p>
+                                            </div>
+                                            <div className="item-arrow">→</div>
+                                        </div>
+                                    ))}
                                 </div>
-                            ))
-                        ) : (
-                            <p>No has creado ningún comentario.</p>
+                            ) : (
+                                <div className="empty-state">
+                                    <p className="empty-icon">📭</p>
+                                    <p>No has creado ningún hilo todavía.</p>
+                                </div>
+                            )}
+                        </div>
+
+                        {hilosTotalPages > 1 && (
+                            <div className="pagination">
+                                <button 
+                                    aria-label="Página anterior de hilos" 
+                                    onClick={() => setHilosPage(p => Math.max(1, p - 1))} 
+                                    disabled={hilosPage === 1}
+                                    className="pagination-btn"
+                                >
+                                    ← Anterior
+                                </button>
+                                <span className="pagination-info">
+                                    Página {hilosPage} de {hilosTotalPages}
+                                </span>
+                                <button 
+                                    aria-label="Página siguiente de hilos" 
+                                    onClick={() => setHilosPage(p => Math.min(hilosTotalPages, p + 1))} 
+                                    disabled={hilosPage === hilosTotalPages}
+                                    className="pagination-btn"
+                                >
+                                    Siguiente →
+                                </button>
+                            </div>
                         )}
                     </div>
 
-                    {/* Comentarios pagination */}
-                    <div style={{ display: 'flex', gap: 10, justifyContent: 'center', marginTop: 8 }}>
-                        <button aria-label="Ir a página anterior" onClick={() => setComentariosPage(p => Math.max(1, p - 1))} disabled={comentariosPage === 1}>Anterior</button>
-                        <span>Página {comentariosPage} de {comentariosTotalPages}</span>
-                        <button aria-label="Ir a página siguiente" onClick={() => setComentariosPage(p => Math.min(comentariosTotalPages, p + 1))} disabled={comentariosPage === comentariosTotalPages}>Siguiente</button>
+                    <div className="activity-card">
+                        <div className="card-header">
+                            <h2 className="card-title">Comentarios</h2>
+                            <span className="badge">{comentariosTotalCount}</span>
+                        </div>
+                        
+                        <div className="activity-content">
+                            {Array.isArray(comentarios) && comentarios.length > 0 ? (
+                                <div className="items-list">
+                                    {comentarios.map(comentario => (
+                                        <div key={comentario.id} className="activity-item-card">
+                                            <div className="item-content">
+                                                <p className="item-comment">"{comentario.contenido}"</p>
+                                                <Link to={`/hilo/${comentario.hiloId}`} className="item-link">
+                                                    Ver en contexto →
+                                                </Link>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="empty-state">
+                                    <p>No has creado ningún comentario todavía.</p>
+                                </div>
+                            )}
+                        </div>
+
+                        {comentariosTotalPages > 1 && (
+                            <div className="pagination">
+                                <button 
+                                    aria-label="Página anterior de comentarios" 
+                                    onClick={() => setComentariosPage(p => Math.max(1, p - 1))} 
+                                    disabled={comentariosPage === 1}
+                                    className="pagination-btn"
+                                >
+                                    ← Anterior
+                                </button>
+                                <span className="pagination-info">
+                                    Página {comentariosPage} de {comentariosTotalPages}
+                                </span>
+                                <button 
+                                    aria-label="Página siguiente de comentarios" 
+                                    onClick={() => setComentariosPage(p => Math.min(comentariosTotalPages, p + 1))} 
+                                    disabled={comentariosPage === comentariosTotalPages}
+                                    className="pagination-btn"
+                                >
+                                    Siguiente →
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
-            </div>
-
-            {/* Hilos pagination */}
-            <div style={{ display: 'flex', gap: 10, justifyContent: 'center', marginTop: 16 }}>
-                <button aria-label="Ir a página anterior" onClick={() => setHilosPage(p => Math.max(1, p - 1))} disabled={hilosPage === 1}>Anterior</button>
-                <span>Página {hilosPage} de {hilosTotalPages}</span>
-                <button aria-label="Ir a página siguiente" onClick={() => setHilosPage(p => Math.min(hilosTotalPages, p + 1))} disabled={hilosPage === hilosTotalPages}>Siguiente</button>
             </div>
         </div>
     );

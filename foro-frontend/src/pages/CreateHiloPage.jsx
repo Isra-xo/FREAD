@@ -72,54 +72,61 @@ const CreateHiloPage = () => {
     }
 
     return (
-        <div className="create-post-container">
-            <h2 className="page-title">Crear un Nuevo Hilo</h2>
-            <form onSubmit={handleSubmit} className="post-form">
-                {error && <p className="error-message">{error}</p>}
-                
-                <div className="form-group">
-                    <label htmlFor="comunidad">Comunidad</label>
-                    <select id="comunidad" value={foroId} onChange={(e) => setForoId(e.target.value)} required>
-                        <option value="" disabled>Selecciona una comunidad</option>
-                        {foros.length === 0 ? (
-                            <option value="" disabled>No hay comunidades creadas. Contacta a un administrador</option>
-                        ) : (
-                            foros.map(foro => (
-                                <option key={foro.id} value={foro.id}>
-                                    f/{foro.nombreForo}
-                                </option>
-                            ))
-                        )}
-                    </select>
+        <div className="create-hilo-wrapper">
+            <div className="create-hilo-container">
+                <div className="form-header">
+                    <h2 className="page-title"> Crear un Nuevo Hilo</h2>
+                    <p className="form-subtitle">Comparte tus ideas y comienza una conversación</p>
                 </div>
 
-                <div className="form-group">
-                    <label htmlFor="titulo">Título</label>
-                    <input
-                        id="titulo"
-                        type="text"
-                        placeholder="Un título interesante"
-                        value={titulo}
-                        onChange={(e) => setTitulo(e.target.value)}
-                        required
-                    />
-                </div>
+                <form onSubmit={handleSubmit} className="hilo-form">
+                    {error && <div className="error-banner">{error}</div>}
+                    
+                    <div className="form-group">
+                        <label htmlFor="comunidad">Comunidad</label>
+                        <select id="comunidad" value={foroId} onChange={(e) => setForoId(e.target.value)} required>
+                            <option value="" disabled>Selecciona una comunidad</option>
+                            {foros.length === 0 ? (
+                                <option value="" disabled>No hay comunidades creadas. Contacta a un administrador</option>
+                            ) : (
+                                foros.map(foro => (
+                                    <option key={foro.id} value={foro.id}>
+                                        f/{foro.nombreForo}
+                                    </option>
+                                ))
+                            )}
+                        </select>
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="titulo">Título</label>
+                        <input
+                            id="titulo"
+                            type="text"
+                            placeholder="Un título interesante"
+                            value={titulo}
+                            onChange={(e) => setTitulo(e.target.value)}
+                            required
+                        />
+                    </div>
 
-                <div className="form-group">
-                    <label htmlFor="contenido">Contenido (opcional)</label>
-                    <textarea
-                        id="contenido"
-                        placeholder="Escribe tu texto aquí..."
-                        rows="10"
-                        value={contenido}
-                        onChange={(e) => setContenido(e.target.value)}
-                    />
-                </div>
-                
-                <div className="form-actions">
-                    <button type="submit" className="btn btn-primary" disabled={foros.length === 0 || !canCreate}>Publicar Hilo</button>
-                </div>
-            </form>
+                    <div className="form-group">
+                        <label htmlFor="contenido">Contenido (opcional)</label>
+                        <textarea
+                            id="contenido"
+                            placeholder="Escribe tu texto aquí..."
+                            rows="10"
+                            value={contenido}
+                            onChange={(e) => setContenido(e.target.value)}
+                        />
+                    </div>
+                    
+                    <div className="form-actions">
+                        <button type="submit" className="btn-publish" disabled={foros.length === 0 || !canCreate}>
+                            <span className="btn-text">Publicar Hilo</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     );
 };

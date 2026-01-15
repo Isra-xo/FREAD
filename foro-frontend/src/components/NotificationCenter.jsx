@@ -64,22 +64,22 @@ const NotificationCenter = () => {
     };
 
     const handleDeleteNotificacion = async (notificacionId) => {
-        // 🟢 OPTIMISTIC: Guardar estado anterior por si acaso rollback
+        // OPTIMISTIC: Guardar estado anterior por si acaso rollback
         const previousNotificaciones = notificaciones;
         const previousCount = unreadCount;
 
         try {
-            // 🟢 STEP 1: Actualizar UI inmediatamente (sin esperar servidor)
+            // STEP 1: Actualizar UI inmediatamente (sin esperar servidor)
             setNotificaciones(notificaciones.filter(n => n.id !== notificacionId));
             if (unreadCount > 0) {
                 setUnreadCount(unreadCount - 1);
             }
 
-            // 🟡 STEP 2: Enviar petición al servidor (background)
+            // STEP 2: Enviar petición al servidor (background)
             await deleteNotificacion(notificacionId);
             showToast('Notificación eliminada', 'success');
         } catch (error) {
-            // 🔴 STEP 3: Si falla, revertir estado y recargar desde servidor
+            // STEP 3: Si falla, revertir estado y recargar desde servidor
             console.error('[DELETE ERROR]', error);
             setNotificaciones(previousNotificaciones);
             setUnreadCount(previousCount);
@@ -115,7 +115,7 @@ const NotificationCenter = () => {
                 onClick={() => setIsOpen(!isOpen)}
                 aria-label="Notificaciones"
             >
-                🔔
+                <span>🔔</span>
                 {unreadCount > 0 && (
                     <span className="notification-badge">
                         {unreadCount > 99 ? '99+' : unreadCount}

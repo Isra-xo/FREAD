@@ -1,34 +1,356 @@
-.post-card {
-    background-color: #161b22;
-    border: 1px solid #30363d;
-    border-radius: 8px;
-    margin-bottom: 10px;
-    display: flex;
-    transition: border-color 0.2s;
+/* ═══════════════════════════════════════════════════════════════════════════════
+   📝 POST CARD - GLASSMORPHISM + BORDE GRADIENTE CON GLOW
+   Animaciones suaves, truncado de contenido, diseño premium
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* 🌟 CONTENEDOR CON ESPACIO PARA SHADOW */
+.post-card-container {
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
-.post-card:hover { border-color: #58a6ff; }
+
+/* 🎨 TARJETA PRINCIPAL */
+.post-card {
+    display: flex;
+    gap: 12px;
+    padding: 16px;
+    background: linear-gradient(135deg, rgba(31, 41, 55, 0.4), rgba(31, 41, 55, 0.2));
+    border: 2px solid rgba(147, 51, 234, 0.25);
+    border-radius: 12px;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2), inset 0 0 1px rgba(255, 255, 255, 0.1);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    cursor: pointer;
+}
+
+/* 🔥 HOVER: GLOW BRILLANTE CON BORDE GRADIENTE */
+.post-card:hover {
+    border-color: rgba(147, 51, 234, 0.8);
+    box-shadow: 
+        0 8px 32px rgba(147, 51, 234, 0.25),
+        inset 0 0 20px rgba(147, 51, 234, 0.1),
+        0 0 30px rgba(147, 51, 234, 0.4);
+    background: linear-gradient(135deg, rgba(31, 41, 55, 0.6), rgba(31, 41, 55, 0.4));
+    transform: translateY(-2px);
+}
+
+.post-card-container:hover {
+    transform: translateY(-4px);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   🗳️ COLUMNA DE VOTACIÓN
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
 .post-voting {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 8px;
-    background-color: #0d1117;
-    width: 40px;
-    color: #8b949e; 
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 12px;
+    background-color: rgba(18, 18, 18, 0.4);
+    border-radius: 8px;
+    border: 1px solid rgba(147, 51, 234, 0.15);
+    min-width: 50px;
+    flex-shrink: 0;
+    backdrop-filter: blur(4px);
 }
+
+/* ▲ BOTÓN DE VOTO */
 .vote-btn {
-    background: none; border: none; color: #8b949e; cursor: pointer; font-size: 1.2rem;
-}
-.post-content { padding: 8px 16px; flex-grow: 1; }
-.post-meta { font-size: 0.75rem; color: #8b949e; margin: 0 0 8px 0; }
-.post-title-link { text-decoration: none; }
-.post-title { margin: 0 0 8px 0; font-size: 1.1rem; color: #f0f6fc; }
-.post-actions { display: flex; gap: 16px; font-size: 0.75rem; }
-.post-actions a, .post-actions button {
+    background: none;
+    border: none;
     color: #8b949e;
-    font-weight: bold;
-    text-decoration: none;
+    cursor: pointer;
+    font-size: 1.1rem;
+    padding: 4px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
 }
-.post-action-btn { background: none; border: none; color: #8b949e; cursor: pointer; font-weight: bold; padding: 0; font-size: 0.75rem; }
-.post-action-btn.saved { color: #58a6ff; }
-.btn-delete { background: none; border: none; color: #f85149; cursor: pointer; font-weight: bold; padding: 0; font-size: 0.75rem; }
+
+.vote-btn:hover {
+    color: #f0f6fc;
+    background-color: rgba(147, 51, 234, 0.15);
+    transform: scale(1.2);
+}
+
+.vote-btn.vote-up:active {
+    color: #3b82f6;
+}
+
+.vote-btn.vote-down:active {
+    color: #ef4444;
+}
+
+/* 📊 CONTADOR DE VOTOS */
+.vote-count {
+    color: #e5e7eb;
+    font-weight: 700;
+    font-size: 0.9rem;
+    min-width: 30px;
+    text-align: center;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   📝 CONTENIDO PRINCIPAL
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+.post-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+}
+
+/* 🏷️ META INFORMACIÓN */
+.post-meta {
+    margin: 0;
+    font-size: 0.8rem;
+    color: #8b949e;
+    font-weight: 500;
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.meta-user {
+    color: #d0d7de;
+    font-weight: 600;
+}
+
+.meta-separator {
+    opacity: 0.5;
+}
+
+.foro-link {
+    color: #3b82f6;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.foro-link:hover {
+    color: #60a5fa;
+    text-decoration: underline;
+}
+
+/* 🎯 TÍTULO */
+.post-title-link {
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.post-title {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #f0f6fc;
+    line-height: 1.4;
+    transition: all 0.2s ease;
+}
+
+.post-title-link:hover .post-title {
+    color: #60a5fa;
+}
+
+/* 📄 CUERPO DEL POST (TRUNCADO A 3 LÍNEAS) */
+.post-body {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #d0d7de;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    word-break: break-word;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   🎬 ACCIONES
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+.post-actions {
+    display: flex;
+    gap: 16px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+}
+
+.post-action-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: none;
+    border: 1px solid rgba(147, 51, 234, 0.2);
+    border-radius: 6px;
+    color: #8b949e;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.post-action-item:hover {
+    background-color: rgba(147, 51, 234, 0.1);
+    border-color: rgba(147, 51, 234, 0.4);
+    color: #f0f6fc;
+}
+
+.post-action-item:active {
+    transform: scale(0.95);
+}
+
+/* 💬 ACCIÓN: COMENTARIOS */
+.comments-action {
+    color: #3b82f6;
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+.comments-action:hover {
+    background-color: rgba(59, 130, 246, 0.1);
+    border-color: rgba(59, 130, 246, 0.6);
+    color: #60a5fa;
+}
+
+/* 🔗 ACCIÓN: COMPARTIR */
+.share-action {
+    color: #8b949e;
+    border-color: rgba(147, 51, 234, 0.2);
+}
+
+.share-action:hover {
+    background-color: rgba(147, 51, 234, 0.1);
+    border-color: rgba(147, 51, 234, 0.4);
+    color: #f0f6fc;
+}
+
+/* ⭐ ACCIÓN: GUARDAR */
+.save-action {
+    color: #8b949e;
+    border-color: rgba(147, 51, 234, 0.2);
+}
+
+.save-action:hover {
+    background-color: rgba(147, 51, 234, 0.1);
+    border-color: rgba(147, 51, 234, 0.4);
+    color: #fbbf24;
+}
+
+.save-action.saved {
+    background-color: rgba(251, 191, 36, 0.15);
+    border-color: rgba(251, 191, 36, 0.4);
+    color: #fbbf24;
+    font-weight: 700;
+}
+
+/* 🗑️ ACCIÓN: ELIMINAR */
+.delete-action {
+    color: #ef4444;
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+.delete-action:hover {
+    background-color: rgba(239, 68, 68, 0.1);
+    border-color: rgba(239, 68, 68, 0.6);
+    color: #f87171;
+}
+
+/* 🎨 ICONO DE ACCIÓN */
+.action-icon {
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   RESPONSIVE DESIGN
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+    .post-card {
+        gap: 10px;
+        padding: 12px;
+    }
+
+    .post-title {
+        font-size: 1rem;
+    }
+
+    .post-body {
+        font-size: 0.9rem;
+    }
+
+    .post-meta {
+        font-size: 0.75rem;
+    }
+
+    .post-actions {
+        gap: 8px;
+    }
+
+    .post-action-item {
+        padding: 4px 8px;
+        font-size: 0.7rem;
+        gap: 4px;
+    }
+
+    .action-icon {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .post-card {
+        gap: 8px;
+        padding: 10px;
+    }
+
+    .post-voting {
+        min-width: 45px;
+        padding: 6px 8px;
+    }
+
+    .vote-btn {
+        width: 24px;
+        height: 24px;
+        font-size: 0.9rem;
+    }
+
+    .post-title {
+        font-size: 0.95rem;
+    }
+
+    .post-body {
+        -webkit-line-clamp: 2;
+        font-size: 0.85rem;
+    }
+
+    .post-actions {
+        gap: 6px;
+    }
+
+    .post-action-item {
+        padding: 4px 6px;
+        font-size: 0.65rem;
+    }
+
+    /* Ocultar texto en acciones en móvil muy pequeño */
+    @media (max-width: 360px) {
+        .post-action-item span:not(.action-icon) {
+            display: none;
+        }
+    }
+}

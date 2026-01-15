@@ -1,18 +1,520 @@
-.admin-container { max-width: 1000px; margin: 20px auto; padding: 24px; }
-.admin-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-.admin-table th, .admin-table td { padding: 12px; border: 1px solid #30363d; text-align: left; }
-.admin-table th { background-color: #161b22; }
+/* ═══════════════════════════════════════════════════════════════════════════════
+   👨‍💼 ADMIN PAGE - TABLA DE CRISTAL + GESTIÓN DE USUARIOS
+   Glassmorphism, cards con hover glow, selectores oscuros, botones rojos
+   ═══════════════════════════════════════════════════════════════════════════════ */
 
-.table-container {
-    max-height: 60vh; 
-    overflow-y: auto; 
-    border: 1px solid #30363d;
+/* 🌟 WRAPPER Y CONTENEDOR */
+.admin-wrapper {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    min-height: calc(100vh - 100px);
+    padding: 40px 24px;
+    background: linear-gradient(135deg, rgba(18, 18, 18, 0.9), rgba(31, 41, 55, 0.6));
+}
+
+.admin-container {
+    width: 100%;
+    max-width: 1200px;
+    animation: slideUp 0.5s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   HEADER DEL PANEL
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+.admin-header {
+    margin-bottom: 40px;
+    text-align: center;
+    animation: fadeInDown 0.6s ease-out;
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.admin-header h1 {
+    margin: 0 0 12px 0;
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #f0f6fc;
+    letter-spacing: -0.5px;
+}
+
+.admin-header .subtitle {
+    margin: 0;
+    font-size: 1rem;
+    color: #8b949e;
+    font-weight: 500;
+    line-height: 1.6;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   SECCIÓN DE USUARIOS - TABLA DE CRISTAL
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+.users-section {
+    padding: 32px;
+    background: linear-gradient(135deg, rgba(31, 41, 55, 0.4), rgba(31, 41, 55, 0.2));
+    border: 1.5px solid rgba(59, 130, 246, 0.25);
+    border-radius: 16px;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.3),
+        0 0 40px rgba(59, 130, 246, 0.1),
+        inset 0 0 1px rgba(255, 255, 255, 0.1);
+    animation: slideInUp 0.5s ease-out;
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 📋 HEADER DE SECCIÓN */
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+    padding-bottom: 16px;
+    border-bottom: 1.5px solid rgba(59, 130, 246, 0.15);
+}
+
+.section-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #f0f6fc;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 40px;
+    padding: 0 12px;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(147, 51, 234, 0.2));
+    border: 1.5px solid rgba(59, 130, 246, 0.4);
+    border-radius: 10px;
+    color: #60a5fa;
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+/* 📝 LISTA DE USUARIOS */
+.users-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+    max-height: 600px;
+    overflow-y: auto;
+    padding-right: 8px;
+}
+
+.users-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.users-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.users-list::-webkit-scrollbar-thumb {
+    background-color: rgba(59, 130, 246, 0.3);
+    border-radius: 3px;
+}
+
+.users-list::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(59, 130, 246, 0.5);
+}
+
+/* 👤 TARJETA DE USUARIO */
+.user-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    background: linear-gradient(135deg, rgba(18, 18, 18, 0.6), rgba(31, 41, 55, 0.3));
+    border: 1.5px solid rgba(59, 130, 246, 0.15);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.user-card:hover {
+    background: linear-gradient(135deg, rgba(18, 18, 18, 0.8), rgba(31, 41, 55, 0.5));
+    border-color: rgba(59, 130, 246, 0.4);
+    box-shadow: 0 0 25px rgba(59, 130, 246, 0.2);
+}
+
+/* 🎨 AVATAR */
+.user-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #9333ea 0%, #6d28d9 100%);
+    box-shadow: 0 0 20px rgba(147, 51, 234, 0.3);
+}
+
+.avatar-letter {
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+/* 📌 INFORMACIÓN DEL USUARIO */
+.user-info {
+    flex: 1;
+}
+
+.user-name {
+    margin: 0 0 4px 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #f0f6fc;
+}
+
+.user-email {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #8b949e;
+}
+
+/* ⚙️ ACCIONES DEL USUARIO */
+.user-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+/* 🎯 SELECTOR DE ROL - OSCURO Y REDONDEADO */
+.role-wrapper {
+    position: relative;
 }
 
 .role-select {
+    padding: 8px 12px;
+    background: linear-gradient(135deg, rgba(18, 18, 18, 0.8), rgba(18, 18, 18, 0.6));
+    border: 1.5px solid rgba(59, 130, 246, 0.3);
+    border-radius: 10px;
+    color: #d0d7de;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    appearance: none;
+    padding-right: 28px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%2360a5fa' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    padding-right: 32px;
+}
+
+.role-select:hover {
+    background-color: rgba(18, 18, 18, 0.9);
+    border-color: rgba(59, 130, 246, 0.6);
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.15);
+}
+
+.role-select:focus {
+    outline: none;
+    background-color: rgba(18, 18, 18, 0.95);
+    border-color: rgba(59, 130, 246, 0.8);
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.25);
+}
+
+.role-select option {
     background-color: #0d1117;
-    color: #c9d1d9;
-    padding: 5px;
-    border-radius: 4px;
-    border: 1px solid #30363d;
+    color: #d0d7de;
+    padding: 8px;
+}
+
+/* 🗑️ BOTÓN ELIMINAR - ROJO SUAVE → INTENSO */
+.btn-delete {
+    padding: 8px 12px;
+    background: rgba(248, 81, 73, 0.15);
+    border: 1.5px solid rgba(248, 81, 73, 0.3);
+    border-radius: 10px;
+    color: #f87171;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-delete:hover {
+    background: linear-gradient(135deg, rgba(248, 81, 73, 0.35), rgba(220, 38, 38, 0.25));
+    border-color: rgba(248, 81, 73, 0.8);
+    color: #fca5a5;
+    box-shadow: 0 0 30px rgba(248, 81, 73, 0.4);
+    transform: scale(1.08);
+}
+
+.btn-delete:active {
+    transform: scale(0.96);
+}
+
+/* 📭 ESTADO VACÍO */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 250px;
+    color: #8b949e;
+}
+
+.empty-icon {
+    font-size: 3rem;
+    margin-bottom: 12px;
+    opacity: 0.8;
+}
+
+.empty-state p {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   PAGINACIÓN
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+.pagination {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    justify-content: center;
+    padding-top: 20px;
+    border-top: 1.5px solid rgba(59, 130, 246, 0.15);
+}
+
+.pagination-btn {
+    padding: 10px 16px;
+    background: transparent;
+    border: 1.5px solid rgba(59, 130, 246, 0.3);
+    border-radius: 10px;
+    color: #60a5fa;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    white-space: nowrap;
+}
+
+.pagination-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(59, 130, 246, 0.1));
+    border-color: rgba(59, 130, 246, 0.6);
+    color: #93c5fd;
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
+    transform: translateY(-2px);
+}
+
+.pagination-btn:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.pagination-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.pagination-info {
+    font-size: 0.9rem;
+    color: #8b949e;
+    font-weight: 600;
+    min-width: 160px;
+    text-align: center;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   RESPONSIVE DESIGN
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 1024px) {
+    .users-section {
+        padding: 24px;
+    }
+
+    .users-list {
+        max-height: 500px;
+    }
+}
+
+@media (max-width: 768px) {
+    .admin-wrapper {
+        padding: 24px 16px;
+    }
+
+    .admin-header h1 {
+        font-size: 1.8rem;
+    }
+
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .users-section {
+        padding: 20px;
+    }
+
+    .user-card {
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .user-info {
+        flex: 1 1 calc(100% - 64px);
+    }
+
+    .user-actions {
+        flex: 1 1 100%;
+        width: 100%;
+    }
+
+    .role-wrapper {
+        flex: 1;
+    }
+
+    .role-select {
+        width: 100%;
+    }
+
+    .users-list {
+        max-height: 400px;
+    }
+
+    .pagination {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .admin-wrapper {
+        padding: 16px 12px;
+    }
+
+    .admin-header h1 {
+        font-size: 1.4rem;
+    }
+
+    .admin-header .subtitle {
+        font-size: 0.9rem;
+    }
+
+    .section-header h2 {
+        font-size: 1.2rem;
+    }
+
+    .badge {
+        min-width: 36px;
+        height: 36px;
+        font-size: 0.9rem;
+    }
+
+    .users-section {
+        padding: 16px;
+    }
+
+    .user-card {
+        padding: 12px;
+        gap: 12px;
+    }
+
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+        min-width: 40px;
+    }
+
+    .avatar-letter {
+        font-size: 1rem;
+    }
+
+    .user-name {
+        font-size: 0.85rem;
+    }
+
+    .user-email {
+        font-size: 0.75rem;
+    }
+
+    .user-actions {
+        width: 100%;
+    }
+
+    .role-select {
+        padding: 6px 10px;
+        font-size: 0.75rem;
+    }
+
+    .btn-delete {
+        padding: 6px 10px;
+        font-size: 0.9rem;
+    }
+
+    .users-list {
+        max-height: 300px;
+    }
+
+    .pagination-btn {
+        padding: 8px 12px;
+        font-size: 0.8rem;
+    }
+
+    .pagination-info {
+        min-width: 110px;
+        font-size: 0.8rem;
+    }
 }

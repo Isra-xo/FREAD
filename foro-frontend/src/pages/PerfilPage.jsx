@@ -17,6 +17,7 @@ const PerfilPage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [isEditing, setIsEditing] = useState(false);
+    const [isSaved, setIsSaved] = useState(false);
     
     const [newNombreUsuario, setNewNombreUsuario] = useState('');
     const [newEmail, setNewEmail] = useState('');
@@ -25,6 +26,7 @@ const PerfilPage = () => {
     const [confirmNewPassword, setConfirmNewPassword] = useState('');
     const [profilePictureFile, setProfilePictureFile] = useState(null);
     const [profilePicturePreview, setProfilePicturePreview] = useState(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -72,13 +74,22 @@ const PerfilPage = () => {
     const handleUpdateProfile = async (e) => {
         e.preventDefault();
         setError('');
+        setIsSubmitting(true);
         const updates = {};
         if (newNombreUsuario !== userData.nombreUsuario) updates.nombreUsuario = newNombreUsuario;
         if (newEmail !== userData.email) updates.email = newEmail;
         
         if (newPassword) {
-            if (newPassword !== confirmNewPassword) return setError("Las nuevas contraseñas no coinciden.");
-            if (!oldPassword) return setError("Debes ingresar tu contraseña actual para cambiarla.");
+            if (newPassword !== confirmNewPassword) {
+                setError("Las nuevas contraseñas no coinciden.");
+                setIsSubmitting(false);
+                return;
+            }
+            if (!oldPassword) {
+                setError("Debes ingresar tu contraseña actual para cambiarla.");
+                setIsSubmitting(false);
+                return;
+            }
             updates.oldPassword = oldPassword;
             updates.newPassword = newPassword;
         }
@@ -96,9 +107,11 @@ const PerfilPage = () => {
 
             alert("Perfil actualizado con éxito.");
             setIsEditing(false);
+            setIsSubmitting(false);
             window.location.reload();
         } catch (err) {
             setError(err.response?.data?.message || "Error al actualizar el perfil.");
+            setIsSubmitting(false);
         }
     };
     
@@ -107,95 +120,190 @@ const PerfilPage = () => {
     if (!userData) return <div className="profile-page-container"><p>No se encontró información del usuario.</p></div>;
 
     return (
-        <div className="profile-page-container">
-            <h1>Mi Perfil</h1>
-            <div className="profile-header">
-                <img 
-                    src={userData.profilePictureUrl ? `${"http://localhost:5153"}${userData.profilePictureUrl}` : `https://ui-avatars.com/api/?name=${userData.nombreUsuario.replace(' ', '+')}&background=random`}
-                    alt="Foto de perfil" 
-                    className="profile-picture" 
-                />
-                <div className="user-info">
-                    <h2>{userData.nombreUsuario}</h2>
-                    <p>{userData.email}</p>
-                    <p>Rol: {user.role}</p>
-                    <button className="btn" onClick={() => setIsEditing(!isEditing)}>
-                        {isEditing ? 'Cancelar' : 'Editar Perfil'}
-                    </button>
-                </div>
-            </div>
-            
-            {isEditing && (
-                <form onSubmit={handleUpdateProfile} className="profile-edit-form">
-                    <h3>Actualizar Información</h3>
-                    {error && <p className="error-message">{error}</p>}
-                    <div className="form-group">
-                        <label>Nombre de Usuario:</label>
-                        <input type="text" value={newNombreUsuario} onChange={(e) => setNewNombreUsuario(e.target.value)} required />
-                    </div>
-                    <div className="form-group">
-                        <label>Email:</label>
-                        <input type="email" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} required />
-                    </div>
-                    <hr />
-                    <div className="form-group">
-                        <label>Contraseña Actual (solo si quieres cambiarla):</label>
-                        <input type="password" value={oldPassword} onChange={(e) => setOldPassword(e.target.value)} />
-                    </div>
-                    <div className="form-group">
-                        <label>Nueva Contraseña:</label>
-                        <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
-                    </div>
-                    <div className="form-group">
-                        <label>Confirmar Nueva Contraseña:</label>
-                        <input type="password" value={confirmNewPassword} onChange={(e) => setConfirmNewPassword(e.target.value)} />
-                    </div>
-                    <hr />
-                    <div className="form-group">
-                        <label>Foto de Perfil:</label>
-                        <div className="file-input-container">
-                            <input type="file" id="file-upload" accept="image/*" onChange={handleFileChange} />
-                            <label htmlFor="file-upload" className="btn btn-secondary">Elegir Archivo</label>
-                            <span className="file-name">{profilePictureFile ? profilePictureFile.name : "No se eligió ningún archivo"}</span>
+        <div className="perfil-wrapper">
+            <div className="perfil-container">
+                <div className="perfil-header">
+                    <div className="avatar-section">
+                        <div className="avatar-pro">
+                            <img 
+                                src={userData.profilePictureUrl ? `${"http://localhost:5153"}${userData.profilePictureUrl}` : `https://ui-avatars.com/api/?name=${userData.nombreUsuario.replace(' ', '+')}&background=random`}
+                                alt="Foto de perfil" 
+                                className="avatar-image" 
+                            />
                         </div>
-                        {profilePicturePreview && (<img src={profilePicturePreview} alt="Previsualización" className="profile-picture-preview" />)}
                     </div>
-                    <button type="submit" className="btn btn-primary">Guardar Cambios</button>
-                </form>
-            )}
-
-            <div className="profile-sections">
-                <div className="user-hilos">
-                    <h3>Mis Hilos Creados ({hilos.length})</h3>
-                    <div className="scrollable-list">
-                        {hilos.length > 0 ? hilos.map(hilo => (
-                            <div key={hilo.id} className="profile-item">
-                                <Link to={`/hilo/${hilo.id}`}>{hilo.titulo}</Link>
-                                <p className="meta-info">En: f/{hilo.foro?.nombreForo}</p>
-                            </div>
-                        )) : <p>No has creado ningún hilo.</p>}
-                    </div>
-
-                    <div style={{ display: 'flex', gap: 10, justifyContent: 'center', marginTop: 8 }}>
-                        <button aria-label="Ir a página anterior" onClick={() => setHilosPage(p => Math.max(1, p - 1))} disabled={hilosPage === 1}>Anterior</button>
-                        <span>Página {hilosPage} de {hilosTotalPages}</span>
-                        <button aria-label="Ir a página siguiente" onClick={() => setHilosPage(p => Math.min(hilosTotalPages, p + 1))} disabled={hilosPage === hilosTotalPages}>Siguiente</button>
+                    
+                    <div className="header-info">
+                        <h1 className="profile-title">{userData.nombreUsuario}</h1>
+                        <p className="profile-email">{userData.email}</p>
+                        <p className="profile-role">{user.role}</p>
+                        <button className="btn-edit-profile" onClick={() => {
+                            setIsEditing(!isEditing);
+                            if (isEditing) {
+                                setIsSaved(false);
+                            }
+                        }}>
+                            {isEditing ? 'Cancelar' : 'Editar Perfil'}
+                        </button>
                     </div>
                 </div>
-                <div className="user-foros">
-                    <h3>Foros Creados ({foros.length})</h3>
-                    <div className="scrollable-list">
-                        {foros.length > 0 ? foros.map(foro => (
-                            <div key={foro.id} className="profile-item">
-                                <Link to={`/foro/${foro.id}`}>f/{foro.nombreForo}</Link>
-                            </div>
-                        )) : <p>No has creado ningún foro.</p>}
-                    </div>
+                
+                {isEditing && (
+                    <form onSubmit={handleUpdateProfile} className="settings-form">
+                        <div className="form-header">
+                            <h2>Ajustes de Perfil</h2>
+                            <p className="subtitle">Actualiza tu información personal y seguridad</p>
+                        </div>
+                        
+                        {error && <div className="error-banner">{error}</div>}
 
-                    <div style={{ display: 'flex', gap: 10, justifyContent: 'center', marginTop: 8 }}>
-                        <button aria-label="Ir a página anterior" onClick={() => setForosPage(p => Math.max(1, p - 1))} disabled={forosPage === 1}>Anterior</button>
-                        <span>Página {forosPage} de {forosTotalPages}</span>
-                        <button aria-label="Ir a página siguiente" onClick={() => setForosPage(p => Math.min(forosTotalPages, p + 1))} disabled={forosPage === forosTotalPages}>Siguiente</button>
+                        <div className="form-section">
+                            <h3 className="section-title">Información Personal</h3>
+                            <div className="form-group">
+                                <label>Nombre de Usuario</label>
+                                <input 
+                                    type="text" 
+                                    value={newNombreUsuario} 
+                                    onChange={(e) => setNewNombreUsuario(e.target.value)} 
+                                    required 
+                                    disabled={!isEditing || isSubmitting}
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Correo Electrónico</label>
+                                <input 
+                                    type="email" 
+                                    value={newEmail} 
+                                    onChange={(e) => setNewEmail(e.target.value)} 
+                                    required 
+                                    disabled={!isEditing || isSubmitting}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="form-section">
+                            <h3 className="section-title">Seguridad</h3>
+                            <div className="form-group">
+                                <label>Contraseña Actual <span className="optional">(solo si cambias contraseña)</span></label>
+                                <input 
+                                    type="password" 
+                                    value={oldPassword} 
+                                    onChange={(e) => setOldPassword(e.target.value)}
+                                    disabled={!isEditing || isSubmitting}
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Nueva Contraseña</label>
+                                <input 
+                                    type="password" 
+                                    value={newPassword} 
+                                    onChange={(e) => setNewPassword(e.target.value)}
+                                    disabled={!isEditing || isSubmitting}
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Confirmar Nueva Contraseña</label>
+                                <input 
+                                    type="password" 
+                                    value={confirmNewPassword} 
+                                    onChange={(e) => setConfirmNewPassword(e.target.value)}
+                                    disabled={!isEditing || isSubmitting}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="form-section">
+                            <h3 className="section-title">Foto de Perfil</h3>
+                            <div className="form-group">
+                                <label>Selecciona una imagen</label>
+                                <div className="file-input-wrapper">
+                                    <input 
+                                        type="file" 
+                                        id="file-upload" 
+                                        accept="image/*" 
+                                        onChange={handleFileChange}
+                                        disabled={!isEditing || isSubmitting}
+                                    />
+                                    <label htmlFor="file-upload" className="btn-file-upload">Elegir Archivo</label>
+                                    <span className="file-name">{profilePictureFile ? profilePictureFile.name : "Sin archivo seleccionado"}</span>
+                                </div>
+                                {profilePicturePreview && (
+                                    <div className="preview-section">
+                                        <p className="preview-label">Vista Previa:</p>
+                                        <img src={profilePicturePreview} alt="Previsualización" className="avatar-preview" />
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        <button type="submit" className="btn-save" disabled={isSubmitting}>
+                            {isSubmitting ? 'Guardando...' : 'Guardar Cambios'}
+                        </button>
+                    </form>
+                )}
+
+                <div className="activity-section">
+                    <div className="activity-card">
+                        <h3 className="card-title">Mis Hilos Creados</h3>
+                        <p className="card-count">{hilos.length} hilos</p>
+                        <div className="activity-list">
+                            {hilos.length > 0 ? hilos.map(hilo => (
+                                <div key={hilo.id} className="activity-item">
+                                    <Link to={`/hilo/${hilo.id}`} className="item-link">{hilo.titulo}</Link>
+                                    <p className="item-meta">en f/{hilo.foro?.nombreForo}</p>
+                                </div>
+                            )) : <p className="empty-state">No has creado ningún hilo.</p>}
+                        </div>
+                        <div className="pagination">
+                            <button 
+                                aria-label="Página anterior" 
+                                onClick={() => setHilosPage(p => Math.max(1, p - 1))} 
+                                disabled={hilosPage === 1}
+                                className="pagination-btn"
+                            >
+                                ← Anterior
+                            </button>
+                            <span className="pagination-info">Página {hilosPage} de {hilosTotalPages}</span>
+                            <button 
+                                aria-label="Página siguiente" 
+                                onClick={() => setHilosPage(p => Math.min(hilosTotalPages, p + 1))} 
+                                disabled={hilosPage === hilosTotalPages}
+                                className="pagination-btn"
+                            >
+                                Siguiente →
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div className="activity-card">
+                        <h3 className="card-title">Foros Creados</h3>
+                        <p className="card-count">{foros.length} foros</p>
+                        <div className="activity-list">
+                            {foros.length > 0 ? foros.map(foro => (
+                                <div key={foro.id} className="activity-item">
+                                    <Link to={`/foro/${foro.id}`} className="item-link">f/{foro.nombreForo}</Link>
+                                </div>
+                            )) : <p className="empty-state">No has creado ningún foro.</p>}
+                        </div>
+                        <div className="pagination">
+                            <button 
+                                aria-label="Página anterior" 
+                                onClick={() => setForosPage(p => Math.max(1, p - 1))} 
+                                disabled={forosPage === 1}
+                                className="pagination-btn"
+                            >
+                                ← Anterior
+                            </button>
+                            <span className="pagination-info">Página {forosPage} de {forosTotalPages}</span>
+                            <button 
+                                aria-label="Página siguiente" 
+                                onClick={() => setForosPage(p => Math.min(forosTotalPages, p + 1))} 
+                                disabled={forosPage === forosTotalPages}
+                                className="pagination-btn"
+                            >
+                                Siguiente →
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -1,4 +1,4 @@
-/* 🔔 NOTIFICATION CENTER STYLES */
+/* NOTIFICATION CENTER STYLES */
 
 .notification-center {
     position: relative;
@@ -6,7 +6,7 @@
     align-items: center;
 }
 
-/* 🔔 BOTÓN CAMPANITA */
+/* BOTÓN CAMPANITA */
 .notification-bell {
     background: none;
     border: none;
@@ -27,7 +27,7 @@
     transform: scale(0.95);
 }
 
-/* 🔴 BADGE DE CONTADOR */
+/* BADGE DE CONTADOR */
 .notification-badge {
     position: absolute;
     top: 0;
@@ -54,7 +54,7 @@
     }
 }
 
-/* 📋 DROPDOWN CONTAINER */
+/* DROPDOWN CONTAINER */
 .notification-dropdown {
     position: absolute;
     top: 100%;

@@ -40,7 +40,7 @@ const RegisterPage = () => {
                 <div className="auth-box">
                     <div className="auth-header">
                         <i className="fas fa-check-circle icon"></i>
-                        <h1>¡Registro Exitoso!</h1>
+                        <h1>Registro Exitoso</h1>
                         <p>Serás redirigido para iniciar sesión...</p>
                     </div>
                 </div>

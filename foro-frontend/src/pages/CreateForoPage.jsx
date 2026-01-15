@@ -17,7 +17,7 @@ const CreateForoPage = () => {
         setIsSubmitting(true);
         try {
             await createForo({ nombreForo, descripcion });
-            showToast(`¡Comunidad "${nombreForo}" creada con éxito! 🎉`, 'success');
+            showToast(`¡Comunidad "${nombreForo}" creada con éxito! `, 'success');
             // Redirige a la página principal después de crear el foro
             navigate('/');
         } catch (err) {
@@ -31,16 +31,19 @@ const CreateForoPage = () => {
     };
 
     return (
-        <div className="create-foro-container">
-            <div className="form-panel">
-                <h2>Cuéntanos sobre tu comunidad</h2>
-                <p className="subtitle">Un nombre y una descripción ayudan a la gente a entender de qué se trata.</p>
-                
-                <form onSubmit={handleSubmit}>
-                    {error && <p className="error-message">{error}</p>}
+        <div className="create-foro-wrapper">
+            <div className="create-foro-content">
+                <div className="form-container">
+                    <div className="form-header">
+                        <h2> Cuéntanos sobre tu comunidad</h2>
+                        <p className="subtitle">Un nombre y una descripción ayudan a la gente a entender de qué se trata.</p>
+                    </div>
+                    
+                    <form onSubmit={handleSubmit} className="foro-form">
+                        {error && <div className="error-banner">{error}</div>}
 
-                    <div className="form-group">
-                        <label>Nombre de la Comunidad</label>
+                        <div className="form-group">
+                            <label> Nombre de la Comunidad</label>
                         <input
                             type="text"
                             placeholder="Ej: Videojuegos"
@@ -50,11 +53,11 @@ const CreateForoPage = () => {
                             required
                             disabled={isSubmitting}
                         />
-                        <small>{21 - nombreForo.length} caracteres restantes</small>
+                        <small className="char-count">{21 - nombreForo.length} caracteres restantes</small>
                     </div>
 
                     <div className="form-group">
-                        <label>Descripción</label>
+                        <label>💬 Descripción</label>
                         <textarea
                             placeholder="Describe de qué trata tu comunidad..."
                             value={descripcion}
@@ -64,29 +67,32 @@ const CreateForoPage = () => {
                             required
                             disabled={isSubmitting}
                         />
-                        <small>{300 - descripcion.length} caracteres restantes</small>
+                        <small className="char-count">{300 - descripcion.length} caracteres restantes</small>
                     </div>
 
                     <div className="form-actions">
-                        <button type="button" className="btn btn-secondary" onClick={() => navigate('/')} disabled={isSubmitting}>Cancelar</button>
-                        <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
-                            {isSubmitting ? 'Creando...' : 'Crear Comunidad'}
+                        <button type="button" className="btn-cancel" onClick={() => navigate('/')} disabled={isSubmitting}>
+                            ✕ Cancelar
+                        </button>
+                        <button type="submit" className="btn-create-foro" disabled={isSubmitting}>
+                            <span>{isSubmitting ? 'Creando...' : 'Crear Comunidad'}</span>
                         </button>
                     </div>
-                </form>
-            </div>
+                    </form>
+                </div>
 
-            <div className="preview-panel">
-                <h4>Vista Previa</h4>
-                <div className="preview-card">
-                    <div className="preview-header">f/{nombreForo || 'nombrecomunidad'}</div>
-                    <div className="preview-body">
-                        <p>{descripcion || 'La descripción de tu comunidad aparecerá aquí.'}</p>
-                    </div>
-                    <div className="preview-footer">
-                        <span><strong>1</strong> miembro</span>
-                        <span>•</span>
-                        <span><strong>1</strong> en línea</span>
+                <div className="preview-container">
+                    <h4> Vista Previa</h4>
+                    <div className="preview-card">
+                        <div className="preview-header">f/{nombreForo || 'nombrecomunidad'}</div>
+                        <div className="preview-body">
+                            <p>{descripcion || 'La descripción de tu comunidad aparecerá aquí.'}</p>
+                        </div>
+                        <div className="preview-footer">
+                            <span><strong>1</strong> miembro</span>
+                            <span>•</span>
+                            <span><strong>1</strong> en línea</span>
+                        </div>
                     </div>
                 </div>
             </div>

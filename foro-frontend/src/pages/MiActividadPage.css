@@ -1,0 +1,438 @@
+/* WRAPPER Y CONTENEDOR */
+.actividad-wrapper {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    min-height: calc(100vh - 100px);
+    padding: 40px 24px;
+    background: linear-gradient(135deg, rgba(18, 18, 18, 0.9), rgba(31, 41, 55, 0.6));
+}
+
+.actividad-container {
+    width: 100%;
+    max-width: 1200px;
+    animation: slideUp 0.5s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* HEADER DE LA PÁGINA */
+
+.actividad-header {
+    margin-bottom: 40px;
+    text-align: center;
+    animation: fadeInDown 0.6s ease-out;
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.actividad-header h1 {
+    margin: 0 0 12px 0;
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #f0f6fc;
+    letter-spacing: -0.5px;
+}
+
+.actividad-header .subtitle {
+    margin: 0;
+    font-size: 1rem;
+    color: #8b949e;
+    font-weight: 500;
+    line-height: 1.6;
+}
+
+/* DASHBOARD - GRID DE TARJETAS */
+
+.activity-dashboard {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+}
+
+.activity-card {
+    padding: 32px;
+    background: linear-gradient(135deg, rgba(31, 41, 55, 0.4), rgba(31, 41, 55, 0.2));
+    border: 1.5px solid rgba(147, 51, 234, 0.25);
+    border-radius: 16px;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.3),
+        0 0 40px rgba(147, 51, 234, 0.1),
+        inset 0 0 1px rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+    animation: slideInCard 0.5s ease-out;
+}
+
+@keyframes slideInCard {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.activity-card:hover {
+    border-color: rgba(147, 51, 234, 0.4);
+    box-shadow: 
+        0 12px 48px rgba(0, 0, 0, 0.4),
+        0 0 60px rgba(147, 51, 234, 0.15),
+        inset 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+/* HEADER DE TARJETA */
+.card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1.5px solid rgba(147, 51, 234, 0.15);
+}
+
+.card-title {
+    margin: 0;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #f0f6fc;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    height: 32px;
+    padding: 0 8px;
+    background: linear-gradient(135deg, rgba(147, 51, 234, 0.3), rgba(59, 130, 246, 0.2));
+    border: 1px solid rgba(147, 51, 234, 0.4);
+    border-radius: 8px;
+    color: #60a5fa;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+/* CONTENIDO DE ACTIVIDAD */
+.activity-content {
+    margin-bottom: 20px;
+    min-height: 200px;
+}
+
+.items-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 8px;
+}
+
+.items-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.items-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.items-list::-webkit-scrollbar-thumb {
+    background-color: rgba(147, 51, 234, 0.3);
+    border-radius: 3px;
+}
+
+.items-list::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(147, 51, 234, 0.5);
+}
+
+/*  ITEM DE ACTIVIDAD - TARJETA MINIMALISTA */
+.activity-item-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px;
+    background: linear-gradient(135deg, rgba(18, 18, 18, 0.6), rgba(31, 41, 55, 0.3));
+    border: 1px solid rgba(147, 51, 234, 0.15);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.activity-item-card:hover {
+    background: linear-gradient(135deg, rgba(18, 18, 18, 0.8), rgba(31, 41, 55, 0.5));
+    border-color: rgba(147, 51, 234, 0.4);
+    box-shadow: 0 0 20px rgba(147, 51, 234, 0.2);
+    transform: translateX(4px);
+}
+
+.item-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.item-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.item-title {
+    margin: 0 0 6px 0;
+    color: #f0f6fc;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    cursor: pointer;
+    transition: color 0.2s ease;
+    display: block;
+    word-break: break-word;
+}
+
+.item-title:hover {
+    color: #60a5fa;
+}
+
+.item-meta {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #8b949e;
+    line-height: 1.3;
+}
+
+.foro-name {
+    color: #60a5fa;
+    font-weight: 600;
+}
+
+.item-comment {
+    margin: 0 0 8px 0;
+    font-size: 0.9rem;
+    color: #d0d7de;
+    font-style: italic;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.item-link {
+    display: inline-block;
+    color: #60a5fa;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+}
+
+.item-link:hover {
+    color: #93c5fd;
+    text-decoration: underline;
+}
+
+.item-arrow {
+    color: #60a5fa;
+    font-weight: 700;
+    flex-shrink: 0;
+    opacity: 0;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    margin-top: 2px;
+}
+
+.activity-item-card:hover .item-arrow {
+    opacity: 1;
+    transform: translateX(2px);
+}
+
+/* ESTADO VACÍO */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+    color: #8b949e;
+}
+
+.empty-icon {
+    font-size: 3rem;
+    margin-bottom: 12px;
+    opacity: 0.8;
+}
+
+.empty-state p {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+/* PAGINACIÓN PREMIUM */
+
+.pagination {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    justify-content: center;
+    padding: 16px 20px;
+    background: rgba(31, 41, 55, 0.4) !important;
+    border: 1.5px solid rgba(147, 51, 234, 0.3) !important;
+    border-radius: 12px;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+    margin-top: 20px;
+}
+
+.pagination-btn {
+    padding: 10px 16px;
+    background: transparent !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    border-radius: 10px;
+    color: #ffffff !important;
+    font-weight: 800 !important;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    white-space: nowrap;
+}
+
+.pagination-btn:hover:not(:disabled) {
+    background: rgba(147, 51, 234, 0.15);
+    border-color: rgba(147, 51, 234, 0.6);
+    color: #f0f6fc;
+    box-shadow: 0 0 20px rgba(147, 51, 234, 0.25);
+    transform: translateY(-2px);
+}
+
+.pagination-btn:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.pagination-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.pagination-info {
+    font-size: 1rem !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    min-width: 140px;
+    text-align: center;
+}
+
+/* Diseño Resposivo */
+
+@media (max-width: 1024px) {
+    .activity-dashboard {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+}
+
+@media (max-width: 768px) {
+    .actividad-wrapper {
+        padding: 24px 16px;
+    }
+
+    .actividad-header h1 {
+        font-size: 1.8rem;
+    }
+
+    .activity-card {
+        padding: 24px;
+    }
+
+    .card-title {
+        font-size: 1.2rem;
+    }
+
+    .items-list {
+        max-height: 300px;
+    }
+
+    .pagination {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .actividad-wrapper {
+        padding: 16px 12px;
+    }
+
+    .actividad-header h1 {
+        font-size: 1.4rem;
+    }
+
+    .activity-card {
+        padding: 16px;
+    }
+
+    .card-header {
+        margin-bottom: 16px;
+    }
+
+    .card-title {
+        font-size: 1rem;
+    }
+
+    .badge {
+        min-width: 28px;
+        height: 28px;
+        font-size: 0.8rem;
+    }
+
+    .activity-item-card {
+        gap: 10px;
+        padding: 12px;
+    }
+
+    .item-icon {
+        font-size: 1.2rem;
+    }
+
+    .item-title {
+        font-size: 0.9rem;
+    }
+
+    .item-meta {
+        font-size: 0.8rem;
+    }
+
+    .items-list {
+        max-height: 250px;
+    }
+
+    .pagination-btn {
+        padding: 6px 10px;
+        font-size: 0.75rem;
+    }
+
+    .pagination-info {
+        min-width: 120px;
+        font-size: 0.75rem;
+    }
+}
