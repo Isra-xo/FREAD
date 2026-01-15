@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GeneradorDeModelos.Services;
 
-/// <summary>
+
 /// Servicio para gestionar votos en hilos.
 /// Implementa lógica para prevenir múltiples votos del mismo usuario en un hilo.
-/// </summary>
+
 public class VoteService : IVoteService
 {
     private readonly FreadContext _context;

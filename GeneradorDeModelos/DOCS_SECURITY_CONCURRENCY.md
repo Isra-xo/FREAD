@@ -67,7 +67,7 @@ public byte[]? RowVersion { get; set; }
 
 ---
 
-## 4) Archivos y métodos referenciados 📁
+## 4) Archivos y métodos referenciados 
 - `Controllers/AuthController.cs`
   - `CreateToken(Usuario user)` — genera JWT con claims y firma HMAC SHA512.
   - `[Authorize]` y `[OutputCache]` en métodos protegidos (ej. `GetUserMenu()`).
@@ -88,5 +88,3 @@ public byte[]? RowVersion { get; set; }
 - Revisar `AppSettings:Token` y migrarlo a storage seguro en entorno de producción.
 
 ---
-
-¿Quieres que añada tests de integración que simulen conflictos concurrentes en `VoteService` y un ejemplo de cómo instrumentar métricas para estos eventos?

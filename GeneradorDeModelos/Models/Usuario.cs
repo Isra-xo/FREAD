@@ -20,6 +20,9 @@ public partial class Usuario
     public virtual ICollection<Hilo> Hilos { get; set; } = new List<Hilo>();
     public virtual ICollection<Comentario> Comentarios { get; set; } = new List<Comentario>(); // Relación con Comentarios
     public virtual ICollection<Post> Posts { get; set; } = new List<Post>();
+    
+    // 🔴 FASE 10: Relación con Notificaciones
+    public virtual ICollection<Notificacion> Notificaciones { get; set; } = new List<Notificacion>();
 
     public virtual Role Rol { get; set; } = null!;
 }

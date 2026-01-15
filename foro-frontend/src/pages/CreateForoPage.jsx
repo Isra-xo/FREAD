@@ -1,22 +1,32 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createForo } from '../services/apiService';
+import { useNotification } from '../context/NotificationContext';
 import './CreateForoPage.css'; 
 
 const CreateForoPage = () => {
     const [nombreForo, setNombreForo] = useState('');
     const [descripcion, setDescripcion] = useState('');
     const [error, setError] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const navigate = useNavigate();
+    const { showToast } = useNotification();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setIsSubmitting(true);
         try {
             await createForo({ nombreForo, descripcion });
-            navigate('/crear-hilo');
+            showToast(`¡Comunidad "${nombreForo}" creada con éxito! 🎉`, 'success');
+            // Redirige a la página principal después de crear el foro
+            navigate('/');
         } catch (err) {
             console.error("Error al crear el foro:", err);
-            setError("No se pudo crear el foro. Inténtalo de nuevo.");
+            const errorMessage = err.response?.data?.message || "No se pudo crear el foro. Inténtalo de nuevo.";
+            setError(errorMessage);
+            showToast(errorMessage, 'error');
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -33,11 +43,12 @@ const CreateForoPage = () => {
                         <label>Nombre de la Comunidad</label>
                         <input
                             type="text"
-                            placeholder="Ej: f/Videojuegos"
+                            placeholder="Ej: Videojuegos"
                             value={nombreForo}
                             onChange={(e) => setNombreForo(e.target.value)}
                             maxLength="21"
                             required
+                            disabled={isSubmitting}
                         />
                         <small>{21 - nombreForo.length} caracteres restantes</small>
                     </div>
@@ -51,13 +62,16 @@ const CreateForoPage = () => {
                             maxLength="300"
                             rows="5"
                             required
+                            disabled={isSubmitting}
                         />
                         <small>{300 - descripcion.length} caracteres restantes</small>
                     </div>
 
                     <div className="form-actions">
-                        <button type="button" className="btn btn-secondary" onClick={() => navigate('/')}>Cancelar</button>
-                        <button type="submit" className="btn btn-primary">Crear Comunidad</button>
+                        <button type="button" className="btn btn-secondary" onClick={() => navigate('/')} disabled={isSubmitting}>Cancelar</button>
+                        <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
+                            {isSubmitting ? 'Creando...' : 'Crear Comunidad'}
+                        </button>
                     </div>
                 </form>
             </div>

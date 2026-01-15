@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { getHilos } from '../services/apiService';
 import { extractItems, getTotalPages } from '../services/apiHelpers';
 import PostCard from '../components/PostCard';
@@ -6,6 +7,7 @@ import Sidebar from '../components/Sidebar';
 import './HomePage.css';
 
 const HomePage = ({ searchTerm }) => {
+    const { id: foroIdParam } = useParams();
     const [hilos, setHilos] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -19,8 +21,8 @@ const HomePage = ({ searchTerm }) => {
         const fetchHilos = async () => {
             setLoading(true);
             try {
-                // Ahora llamamos a la API con paginación y el término de búsqueda
-                const response = await getHilos(currentPage, pageSize, searchTerm);
+                // Ahora llamamos a la API con paginación, búsqueda y filtro por foro si aplica
+                const response = await getHilos(currentPage, pageSize, searchTerm, foroIdParam);
                 const items = extractItems(response);
                 setHilos(items);
                 setTotalPages(getTotalPages(response));
@@ -31,12 +33,12 @@ const HomePage = ({ searchTerm }) => {
             }
         };
         fetchHilos();
-    }, [currentPage, searchTerm]); // Se recarga si cambia la página o la búsqueda
+    }, [currentPage, searchTerm, foroIdParam]); // Se recarga si cambia la página, la búsqueda o el foro seleccionado
 
-    // Reset page to 1 when the search term changes to avoid invalid pages
+    // Reset page to 1 when the search term or foro changes to avoid invalid pages
     useEffect(() => {
         setCurrentPage(1);
-    }, [searchTerm]);
+    }, [searchTerm, foroIdParam]);
 
     const handlePageChange = (newPage) => {
         if (newPage >= 1 && newPage <= totalPages) {
@@ -62,6 +64,9 @@ const HomePage = ({ searchTerm }) => {
     return (
         <div className="home-container">
             <div className="posts-list">
+                {foroIdParam && (
+                    <h2 className="foro-header">Comunidad: {hilos[0]?.foro?.nombreForo ?? `ID ${foroIdParam}`}</h2>
+                )}
                 {hilos.length > 0 ? (
                     <>
                         {hilos.map(hilo => (
@@ -92,7 +97,13 @@ const HomePage = ({ searchTerm }) => {
                         </div>
                     </>
                 ) : (
-                    <p>No se encontraron resultados para "{searchTerm}"</p>
+                    <p>
+                        {foroIdParam ? (
+                            "No hay hilos en esta comunidad."
+                        ) : (
+                            `No se encontraron resultados para "${searchTerm}"`
+                        )}
+                    </p>
                 )}
             </div>
             <Sidebar />

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import NotificationCenter from './NotificationCenter';
 import './Navbar.css';
 
 const Navbar = ({ searchTerm, setSearchTerm }) => {
@@ -57,7 +58,13 @@ const Navbar = ({ searchTerm, setSearchTerm }) => {
 
             <div className="navbar-right">
                 
-                <Link to="/crear-hilo" className="btn btn-primary">Crear Hilo</Link>
+                {(menuItems?.some(mi => mi.url === '/crear-hilo') || user?.role === 'Administrador') && (
+                    <Link to="/crear-hilo" className="btn btn-primary">Crear Hilo</Link>
+                )}
+
+                {/* 🔔 NOTIFICATION CENTER - CAMPANITA DE NOTIFICACIONES (FASE 10) */}
+                <NotificationCenter />
+
                 <div className="dropdown">
                     <button className="btn dropdown-btn">
                         Cuenta ({userName}) ▼

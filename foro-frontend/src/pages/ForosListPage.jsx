@@ -47,7 +47,7 @@ const ForosListPage = () => {
             <div>
                 {foros.map(foro => (
                     <div key={foro.id} style={{ border: '1px solid gray', padding: '10px', margin: '10px' }}>
-                        <h2>{foro.nombreForo}</h2>
+                        <h2><Link to={`/foro/${foro.id}`}>f/{foro.nombreForo}</Link></h2>
                         <p>{foro.descripcion}</p>
                         <small>Creado por: {foro.usuario?.nombreUsuario || 'Desconocido'}</small>
 

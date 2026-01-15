@@ -187,7 +187,7 @@ const PerfilPage = () => {
                     <div className="scrollable-list">
                         {foros.length > 0 ? foros.map(foro => (
                             <div key={foro.id} className="profile-item">
-                                <Link to={`/f/${foro.nombreForo}`}>{foro.nombreForo}</Link>
+                                <Link to={`/foro/${foro.id}`}>f/{foro.nombreForo}</Link>
                             </div>
                         )) : <p>No has creado ningún foro.</p>}
                     </div>

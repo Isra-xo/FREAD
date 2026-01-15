@@ -76,7 +76,7 @@ const HiloDetailPage = () => {
         <div className="hilo-detail-container">
             <div className="hilo-content">
                 <p className="meta-info">
-                    {hilo.foro && <Link to={`/f/${hilo.foro.nombreForo}`}>f/{hilo.foro.nombreForo}</Link>}
+                    {hilo.foro && <Link to={`/foro/${hilo.foro.id}`}>f/{hilo.foro.nombreForo}</Link>}
                     <span style={{ margin: '0 8px' }}>•</span>
                     Publicado por u/{hilo.usuario?.nombreUsuario}
                 </p>

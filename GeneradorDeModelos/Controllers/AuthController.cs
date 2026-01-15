@@ -103,7 +103,7 @@ namespace GeneradorDeModelos.Controllers
         // --- MÉTODO AÑADIDO PARA EL MENÚ DINÁMICO ---
         [HttpGet("menu")]
         [Authorize]
-        [OutputCache(Duration = 60)] // Cache de 60 segundos
+        [OutputCache(Duration = 60, Tags = new[] { "UserMenuTag" })] // ✅ Cache con Tag para invalidación selectiva
         public async Task<ActionResult<IEnumerable<MenuItem>>> GetUserMenu()
         {
             // 1. Obtiene el nombre del rol del usuario desde su token JWT

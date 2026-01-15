@@ -36,11 +36,15 @@ builder.Services.AddScoped<IVoteService, VoteService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Configurar OutputCache
+// Configurar OutputCache (Phase 9: Menu caching)
 builder.Services.AddOutputCache(options =>
 {
     options.DefaultExpirationTimeSpan = TimeSpan.FromSeconds(60);
 });
+
+// 🔵 Configurar Distributed Caching (Phase 10: Notificaciones + datos temporales)
+// En desarrollo usamos in-memory, en producción cambiar a Redis/NCache
+builder.Services.AddDistributedMemoryCache();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -87,6 +91,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors("MyCorsPolicy");
 app.UseOutputCache(); // Middleware de OutputCache debe ir antes de UseAuthentication
+// 🔵 HybridCache no necesita middleware explícito, funciona via DI
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

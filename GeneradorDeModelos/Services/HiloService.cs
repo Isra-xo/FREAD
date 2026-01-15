@@ -17,7 +17,7 @@ public class HiloService : IHiloService
         _context = context;
     }
 
-    public async Task<PagedResult<Hilo>> GetHilosAsync(int pageNumber = 1, int pageSize = 10, string? searchTerm = null)
+    public async Task<PagedResult<Hilo>> GetHilosAsync(int pageNumber = 1, int pageSize = 10, string? searchTerm = null, int? foroId = null)
     {
         // Validar parámetros
         if (pageNumber < 1) pageNumber = 1;
@@ -28,6 +28,12 @@ public class HiloService : IHiloService
             .Include(h => h.Usuario)
             .Include(h => h.Foro)
             .AsQueryable();
+
+        // Aplicar filtro por foro si se proporciona
+        if (foroId.HasValue)
+        {
+            query = query.Where(h => h.ForoId == foroId.Value);
+        }
 
         // Aplicar filtro de búsqueda si se proporciona
         if (!string.IsNullOrWhiteSpace(searchTerm))
@@ -122,13 +128,25 @@ public class HiloService : IHiloService
         return true;
     }
 
-    public async Task<IEnumerable<Hilo>> GetHilosByUsuarioAsync(int userId)
+    public async Task<PagedResult<Hilo>> GetHilosByUsuarioAsync(int userId, int pageNumber = 1, int pageSize = 10)
     {
-        return await _context.Hilos
+        if (pageNumber < 1) pageNumber = 1;
+        if (pageSize < 1) pageSize = 10;
+        if (pageSize > 100) pageSize = 100;
+
+        var query = _context.Hilos
             .Where(h => h.UsuarioId == userId)
             .Include(h => h.Foro)
-            .OrderByDescending(h => h.FechaCreacion)
+            .OrderByDescending(h => h.FechaCreacion);
+
+        var totalCount = await query.CountAsync();
+
+        var items = await query
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
             .ToListAsync();
+
+        return new PagedResult<Hilo>(items, totalCount, pageNumber, pageSize);
     }
 
     public async Task<bool> HiloExistsAsync(int id)

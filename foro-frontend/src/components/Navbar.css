@@ -20,6 +20,10 @@
   gap: 20px;
 }
 
+.navbar-right {
+  gap: 12px;
+}
+
 .navbar-center {
   flex-grow: 1;
   justify-content: center;

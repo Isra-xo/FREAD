@@ -9,11 +9,11 @@ namespace GeneradorDeModelos.Services;
 /// </summary>
 public interface IHiloService
 {
-    Task<PagedResult<Hilo>> GetHilosAsync(int pageNumber = 1, int pageSize = 10, string? searchTerm = null);
+    Task<PagedResult<Hilo>> GetHilosAsync(int pageNumber = 1, int pageSize = 10, string? searchTerm = null, int? foroId = null);
     Task<Hilo?> GetHiloByIdAsync(int id);
     Task<Hilo> CreateHiloAsync(HiloCreateDto hiloDto, int usuarioId);
     Task<bool> UpdateHiloAsync(int id, HiloUpdateDto hiloUpdateDto, int usuarioId, bool isAdmin);
     Task<bool> DeleteHiloAsync(int id, int usuarioId, bool isAdmin);
-    Task<IEnumerable<Hilo>> GetHilosByUsuarioAsync(int userId);
+    Task<PagedResult<Hilo>> GetHilosByUsuarioAsync(int userId, int pageNumber = 1, int pageSize = 10);
     Task<bool> HiloExistsAsync(int id);
 }

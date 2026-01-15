@@ -15,6 +15,7 @@ import PerfilPage from './pages/PerfilPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import NotFoundPage from './pages/NotFoundPage';
 import MiActividadPage from './pages/MiActividadPage';
+import NotificationsPage from './pages/NotificationsPage';
 
 
 function App() {
@@ -31,17 +32,27 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           
-          {/* --- Rutas Protegidas --- */}
+          {/* --- Rutas Protegidas (sin permiso específico) --- */}
           <Route element={<ProtectedRoute />}>
             {/* Pasa el término de búsqueda a HomePage para filtrar */}
             <Route path="/" element={<HomePage searchTerm={searchTerm} />} />
             <Route path="/foros" element={<ForosListPage />} />
-            <Route path="/crear-foro" element={<CreateForoPage />} />
-            <Route path="/crear-hilo" element={<CreateHiloPage />} />
+            <Route path="/foro/:id" element={<HomePage searchTerm={searchTerm} />} />
             <Route path="/hilo/:id" element={<HiloDetailPage />} />
             <Route path="/perfil" element={<PerfilPage />} />
             <Route path="/popular" element={<AdminPage />} />
             <Route path="/mi-actividad" element={<MiActividadPage />} />
+            <Route path="/notificaciones" element={<NotificationsPage />} />
+          </Route>
+
+          {/* --- Ruta protegida con permiso específico: Crear Hilo --- */}
+          <Route element={<ProtectedRoute requiredPermission="/crear-hilo" />}>
+            <Route path="/crear-hilo" element={<CreateHiloPage />} />
+          </Route>
+
+          {/* --- Ruta protegida con permiso específico: Crear Foro --- */}
+          <Route element={<ProtectedRoute requiredPermission="/crear-foro" />}>
+            <Route path="/crear-foro" element={<CreateForoPage />} />
           </Route>
 
           {/* --- Ruta para Páginas no Encontradas (404) --- */}

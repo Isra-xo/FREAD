@@ -27,9 +27,10 @@ namespace GeneradorDeModelos.Controllers
         public async Task<ActionResult<PagedResult<Hilo>>> GetHilos(
             [FromQuery] int pageNumber = 1, 
             [FromQuery] int pageSize = 10,
-            [FromQuery] string? searchTerm = null)
+            [FromQuery] string? searchTerm = null,
+            [FromQuery] int? foroId = null)
         {
-            var result = await _hiloService.GetHilosAsync(pageNumber, pageSize, searchTerm);
+            var result = await _hiloService.GetHilosAsync(pageNumber, pageSize, searchTerm, foroId);
             return Ok(result);
         }
 
@@ -86,10 +87,10 @@ namespace GeneradorDeModelos.Controllers
         // GET: api/Hilos/ByUsuario/5
         [HttpGet("ByUsuario/{userId}")]
         [Authorize]
-        public async Task<ActionResult<IEnumerable<Hilo>>> GetHilosByUsuario(int userId)
+        public async Task<ActionResult<PagedResult<Hilo>>> GetHilosByUsuario(int userId, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
-            var hilos = await _hiloService.GetHilosByUsuarioAsync(userId);
-            return Ok(hilos);
+            var result = await _hiloService.GetHilosByUsuarioAsync(userId, pageNumber, pageSize);
+            return Ok(result);
         }
 
         // PUT: api/Hilos/5 -> Dueño o admin pueden editar

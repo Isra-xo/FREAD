@@ -52,7 +52,12 @@ const PostCard = ({ post }) => {
             </div>
             <div className="post-content">
                 <p className="post-meta">
-                    Publicado por u/{post.usuario?.nombreUsuario || 'desconocido'}
+                    Publicado por u/{post.usuario?.nombreUsuario || 'desconocido'} • 
+                    {post.foro ? (
+                        <Link to={`/foro/${post.foro.id}`} className="foro-link">f/{post.foro.nombreForo}</Link>
+                    ) : (
+                        'f/Desconocido'
+                    )}
                 </p>
                 <Link to={`/hilo/${post.id}`} className="post-title-link">
                     <h3 className="post-title">{post.titulo}</h3>

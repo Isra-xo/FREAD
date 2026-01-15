@@ -28,6 +28,9 @@ public partial class FreadContext : DbContext
     // --- NUEVA ENTIDAD PARA SISTEMA DE VOTOS ---
     public virtual DbSet<Voto> Votos { get; set; }
 
+    // 🔴 FASE 10: NUEVA ENTIDAD PARA NOTIFICACIONES
+    public virtual DbSet<Notificacion> Notificaciones { get; set; }
+
     // OnConfiguring eliminado - La connection string se configura mediante inyección de dependencias en Program.cs
     // Esto previene que se exponga información sensible en el código fuente
 
@@ -169,6 +172,28 @@ public partial class FreadContext : DbContext
                 .HasForeignKey(d => d.HiloId)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_Votos_Hilos");
+        });
+
+        // 🔴 FASE 10: Configuración de la entidad Notificacion
+        modelBuilder.Entity<Notificacion>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Notificaciones__3214EC27");
+
+            entity.Property(e => e.Id).HasColumnName("ID");
+            entity.Property(e => e.UsuarioId).HasColumnName("UsuarioID");
+            entity.Property(e => e.Mensaje).HasMaxLength(1000);
+            entity.Property(e => e.Tipo).HasMaxLength(50);
+            entity.Property(e => e.FechaCreacion).HasDefaultValueSql("(sysdatetimeoffset())");
+
+            // Índice para búsqueda rápida por usuario + leída
+            entity.HasIndex(e => new { e.UsuarioId, e.EsLeida })
+                .HasDatabaseName("IX_Notificaciones_UsuarioId_EsLeida");
+
+            // Relación con Usuario
+            entity.HasOne(d => d.Usuario).WithMany(p => p.Notificaciones)
+                .HasForeignKey(d => d.UsuarioId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK_Notificaciones_Usuarios");
         });
 
         OnModelCreatingPartial(modelBuilder);
