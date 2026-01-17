@@ -1,4 +1,4 @@
-/*  WRAPPER Y CONTENEDOR PRINCIPAL */
+/* ESTRUCTURA PRINCIPAL */
 .create-foro-wrapper {
     display: flex;
     align-items: flex-start;
@@ -17,8 +17,7 @@
     margin-bottom: 40px;
 }
 
-/* PANEL IZQUIERDO: FORMULARIO */
-
+/* PANEL FORMULARIO (IZQUIERDA) */
 .form-container {
     padding: 40px;
     background: linear-gradient(135deg, rgba(31, 41, 55, 0.4), rgba(31, 41, 55, 0.2));
@@ -44,7 +43,6 @@
     }
 }
 
-/*  HEADER DEL FORMULARIO */
 .form-header {
     margin-bottom: 28px;
     padding-bottom: 20px;
@@ -65,14 +63,12 @@
     line-height: 1.5;
 }
 
-/*  FORMULARIO */
 .foro-form {
     display: flex;
     flex-direction: column;
     gap: 20px;
 }
 
-/*  GRUPOS DE FORMULARIO */
 .form-group {
     display: flex;
     flex-direction: column;
@@ -87,7 +83,6 @@
     letter-spacing: 0.3px;
 }
 
-/*  INPUTS Y TEXTAREA */
 .form-group input,
 .form-group textarea {
     padding: 12px 14px;
@@ -108,7 +103,7 @@
     color: rgba(139, 148, 158, 0.6);
 }
 
-/*  FOCUS STATE: GLOW DINÁMICO */
+/* EFECTOS DE ENFOQUE (GLOW) */
 .form-group input:focus,
 .form-group textarea:focus {
     outline: none;
@@ -120,7 +115,6 @@
     transform: translateY(-2px);
 }
 
-/*  CONTADOR DE CARACTERES */
 .char-count {
     display: block;
     font-size: 0.8rem;
@@ -129,7 +123,6 @@
     margin-top: 4px;
 }
 
-/* MENSAJE DE ERROR */
 .error-banner {
     padding: 14px 16px;
     background: linear-gradient(135deg, rgba(248, 81, 73, 0.15), rgba(239, 68, 68, 0.1));
@@ -146,8 +139,6 @@
     25% { transform: translateX(-5px); }
     75% { transform: translateX(5px); }
 }
-
-/* BOTONES DE ACCIÓN*/
 
 .form-actions {
     display: flex;
@@ -204,9 +195,7 @@
     cursor: not-allowed;
 }
 
-/* PANEL DERECHO: VISTA PREVIA EN VIVO*/
-   
-
+/* PANEL VISTA PREVIA (DERECHA) */
 .preview-container {
     padding: 32px;
     background: linear-gradient(135deg, rgba(31, 41, 55, 0.3), rgba(31, 41, 55, 0.15));
@@ -238,7 +227,6 @@
     padding-bottom: 12px;
 }
 
-/* TARJETA DE VISTA PREVIA */
 .preview-card {
     background: linear-gradient(135deg, rgba(18, 18, 18, 0.6), rgba(31, 41, 55, 0.4));
     border: 1px solid rgba(59, 130, 246, 0.2);
@@ -281,7 +269,6 @@
 }
 
 /* RESPONSIVE DESIGN */
-
 @media (max-width: 1024px) {
     .create-foro-wrapper {
         padding: 24px 16px;
@@ -320,20 +307,6 @@
         font-size: 1.4rem;
     }
 
-    .form-group {
-        gap: 6px;
-    }
-
-    .form-group label {
-        font-size: 0.9rem;
-    }
-
-    .form-group input,
-    .form-group textarea {
-        padding: 10px 12px;
-        font-size: 0.9rem;
-    }
-
     .form-actions {
         flex-direction: column;
         gap: 10px;
@@ -344,18 +317,6 @@
         padding: 10px 16px;
         font-size: 0.9rem;
     }
-
-    .preview-container h4 {
-        font-size: 1rem;
-    }
-
-    .preview-header {
-        font-size: 1.1rem;
-    }
-
-    .preview-body p {
-        font-size: 0.85rem;
-    }
 }
 
 @media (max-width: 480px) {
@@ -363,32 +324,12 @@
         padding: 8px;
     }
 
-    .create-foro-content {
-        gap: 12px;
-    }
-
     .form-container,
     .preview-container {
         padding: 16px;
     }
 
-    .form-container h2 {
-        font-size: 1.2rem;
-    }
-
-    .form-group input,
-    .form-group textarea {
-        padding: 8px 10px;
-        font-size: 0.85rem;
-    }
-
-    .btn-cancel,
-    .btn-create-foro {
-        padding: 8px 12px;
-        font-size: 0.8rem;
-    }
-
     .preview-container {
-        display: none;
+        display: none; /* Se oculta vista previa en móviles pequeños */
     }
 }

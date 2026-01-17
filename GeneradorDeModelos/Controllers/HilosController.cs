@@ -5,7 +5,7 @@ using GeneradorDeModelos.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-
+using Microsoft.AspNetCore.OutputCaching; 
 namespace GeneradorDeModelos.Controllers
 {
     [Route("api/[controller]")]
@@ -24,6 +24,7 @@ namespace GeneradorDeModelos.Controllers
         // GET: api/hilos -> Cualquiera puede ver los hilos (con paginación y búsqueda)
         [HttpGet]
         [AllowAnonymous]
+        [OutputCache(Duration = 60)]
         public async Task<ActionResult<PagedResult<Hilo>>> GetHilos(
             [FromQuery] int pageNumber = 1, 
             [FromQuery] int pageSize = 10,

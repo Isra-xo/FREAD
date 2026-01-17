@@ -43,6 +43,7 @@ export const getHilos = (pageNumber = 1, pageSize = 10, searchTerm = null, foroI
 };
 export const getHiloById = (hiloId) => apiClient.get(`/Hilos/${hiloId}`);
 export const createHilo = (hiloData) => apiClient.post('/Hilos', hiloData);
+export const updateHilo = (hiloId, hiloData) => apiClient.put(`/Hilos/${hiloId}`, hiloData);
 export const deleteHilo = (hiloId) => apiClient.delete(`/Hilos/${hiloId}`);
 export const voteOnHilo = (hiloId, voteData) => apiClient.post(`/Hilos/${hiloId}/vote`, voteData);
 

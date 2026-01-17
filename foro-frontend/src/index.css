@@ -1,4 +1,4 @@
-/* --- Variables de Tema (Paleta de Colores) --- */
+/* --- Variables de Tema (Paleta de Colores) --- 
 :root {
   --background-dark: #1a1a2e;
   --background-medium: #161b22;
@@ -73,3 +73,7 @@ a:hover {
   border-radius: 6px;
   text-align: center;
 }
+  */
+  @tailwind base;
+@tailwind components;
+@tailwind utilities;

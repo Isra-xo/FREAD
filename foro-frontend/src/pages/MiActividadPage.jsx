@@ -1,20 +1,66 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { getHilosByUserId, getComentariosByUserId } from '../services/apiService';
 import { extractItems, getTotalPages, getTotalCount } from '../services/apiHelpers';
-import { Link } from 'react-router-dom';
-import './MiActividadPage.css';
+import { Link, useNavigate } from 'react-router-dom';
+import { 
+    ChatBubbleLeftEllipsisIcon, 
+    DocumentTextIcon, 
+    ChevronRightIcon, 
+    ClockIcon,
+    ArrowLeftIcon,
+    SparklesIcon
+} from '@heroicons/react/24/solid';
+
+// --- BACKGROUND OPTIMIZADO (Identidad Visual FREAD) ---
+const BackgroundEffects = React.memo(() => {
+    return (
+        <div className="fixed inset-0 z-0 pointer-events-none bg-[#050505] overflow-hidden translate-z-0">
+            <style>
+                {`
+                    @keyframes dark-flow { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+                    .gpu-blob { position: absolute; border-radius: 50%; opacity: 0.25; filter: blur(100px); will-change: transform; }
+                    .blob-purple { background: radial-gradient(circle, #581c87 0%, transparent 70%); }
+                    .blob-blue { background: radial-gradient(circle, #1e3a8a 0%, transparent 70%); }
+                    
+                    .activity-glass-card {
+                        background: rgba(20, 20, 25, 0.6);
+                        backdrop-filter: blur(15px);
+                        border: 1px solid rgba(255, 255, 255, 0.05);
+                        border-radius: 2rem;
+                        transition: all 0.4s ease;
+                    }
+                    .activity-glass-card:hover {
+                        background: rgba(30, 30, 40, 0.8);
+                        border-color: rgba(168, 85, 247, 0.3);
+                        transform: translateY(-5px);
+                    }
+
+                    .neon-timeline-line {
+                        position: absolute; left: 20px; top: 0; bottom: 0;
+                        width: 2px; background: linear-gradient(to bottom, transparent, #6d28d9, transparent);
+                    }
+                `}
+            </style>
+            <div className="gpu-blob blob-purple w-[60rem] h-[60rem] top-[-10%] left-[-10%]"></div>
+            <div className="gpu-blob blob-blue w-[50rem] h-[50rem] bottom-[-10%] right-[-10%]"></div>
+        </div>
+    );
+});
 
 const MiActividadPage = () => {
     const { user } = useAuth();
+    const navigate = useNavigate();
     const [hilos, setHilos] = useState([]);
     const [hilosPage, setHilosPage] = useState(1);
     const [hilosTotalPages, setHilosTotalPages] = useState(1);
     const [hilosTotalCount, setHilosTotalCount] = useState(0);
+    
     const [comentarios, setComentarios] = useState([]);
     const [comentariosPage, setComentariosPage] = useState(1);
     const [comentariosTotalPages, setComentariosTotalPages] = useState(1);
     const [comentariosTotalCount, setComentariosTotalCount] = useState(0);
+    
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
@@ -22,226 +68,183 @@ const MiActividadPage = () => {
         if (user && user.id) {
             const fetchData = async () => {
                 setLoading(true);
-                setError('');
                 const userIdToUse = Number(user.id);
-                console.log("[MiActividadPage] Iniciando carga de actividad para userId:", userIdToUse);
                 try {
-                    // Paso 1: Realizar llamadas a la API
-                    console.log("[MiActividadPage] Llamando a getHilosByUserId y getComentariosByUserId...");
                     const [hilosRes, comentariosRes] = await Promise.all([
-                        getHilosByUserId(userIdToUse, hilosPage, 10),
-                        getComentariosByUserId(userIdToUse, comentariosPage, 10)
+                        getHilosByUserId(userIdToUse, hilosPage, 5),
+                        getComentariosByUserId(userIdToUse, comentariosPage, 5)
                     ]);
                     
-                    // Paso 2: Validar que las respuestas existan
-                    console.log("[MiActividadPage] Respuestas recibidas exitosamente");
-                    if (!hilosRes || !hilosRes.data) {
-                        console.error("[MiActividadPage] Respuesta de hilos inválida:", hilosRes);
-                        throw new Error("Respuesta de hilos no válida");
-                    }
-                    if (!comentariosRes || !comentariosRes.data) {
-                        console.error("[MiActividadPage] Respuesta de comentarios inválida:", comentariosRes);
-                        throw new Error("Respuesta de comentarios no válida");
-                    }
-                    
-                    // Paso 3: Inspeccionar estructura de respuesta
-                    console.log("[MiActividadPage] Estructura de hilosRes.data:", {
-                        keys: Object.keys(hilosRes.data),
-                        completa: hilosRes.data
-                    });
-                    console.log("[MiActividadPage] Estructura de comentariosRes.data:", {
-                        keys: Object.keys(comentariosRes.data),
-                        completa: comentariosRes.data
-                    });
-                    
-                    // Paso 4: Extraer datos usando helpers
-                    console.log("[MiActividadPage] Extrayendo datos con helpers...");
-                    const hilosItems = extractItems(hilosRes);
-                    const hilosTotalCountValue = getTotalCount(hilosRes);
-                    const hilosTotalPagesValue = getTotalPages(hilosRes);
-                    
-                    const comentariosItems = extractItems(comentariosRes);
-                    const comentariosTotalCountValue = getTotalCount(comentariosRes);
-                    const comentariosTotalPagesValue = getTotalPages(comentariosRes);
-                    
-                    // Paso 5: Validar que extractItems retornó arrays
-                    console.log("[MiActividadPage] Validando tipos de datos extraídos");
-                    if (!Array.isArray(hilosItems)) {
-                        console.error("[MiActividadPage] hilosItems no es un array:", hilosItems);
-                        throw new Error("hilosItems no es un array");
-                    }
-                    if (!Array.isArray(comentariosItems)) {
-                        console.error("[MiActividadPage] comentariosItems no es un array:", comentariosItems);
-                        throw new Error("comentariosItems no es un array");
-                    }
-                    
-                    // Paso 6: Resumen de datos cargados
-                    console.log("[MiActividadPage] Datos cargados exitosamente:", {
-                        hilos: {
-                            cantidad: hilosItems.length,
-                            totalCount: hilosTotalCountValue,
-                            totalPages: hilosTotalPagesValue
-                        },
-                        comentarios: {
-                            cantidad: comentariosItems.length,
-                            totalCount: comentariosTotalCountValue,
-                            totalPages: comentariosTotalPagesValue
-                        }
-                    });
-                    
-                    // Paso 7: Actualizar estados
-                    setHilos(hilosItems);
-                    setHilosTotalPages(hilosTotalPagesValue);
-                    setHilosTotalCount(hilosTotalCountValue);
-                    setComentarios(comentariosItems);
-                    setComentariosTotalPages(comentariosTotalPagesValue);
-                    setComentariosTotalCount(comentariosTotalCountValue);
-                } catch (error) {
-                    console.error("[MiActividadPage] Error cargando actividad:", error.message);
-                    console.error("[MiActividadPage] Detalles completos del error:", {
-                        message: error.message,
-                        status: error.response?.status,
-                        statusText: error.response?.statusText,
-                        data: error.response?.data,
-                        config: error.config?.url
-                    });
-                    setError(`No se pudo cargar tu actividad: ${error.message}`);
-                    setHilos([]);
-                    setComentarios([]);
+                    setHilos(extractItems(hilosRes) || []);
+                    setHilosTotalPages(getTotalPages(hilosRes) || 1);
+                    setHilosTotalCount(getTotalCount(hilosRes) || 0);
+
+                    setComentarios(extractItems(comentariosRes) || []);
+                    setComentariosTotalPages(getTotalPages(comentariosRes) || 1);
+                    setComentariosTotalCount(getTotalCount(comentariosRes) || 0);
+                } catch (err) {
+                    setError(`Error en la red central: ${err.message}`);
                 } finally {
                     setLoading(false);
                 }
             };
             fetchData();
-        } else {
-            setLoading(false);
-            setError("Usuario no autenticado. Por favor, inicia sesión.");
-            console.warn("[MiActividadPage] Usuario no disponible en AuthContext:", user);
         }
     }, [user, hilosPage, comentariosPage]);
 
-    if (loading) return <div className="profile-page-container"><p>Cargando tu actividad...</p></div>;
-    
-    if (error) return <div className="profile-page-container"><p className="error-message">{error}</p></div>;
+    if (loading) return (
+        <div className="min-h-screen bg-[#050505] flex items-center justify-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+        </div>
+    );
 
     return (
-        <div className="actividad-wrapper">
-            <div className="actividad-container">
-                <div className="actividad-header">
-                    <h1>Mi Actividad</h1>
-                    <p className="subtitle">Visualiza todos tus hilos y comentarios en un solo lugar</p>
-                </div>
+        <div className="w-full min-h-screen text-white font-sans bg-[#050505] overflow-x-hidden pb-20">
+            <BackgroundEffects />
 
-                <div className="activity-dashboard">
-                    <div className="activity-card">
-                        <div className="card-header">
-                            <h2 className="card-title">Hilos Creados</h2>
-                            <span className="badge">{hilosTotalCount}</span>
+            {/* --- HEADER TÁCTICO --- */}
+            <header className="relative z-10 pt-32 px-6 max-w-7xl mx-auto">
+                <button 
+                    onClick={() => navigate(-1)} 
+                    className="mb-6 flex items-center gap-2 text-gray-400 hover:text-purple-400 transition-colors group"
+                >
+                    <ArrowLeftIcon className="h-5 w-5 group-hover:-translate-x-1 transition-transform" />
+                    Regresar
+                </button>
+                <div className="flex items-center gap-4 mb-2">
+                    <SparklesIcon className="h-8 w-8 text-purple-500 animate-pulse" />
+                    <h1 className="text-4xl md:text-6xl font-black tracking-tighter">Mi actividad en FREAD</h1>
+                </div>
+                <p className="text-gray-400 text-lg ml-1">Tu huella digital en la red FREAD.</p>
+            </header>
+
+            <main className="relative z-10 max-w-7xl mx-auto px-6 mt-12">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                    
+                    {/* --- COLUMNA HILOS --- */}
+                    <section className="space-y-6">
+                        <div className="flex items-center justify-between px-2">
+                            <h2 className="text-2xl font-bold flex items-center gap-3">
+                                <DocumentTextIcon className="h-7 w-7 text-purple-500" />
+                                Hilos Creados
+                            </h2>
+                            <span className="bg-purple-500/20 text-purple-400 px-4 py-1 rounded-full text-sm font-bold border border-purple-500/30 shadow-[0_0_15px_rgba(168,85,247,0.2)]">
+                                {hilosTotalCount} total
+                            </span>
                         </div>
-                        
-                        <div className="activity-content">
-                            {Array.isArray(hilos) && hilos.length > 0 ? (
-                                <div className="items-list">
-                                    {hilos.map(hilo => (
-                                        <div key={hilo.id} className="activity-item-card">
-                                            <div className="item-content">
-                                                <Link to={`/hilo/${hilo.id}`} className="item-title">
+
+                        <div className="relative space-y-4 min-h-[400px]">
+                            <div className="neon-timeline-line" />
+                            {hilos.length > 0 ? hilos.map(hilo => (
+                                <Link to={`/hilo/${hilo.id}`} key={hilo.id} className="block group">
+                                    <div className="activity-glass-card p-6 ml-10 relative">
+                                        {/* Punto de la línea de tiempo */}
+                                        <div className="absolute -left-[30px] top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-purple-600 border-4 border-[#050505] shadow-[0_0_10px_#6d28d9] group-hover:scale-125 transition-transform" />
+                                        
+                                        <div className="flex justify-between items-center">
+                                            <div className="flex-1">
+                                                <h3 className="text-xl font-bold text-gray-100 group-hover:text-purple-400 transition-colors mb-1">
                                                     {hilo.titulo}
-                                                </Link>
-                                                <p className="item-meta">
-                                                    en <span className="foro-name">f/{hilo.foro?.nombreForo || 'Foro'}</span>
-                                                </p>
+                                                </h3>
+                                                <div className="flex items-center gap-3 text-sm text-gray-500">
+                                                    <span className="flex items-center gap-1">
+                                                        <ClockIcon className="h-4 w-4" />
+                                                        en f/{hilo.foro?.nombreForo || 'Foro'}
+                                                    </span>
+                                                </div>
                                             </div>
-                                            <div className="item-arrow">→</div>
+                                            <ChevronRightIcon className="h-6 w-6 text-gray-700 group-hover:text-purple-400 transition-all" />
                                         </div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <div className="empty-state">
-                                    <p className="empty-icon">📭</p>
-                                    <p>No has creado ningún hilo todavía.</p>
-                                </div>
+                                    </div>
+                                </Link>
+                            )) : (
+                                <div className="ml-10 py-10 text-gray-600 italic">Aún no has compartido historias con la red...</div>
                             )}
                         </div>
 
+                        {/* Paginación Hilos */}
                         {hilosTotalPages > 1 && (
-                            <div className="pagination">
+                            <div className="flex items-center gap-4 justify-center pt-4">
                                 <button 
-                                    aria-label="Página anterior de hilos" 
-                                    onClick={() => setHilosPage(p => Math.max(1, p - 1))} 
+                                    onClick={() => setHilosPage(p => Math.max(1, p - 1))}
                                     disabled={hilosPage === 1}
-                                    className="pagination-btn"
+                                    className="p-2 rounded-lg bg-white/5 hover:bg-purple-500/20 disabled:opacity-20 transition-all"
                                 >
-                                    ← Anterior
+                                    <ArrowLeftIcon className="h-5 w-5" />
                                 </button>
-                                <span className="pagination-info">
-                                    Página {hilosPage} de {hilosTotalPages}
-                                </span>
+                                <span className="text-sm font-mono">{hilosPage} / {hilosTotalPages}</span>
                                 <button 
-                                    aria-label="Página siguiente de hilos" 
-                                    onClick={() => setHilosPage(p => Math.min(hilosTotalPages, p + 1))} 
+                                    onClick={() => setHilosPage(p => Math.min(hilosTotalPages, p + 1))}
                                     disabled={hilosPage === hilosTotalPages}
-                                    className="pagination-btn"
+                                    className="p-2 rounded-lg bg-white/5 hover:bg-purple-500/20 disabled:opacity-20 transition-all"
                                 >
-                                    Siguiente →
+                                    <ChevronRightIcon className="h-5 w-5" />
                                 </button>
                             </div>
                         )}
-                    </div>
+                    </section>
 
-                    <div className="activity-card">
-                        <div className="card-header">
-                            <h2 className="card-title">Comentarios</h2>
-                            <span className="badge">{comentariosTotalCount}</span>
+                    {/* --- COLUMNA COMENTARIOS --- */}
+                    <section className="space-y-6">
+                        <div className="flex items-center justify-between px-2">
+                            <h2 className="text-2xl font-bold flex items-center gap-3">
+                                <ChatBubbleLeftEllipsisIcon className="h-7 w-7 text-blue-500" />
+                                Intervenciones
+                            </h2>
+                            <span className="bg-blue-500/20 text-blue-400 px-4 py-1 rounded-full text-sm font-bold border border-blue-500/30 shadow-[0_0_15px_rgba(59,130,246,0.2)]">
+                                {comentariosTotalCount} total
+                            </span>
                         </div>
-                        
-                        <div className="activity-content">
-                            {Array.isArray(comentarios) && comentarios.length > 0 ? (
-                                <div className="items-list">
-                                    {comentarios.map(comentario => (
-                                        <div key={comentario.id} className="activity-item-card">
-                                            <div className="item-content">
-                                                <p className="item-comment">"{comentario.contenido}"</p>
-                                                <Link to={`/hilo/${comentario.hiloId}`} className="item-link">
-                                                    Ver en contexto →
-                                                </Link>
-                                            </div>
-                                        </div>
-                                    ))}
+
+                        <div className="space-y-4 min-h-[400px]">
+                            {comentarios.length > 0 ? comentarios.map(comentario => (
+                                <div key={comentario.id} className="activity-glass-card p-6 relative group overflow-hidden">
+                                    {/* Destello lateral azul */}
+                                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-500 opacity-30 group-hover:opacity-100 transition-opacity" />
+                                    
+                                    <p className="text-gray-300 mb-4 line-clamp-2 italic">
+                                        "{comentario.contenido}"
+                                    </p>
+                                    
+                                    <div className="flex justify-between items-center border-t border-white/5 pt-4">
+                                        <Link 
+                                            to={`/hilo/${comentario.hiloId}`} 
+                                            className="text-xs font-bold text-blue-400 hover:text-blue-300 uppercase tracking-widest flex items-center gap-1"
+                                        >
+                                            Ver contexto <ChevronRightIcon className="h-3 w-3" />
+                                        </Link>
+                                        <span className="text-[10px] text-gray-600 font-mono">ID_REF: #{comentario.id}</span>
+                                    </div>
                                 </div>
-                            ) : (
-                                <div className="empty-state">
-                                    <p>No has creado ningún comentario todavía.</p>
-                                </div>
+                            )) : (
+                                <div className="py-10 text-gray-600 italic">Tus pensamientos aún no han sido registrados...</div>
                             )}
                         </div>
 
+                        {/* Paginación Comentarios */}
                         {comentariosTotalPages > 1 && (
-                            <div className="pagination">
+                            <div className="flex items-center gap-4 justify-center pt-4">
                                 <button 
-                                    aria-label="Página anterior de comentarios" 
-                                    onClick={() => setComentariosPage(p => Math.max(1, p - 1))} 
+                                    onClick={() => setComentariosPage(p => Math.max(1, p - 1))}
                                     disabled={comentariosPage === 1}
-                                    className="pagination-btn"
+                                    className="p-2 rounded-lg bg-white/5 hover:bg-blue-500/20 disabled:opacity-20 transition-all"
                                 >
-                                    ← Anterior
+                                    <ArrowLeftIcon className="h-5 w-5" />
                                 </button>
-                                <span className="pagination-info">
-                                    Página {comentariosPage} de {comentariosTotalPages}
-                                </span>
+                                <span className="text-sm font-mono">{comentariosPage} / {comentariosTotalPages}</span>
                                 <button 
-                                    aria-label="Página siguiente de comentarios" 
-                                    onClick={() => setComentariosPage(p => Math.min(comentariosTotalPages, p + 1))} 
+                                    onClick={() => setComentariosPage(p => Math.min(comentariosTotalPages, p + 1))}
                                     disabled={comentariosPage === comentariosTotalPages}
-                                    className="pagination-btn"
+                                    className="p-2 rounded-lg bg-white/5 hover:bg-blue-500/20 disabled:opacity-20 transition-all"
                                 >
-                                    Siguiente →
+                                    <ChevronRightIcon className="h-5 w-5" />
                                 </button>
                             </div>
                         )}
-                    </div>
+                    </section>
+
                 </div>
-            </div>
+            </main>
         </div>
     );
 };
