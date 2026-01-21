@@ -69,9 +69,13 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("MyCorsPolicy", policy =>
     {
-        policy.WithOrigins("http://localhost:3000")
+        policy.WithOrigins(
+                "http://localhost:3000", // Para desarrollo local
+                "https://kind-meadow-021d0e11e.4.azurestaticapps.net" // Tu frontend en Azure
+              )
               .AllowAnyHeader()
-              .AllowAnyMethod();
+              .AllowAnyMethod()
+              .AllowCredentials(); // Importante para el manejo de sesiones y cookies si aplica
     });
 });
 
