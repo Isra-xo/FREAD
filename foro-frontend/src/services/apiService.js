@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'fread-gtbgezbxhbdednfa.canadacentral-01.azurewebsites.net'; 
+const API_URL = 'https://fread-gtbgezbxhbdednfa.canadacentral-01.azurewebsites.net/api'; 
 
 const apiClient = axios.create({
     baseURL: API_URL,
